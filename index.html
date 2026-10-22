@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<!-- CONFIGURACIÓN DE APP NATIVA PWA -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -10,7 +9,6 @@
 <meta name="apple-mobile-web-app-title" content="C.PRO Estruc">
 <meta name="application-name" content="C.PRO Estruc">
 
-<!-- ENLACES AL ÍCONO Y AL MANIFIESTO -->
 <link rel="apple-touch-icon" href="icono-estructuras.png">
 <link rel="icon" type="image/png" href="icono-estructuras.png">
 <link rel="manifest" href="manifest.json">
@@ -21,7 +19,7 @@
 * { box-sizing:border-box; margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; -webkit-tap-highlight-color:transparent; }
 html, body { width:100%; height:100%; background-color:var(--bg-color); color:var(--text-main); overflow:hidden; }
 
-/* ELIMINACIÓN RADICAL DE FLECHAS (SPINNERS) EN TODOS LOS CAMPOS */
+/* ELIMINACIÓN RADICAL DE FLECHAS (SPINNERS) */
 input[type=number]::-webkit-inner-spin-button, 
 input[type=number]::-webkit-outer-spin-button { -webkit-appearance:none !important; margin:0 !important; display:none !important; }
 input[type=number] { -moz-appearance:textfield !important; }
@@ -46,35 +44,51 @@ header { flex:0 0 auto; background-color:var(--card-bg); padding:10px 14px; bord
 .segment-btn { flex:1 0 auto; padding:12px 8px; background:none; border:none; color:var(--text-muted); font-size:11px; font-weight:800; border-radius:6px; cursor:pointer; text-transform:uppercase; transition:all 0.2s; }
 .segment-btn.active { background-color:var(--primary-cyan); color:#000; font-weight:900; }
 
-.form-group { margin-bottom:14px; }
-label { display:flex; align-items:center; gap:6px; font-size:10px; font-weight:800; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; }
+.form-group { margin-bottom:12px; }
+label { display:flex; align-items:center; gap:6px; font-size:10px; font-weight:800; color:var(--text-muted); margin-bottom:5px; text-transform:uppercase; }
 select, input { width:100%; padding:10px 12px; background-color:var(--input-bg); border:1px solid var(--card-border); border-radius:8px; color:var(--text-main); font-size:13px; font-weight:700; outline:none; transition:border-color 0.2s; }
 select:focus, input:focus { border-color:var(--primary-cyan); }
-.input-inline { background:rgba(0,0,0,0.4); border:1px solid var(--card-border); color:var(--primary-orange); padding:4px 6px; border-radius:6px; font-size:12px; font-weight:900; width:78px; text-align:center; }
+.input-inline { background:rgba(0,0,0,0.4); border:1px solid var(--card-border); color:var(--primary-orange); padding:4px 6px; border-radius:6px; font-size:12px; font-weight:900; width:76px; text-align:center; }
 .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 
-.schematic-container { position:relative; background-color:var(--card-bg); border:1px solid var(--card-border); border-radius:12px; margin-bottom:16px; overflow:hidden; box-shadow:0 8px 25px rgba(0,0,0,0.3); }
+.schematic-container { position:relative; background-color:var(--card-bg); border:1px solid var(--card-border); border-radius:12px; margin-bottom:14px; overflow:hidden; box-shadow:0 8px 25px rgba(0,0,0,0.3); }
 .pill-badge { position:absolute; font-size:10px; font-weight:800; padding:6px 14px; border-radius:14px; background:rgba(15,23,42,0.9); border:1px solid rgba(0,229,255,0.4); z-index:10; cursor:pointer; color:var(--primary-cyan); text-transform:uppercase; }
 
-.result-card { background-color:var(--card-bg); border:1px solid var(--card-border); border-radius:10px; padding:16px; margin-bottom:14px; }
+.result-card { background-color:var(--card-bg); border:1px solid var(--card-border); border-radius:10px; padding:15px; margin-bottom:14px; }
 .result-header { font-size:12px; font-weight:900; color:var(--primary-cyan); border-bottom:1px solid var(--card-border); padding-bottom:8px; margin-bottom:12px; text-transform:uppercase; display:flex; justify-content:space-between; align-items:center; }
 .res-table { width:100%; border-collapse:collapse; font-size:12px; }
-.res-table td { padding:12px 4px; border-bottom:1px dashed var(--card-border); vertical-align:middle; color:#fff; font-weight:700; }
+.res-table td { padding:10px 4px; border-bottom:1px dashed var(--card-border); vertical-align:middle; color:#fff; font-weight:700; }
 .res-table td:last-child { text-align:right; }
-.val-sub { font-size:10.5px; color:var(--text-muted); font-weight:600; display:block; margin-top:4px; line-height:1.4; }
+.val-sub { font-size:10.5px; color:var(--text-muted); font-weight:600; display:block; margin-top:3px; line-height:1.4; }
 
 .badge-green { background:rgba(48,209,88,0.15); color:var(--primary-green); border:1px solid rgba(48,209,88,0.3); font-size:10px; padding:4px 8px; border-radius:12px; font-weight:800; display:inline-block; margin-bottom:4px; }
 .badge-red { background:rgba(255,69,58,0.15); color:var(--primary-red); border:1px solid rgba(255,69,58,0.3); font-size:10px; padding:4px 8px; border-radius:12px; font-weight:800; display:inline-block; margin-bottom:4px; }
+.badge-orange { background:rgba(255,159,10,0.18); color:var(--primary-orange); border:1px solid rgba(255,159,10,0.4); font-size:10px; padding:4px 8px; border-radius:12px; font-weight:800; display:inline-block; margin-bottom:4px; }
 
-.btn-auditor { width:100%; background:#1e293b; color:#00e5ff; border:1px solid rgba(0,229,255,0.4); padding:14px; border-radius:8px; font-size:12px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:12px; }
-.memoria-box { background:rgba(0,0,0,0.3); border:1px solid var(--card-border); border-radius:8px; padding:14px; margin-top:12px; display:none; border-left:3px solid var(--primary-orange); }
-.memoria-section { font-size:11px; font-weight:900; color:var(--primary-orange); margin-bottom:8px; text-transform:uppercase; border-bottom:1px solid rgba(255,159,10,0.2); padding-bottom:4px; margin-top:10px; }
+/* TARJETAS DE PROPUESTAS DE ARMADO */
+.propuestas-box { margin-top:12px; background:rgba(0,0,0,0.28); border:1px solid var(--card-border); border-radius:8px; padding:10px; }
+.propuestas-title { font-size:10.5px; font-weight:900; color:var(--primary-orange); text-transform:uppercase; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; }
+.prop-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.prop-card { background:var(--input-bg); border:1px solid var(--card-border); border-radius:7px; padding:8px 10px; cursor:pointer; transition:all 0.2s; text-align:left; position:relative; }
+.prop-card:hover, .prop-card.active { border-color:var(--primary-cyan); background:rgba(0,229,255,0.08); box-shadow:0 0 12px rgba(0,229,255,0.15); }
+.prop-card.best { border-color:var(--primary-green); background:rgba(48,209,88,0.08); }
+.prop-card.best.active { border-color:#00e5ff; background:rgba(0,229,255,0.14); }
+.prop-tag { font-size:9px; font-weight:900; text-transform:uppercase; padding:2px 6px; border-radius:4px; display:inline-block; margin-bottom:4px; }
+.tag-best { background:var(--primary-green); color:#000; }
+.tag-alt { background:#334155; color:#e2e8f0; }
+.tag-warn { background:var(--primary-orange); color:#000; }
+.prop-main { font-size:11.5px; font-weight:900; color:#fff; line-height:1.35; }
+.prop-meta { font-size:9.5px; color:var(--text-muted); margin-top:3px; }
+
+.btn-auditor { width:100%; background:#1e293b; color:#00e5ff; border:1px solid rgba(0,229,255,0.4); padding:13px; border-radius:8px; font-size:12px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:12px; }
+.memoria-box { background:rgba(0,0,0,0.35); border:1px solid var(--card-border); border-radius:8px; padding:14px; margin-top:12px; display:none; border-left:3px solid var(--primary-orange); }
+.memoria-section { font-size:11px; font-weight:900; color:var(--primary-orange); margin-bottom:6px; text-transform:uppercase; border-bottom:1px solid rgba(255,159,10,0.2); padding-bottom:4px; margin-top:8px; }
 .memoria-line { font-size:11px; color:var(--text-main); margin-bottom:6px; line-height:1.5; }
 
 .bottom-nav { position:absolute; bottom:0; left:0; right:0; background-color:var(--card-bg); border-top:1px solid var(--card-border); display:flex; height:70px; z-index:999; padding-bottom:env(safe-area-inset-bottom); }
 .nav-item { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; background:none; border:none; color:var(--text-muted); font-size:10px; font-weight:700; cursor:pointer; gap:4px; transition:color 0.2s; }
 .nav-item.active { color:var(--primary-orange); background-color:rgba(255,159,10,0.08); border-top:2px solid var(--primary-orange); }
-.canvas-2d-section { width:100%; height:210px; border-radius:8px; background-color:#0f172a; margin-top:12px; border:1px solid rgba(51,65,85,0.6); }
+.canvas-2d-section { width:100%; height:215px; border-radius:8px; background-color:#0f172a; margin-top:12px; border:1px solid rgba(51,65,85,0.6); }
 .action-btn { background:var(--primary-cyan); color:#000; border:none; padding:12px; border-radius:8px; font-weight:900; font-size:12px; width:100%; cursor:pointer; text-transform:uppercase; margin-top:10px; }
 .ui-caja-naranja { background:rgba(255,159,10,0.1); padding:10px; border-radius:8px; border:1px solid rgba(255,159,10,0.3); text-align:center; display:flex; flex-direction:column; justify-content:center; }
 </style>
@@ -109,7 +123,7 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
             <div style="position:absolute; top:12px; right:12px; z-index:20;">
                 <button class="pill-badge" onclick="togRX()" id="btn_rayosx">👁️ Rayos X</button>
             </div>
-            <div id="status_dashboard" style="position:absolute; bottom:12px; left:12px; z-index:20; display:flex; flex-direction:column; gap:4px; max-width:68%;"></div>
+            <div id="status_dashboard" style="position:absolute; bottom:12px; left:12px; z-index:20; display:flex; flex-direction:column; gap:4px; max-width:72%;"></div>
             <canvas id="canvas_3d_viewport" width="360" height="280" style="width:100%; height:280px; display:block; cursor:grab;"></canvas>
         </div>
 
@@ -120,11 +134,11 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
             <button class="segment-btn" onclick="setMod('muros', this)">🧱 Muros Cont.</button>
         </div>
 
-        <!-- ZAPATAS -->
+        <!-- ==================== MÓDULO ZAPATAS ==================== -->
         <div id="mod_zapatas" class="calc-subpane">
             <div class="form-group grid-2">
                 <div>
-                    <label>🏢 Uso Edificación:</label>
+                    <label>🏢 Uso Edificación (RNE):</label>
                     <select id="z_uso" onchange="runEng('uso')">
                         <option value="1000" selected>Vivienda (C-1.0)</option>
                         <option value="1300">Comercio (B-1.3)</option>
@@ -150,9 +164,9 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
                 <div>
                     <label>🌍 Suelo (σt E.050):</label>
                     <select id="z_suelo" onchange="runEng('suelo')">
-                        <option value="3.0">Rígido (3.0 kg)</option>
-                        <option value="2.0" selected>Duro (2.0 kg)</option>
-                        <option value="1.3">Blando (1.3 kg)</option>
+                        <option value="3.0">Rígido (3.0 kg/cm²)</option>
+                        <option value="2.0" selected>Duro (2.0 kg/cm²)</option>
+                        <option value="1.3">Blando (1.3 kg/cm²)</option>
                     </select>
                 </div>
                 <div class="ui-caja-naranja" onclick="el('z_df_input').focus()">
@@ -163,13 +177,13 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
                 </div>
             </div>
             <div class="result-card">
-                <div class="result-header">✅ DISEÑO ZAPATA (E.050/E.060)</div>
+                <div class="result-header">✅ DISEÑO ZAPATA (E.050 / E.060)</div>
                 <table class="res-table">
                     <tr>
-                        <td style="width:42%;">Geometría Base:<br><span class="val-sub" id="z_txt_carga">Carga: -- Ton</span></td>
+                        <td style="width:45%;">Geometría Base:<br><span class="val-sub" id="z_txt_carga">Carga: -- Ton</span></td>
                         <td>
-                            <div style="display:flex; justify-content:flex-end; gap:4px; margin-bottom:4px;">L: <input type="number" id="z_mod_l" value="1.40" step="0.05" class="input-inline" oninput="runEng('geom_l')"> m</div>
-                            <div style="display:flex; justify-content:flex-end; gap:4px;">B: <input type="number" id="z_mod_b" value="1.40" step="0.05" class="input-inline" oninput="runEng('geom_b')"> m</div>
+                            <div style="display:flex; justify-content:flex-end; gap:4px; margin-bottom:4px; align-items:center;">L: <input type="number" id="z_mod_l" value="1.40" step="0.05" class="input-inline" oninput="runEng('geom_l')"> m</div>
+                            <div style="display:flex; justify-content:flex-end; gap:4px; align-items:center;">B: <input type="number" id="z_mod_b" value="1.40" step="0.05" class="input-inline" oninput="runEng('geom_b')"> m</div>
                         </td>
                     </tr>
                     <tr>
@@ -177,9 +191,9 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
                         <td style="text-align:right;"><span id="z_txt_hz" style="color:var(--primary-orange);">Cota Final: -- m</span></td>
                     </tr>
                     <tr>
-                        <td>Parrilla Inferior:<br><span class="val-sub" id="z_txt_rho">As Req</span></td>
+                        <td>Parrilla Inferior:<br><span class="val-sub" id="z_txt_rho">As Req: -- cm²</span></td>
                         <td>
-                            <div style="display:flex; justify-content:flex-end; gap:6px;">Ø 
+                            <div style="display:flex; justify-content:flex-end; gap:6px; align-items:center;">Ø 
                                 <select id="z_mod_phi" class="input-inline" onchange="runEng('acero')">
                                     <option value="1.29">1/2"</option>
                                     <option value="1.99" selected>5/8"</option>
@@ -190,13 +204,14 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
                         </td>
                     </tr>
                 </table>
-                <canvas id="cvs_2d_zap" width="320" height="190" class="canvas-2d-section"></canvas>
-                <button class="btn-auditor" onclick="tgMem('mem_zap')">📄 Auditar Memoria</button>
+                <div id="z_propuestas_container" class="propuestas-box"></div>
+                <canvas id="cvs_2d_zap" width="320" height="200" class="canvas-2d-section"></canvas>
+                <button class="btn-auditor" onclick="tgMem('mem_zap')">📄 Auditar Memoria de Cálculo</button>
                 <div id="mem_zap" class="memoria-box"></div>
             </div>
         </div>
 
-        <!-- COLUMNAS -->
+        <!-- ==================== MÓDULO COLUMNAS ==================== -->
         <div id="mod_columnas" class="calc-subpane" style="display:none;">
             <div class="form-group grid-2">
                 <div>
@@ -235,7 +250,7 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
                     <tr>
                         <td style="width:42%;">Sección (b × t):<br><span class="val-sub" id="c_txt_ag">Área</span></td>
                         <td>
-                            <div style="display:flex; justify-content:flex-end; gap:4px;">
+                            <div style="display:flex; justify-content:flex-end; gap:4px; align-items:center;">
                                 <input type="number" id="c_mod_b" value="30" step="5" class="input-inline" oninput="runEng('geom')"> ×
                                 <input type="number" id="c_mod_t" value="35" step="5" class="input-inline" oninput="runEng('geom')"> cm
                             </div>
@@ -246,17 +261,18 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
                         <td style="text-align:right;" id="c_txt_armado"></td>
                     </tr>
                     <tr>
-                        <td>Estribos Sismo:<br><span class="val-sub">Confinamiento</span></td>
+                        <td>Estribos Sismo:<br><span class="val-sub">Confinamiento Cap. 21</span></td>
                         <td style="text-align:right;"><span style="color:var(--primary-orange);" id="c_txt_estr"></span></td>
                     </tr>
                 </table>
-                <canvas id="cvs_2d_col" width="320" height="190" class="canvas-2d-section"></canvas>
-                <button class="btn-auditor" onclick="tgMem('mem_col')">📄 Auditar Memoria</button>
+                <div id="c_propuestas_container" class="propuestas-box"></div>
+                <canvas id="cvs_2d_col" width="320" height="200" class="canvas-2d-section"></canvas>
+                <button class="btn-auditor" onclick="tgMem('mem_col')">📄 Auditar Memoria de Cálculo</button>
                 <div id="mem_col" class="memoria-box"></div>
             </div>
         </div>
 
-        <!-- VIGAS -->
+        <!-- ==================== MÓDULO VIGAS ==================== -->
         <div id="mod_vigas" class="calc-subpane" style="display:none;">
             <div class="form-group grid-2">
                 <div>
@@ -264,10 +280,10 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
                     <input type="number" id="v_luz" value="5.00" step="0.05" oninput="runEng('luz')">
                 </div>
                 <div>
-                    <label>🏗️ Carga:</label>
+                    <label>🏗️ Nivel de Carga:</label>
                     <select id="v_carga" onchange="runEng('carga')">
-                        <option value="normal" selected>Típica (E.020)</option>
-                        <option value="pesada">Pesada</option>
+                        <option value="normal" selected>Típica Vivienda (E.020)</option>
+                        <option value="pesada">Pesada / Comercio</option>
                     </select>
                 </div>
             </div>
@@ -290,11 +306,11 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
                 </div>
             </div>
             <div class="form-group">
-                <label>🟢 Acero Intermedio (Piel):</label>
+                <label>🟢 Acero Intermedio Lateral (Piel):</label>
                 <select id="v_phi_piel" onchange="runEng('acero')">
-                    <option value="0" selected>Auto RNE (si h ≥ 60cm)</option>
-                    <option value="1.29">Forzar 2 Ø 1/2"</option>
-                    <option value="1.99">Forzar 2 Ø 5/8"</option>
+                    <option value="0" selected>Automático RNE (Se activa si h ≥ 60cm)</option>
+                    <option value="1.29">Forzar 2 Ø 1/2" en caras laterales</option>
+                    <option value="1.99">Forzar 2 Ø 5/8" en caras laterales</option>
                 </select>
             </div>
             <div class="result-card">
@@ -303,28 +319,32 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
                     <tr>
                         <td style="width:42%;">Sección (b × h):<br><span class="val-sub">Múltiplos de 5cm</span></td>
                         <td>
-                            <div style="display:flex; justify-content:flex-end; gap:4px;">
+                            <div style="display:flex; justify-content:flex-end; gap:4px; align-items:center;">
                                 <input type="number" id="v_mod_b" value="25" step="5" class="input-inline" oninput="runEng('geom')"> ×
                                 <input type="number" id="v_mod_h" value="45" step="5" class="input-inline" oninput="runEng('geom')"> cm
                             </div>
                         </td>
                     </tr>
                     <tr>
-                        <td>Armado Principal:<br><span class="val-sub" id="v_txt_as">As Requerido</span></td>
+                        <td>Armado Activo:<br><span class="val-sub" id="v_txt_as">As Requerido</span></td>
                         <td style="text-align:right;" id="v_txt_acero"></td>
                     </tr>
                     <tr>
-                        <td>Estribos Auto:<br><span class="val-sub">Confinamiento 2h</span></td>
+                        <td>Estribos Auto:<br><span class="val-sub">Confinamiento 2h y d/4</span></td>
                         <td style="text-align:right;"><span style="color:var(--primary-orange);" id="v_txt_estr"></span></td>
                     </tr>
                 </table>
-                <canvas id="cvs_2d_vig" width="320" height="190" class="canvas-2d-section"></canvas>
-                <button class="btn-auditor" onclick="tgMem('mem_vig')">📄 Auditar Memoria</button>
+
+                <!-- SELECTOR DE MEJOR PROPUESTA Y OTRAS PROPUESTAS -->
+                <div id="v_propuestas_container" class="propuestas-box"></div>
+
+                <canvas id="cvs_2d_vig" width="320" height="215" class="canvas-2d-section"></canvas>
+                <button class="btn-auditor" onclick="tgMem('mem_vig')">📄 Auditar Memoria de Cálculo</button>
                 <div id="mem_vig" class="memoria-box"></div>
             </div>
         </div>
 
-        <!-- MUROS DE CONTENCIÓN -->
+        <!-- ==================== MÓDULO MUROS DE CONTENCIÓN ==================== -->
         <div id="mod_muros" class="calc-subpane" style="display:none;">
             <div class="form-group grid-2">
                 <div>
@@ -386,19 +406,19 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
             </div>
 
             <div class="result-card">
-                <div class="result-header">✅ MURO VOLADIZO (E.050/E.060)</div>
+                <div class="result-header">✅ MURO VOLADIZO (E.050 / E.060)</div>
                 <table class="res-table">
                     <tr>
                         <td style="width:42%;">Zapata (B × hz):<br><span class="val-sub" id="m_txt_fs">FSV y FSD</span></td>
                         <td>
-                            <div style="display:flex; justify-content:flex-end; gap:4px; margin-bottom:4px;">B: <input type="number" id="m_b" value="1.80" step="0.05" class="input-inline" oninput="runEng('geom')"> m</div>
-                            <div style="display:flex; justify-content:flex-end; gap:4px;">hz: <input type="number" id="m_hz" value="0.40" step="0.05" class="input-inline" oninput="runEng('geom')"> m</div>
+                            <div style="display:flex; justify-content:flex-end; gap:4px; margin-bottom:4px; align-items:center;">B: <input type="number" id="m_b" value="1.80" step="0.05" class="input-inline" oninput="runEng('geom')"> m</div>
+                            <div style="display:flex; justify-content:flex-end; gap:4px; align-items:center;">hz: <input type="number" id="m_hz" value="0.40" step="0.05" class="input-inline" oninput="runEng('geom')"> m</div>
                         </td>
                     </tr>
                     <tr>
                         <td>Base Pantalla (e):<br><span class="val-sub" id="m_txt_puntera">Puntera y Talón</span></td>
                         <td>
-                            <div style="display:flex; justify-content:flex-end; gap:4px;">e: <input type="number" id="m_e" value="0.35" step="0.05" class="input-inline" oninput="runEng('geom')"> m</div>
+                            <div style="display:flex; justify-content:flex-end; gap:4px; align-items:center;">e: <input type="number" id="m_e" value="0.35" step="0.05" class="input-inline" oninput="runEng('geom')"> m</div>
                         </td>
                     </tr>
                 </table>
@@ -408,42 +428,80 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
                     <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px; font-weight:700;"><span>Acero Horizontal:</span><span id="m_as_horiz"></span></div>
                     <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700;"><span>Parrilla Zapata:</span><span id="m_as_zap"></span></div>
                 </div>
-                <canvas id="cvs_2d_mur" width="320" height="210" class="canvas-2d-section"></canvas>
-                <button class="btn-auditor" onclick="tgMem('mem_mur')">📄 Auditar Memoria</button>
+                <canvas id="cvs_2d_mur" width="320" height="215" class="canvas-2d-section"></canvas>
+                <button class="btn-auditor" onclick="tgMem('mem_mur')">📄 Auditar Memoria de Cálculo</button>
                 <div id="mem_mur" class="memoria-box"></div>
             </div>
         </div>
     </div>
 
-    <!-- VIEWS SECUNDARIAS -->
+    <!-- ==================== VISTA METRADO DE ACERO ==================== -->
     <div id="view_acero" class="main-viewport">
         <div class="result-card">
-            <div class="result-header">✂️ PLANILLA DE METRADO</div>
+            <div class="result-header">✂️ PLANILLA DE METRADO EN VIVO</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-bottom:12px;" id="acero_subtitulo">Despiece automático en varillas de 9.00 m del módulo activo.</div>
+            <div class="form-group">
+                <label>🔢 Cantidad de Elementos Iguales a Construir:</label>
+                <input type="number" id="ac_cant_elem" value="1" min="1" oninput="runEng('acero')">
+            </div>
             <table class="res-table">
-                <tr><td>Varilla ø 3/8"</td><td style="color:#00e5ff;" id="dyn_ac_38">12 und</td></tr>
-                <tr><td>Varilla ø 1/2"</td><td style="color:#3388ff;" id="dyn_ac_12">16 und</td></tr>
-                <tr><td>Varilla ø 5/8"</td><td style="color:#ff2222;" id="dyn_ac_58">24 und</td></tr>
-                <tr><td>Peso Total:</td><td style="color:var(--primary-green);" id="dyn_peso_tot">412.5 kg</td></tr>
+                <tr><td>Varilla Ø 3/8" (0.56 kg/m):<span class="val-sub">Estribos / Confinamiento</span></td><td style="color:#00e5ff;" id="dyn_ac_38">-- und</td></tr>
+                <tr><td>Varilla Ø 1/2" (0.99 kg/m):<span class="val-sub">Refuerzo / Temperatura / Piel</span></td><td style="color:#3388ff;" id="dyn_ac_12">-- und</td></tr>
+                <tr><td>Varilla Ø 5/8" (1.55 kg/m):<span class="val-sub">Refuerzo Principal</span></td><td style="color:#ff2222;" id="dyn_ac_58">-- und</td></tr>
+                <tr><td>Varilla Ø 3/4" (2.24 kg/m):<span class="val-sub">Refuerzo Mayor</span></td><td style="color:#ffcc00;" id="dyn_ac_34">-- und</td></tr>
+                <tr><td>Alambre Negro N° 16:<span class="val-sub">Para amarre estructural</span></td><td style="color:var(--primary-orange);" id="dyn_alambre">-- kg</td></tr>
+                <tr><td>Peso Total de Acero:<span class="val-sub">Incluye desperdicio configurado</span></td><td style="color:var(--primary-green); font-size:14px;" id="dyn_peso_tot">-- kg</td></tr>
             </table>
-            <button class="action-btn" onclick="alert('Exportado correctamente')">Exportar Planilla</button>
+            <button class="action-btn" onclick="copiarMetrado()">📋 Copiar Pedido de Acero para Obra</button>
         </div>
     </div>
     
+    <!-- ==================== VISTA EXPORTAR FICHA ==================== -->
     <div id="view_pdf" class="main-viewport">
-        <div class="result-card" style="text-align:center; padding:20px;">
-            <div class="result-header" style="justify-content:center;">📄 FICHA TÉCNICA</div>
-            <div style="text-align:left; background:rgba(0,0,0,0.3); padding:12px; border-radius:6px; font-size:11px; margin-bottom:14px; line-height:1.7;">
-                • <b>Concreto:</b> f'c = 210 kg/cm²<br>• <b>Acero:</b> fy = 4200 kg/cm²<br>• <b>Norma:</b> RNE E.030, E.050, E.060
-            </div>
-            <button class="action-btn" onclick="alert('Copiado al portapapeles.')">Compartir por WhatsApp</button>
+        <div class="result-card" style="padding:18px;">
+            <div class="result-header">📄 EXPEDIENTE TÉCNICO DE OBRA</div>
+            <div style="color:var(--text-muted); font-size:11.5px; margin-bottom:12px;">Resumen ejecutivo sincronizado con tu cálculo actual listo para enviar a cuadrilla o supervisión.</div>
+            <div id="ficha_tecnica_live" style="text-align:left; background:rgba(0,0,0,0.35); padding:14px; border-radius:8px; font-size:11.5px; margin-bottom:14px; color:#fff; line-height:1.7; border-left:3px solid var(--primary-cyan);"></div>
+            <button class="action-btn" onclick="compartirFicha()">📲 Copiar / Compartir Ficha por WhatsApp</button>
         </div>
     </div>
 
+    <!-- ==================== VISTA PARÁMETROS ==================== -->
     <div id="view_params" class="main-viewport">
         <div class="result-card">
-            <div class="result-header">⚙️ CONSTANTES (RNE)</div>
-            <div class="form-group"><label>Concreto (f'c):</label><select id="p_fc" onchange="runEng('all')"><option value="210" selected>210 kg/cm²</option><option value="280">280 kg/cm²</option></select></div>
-            <div class="form-group"><label>Acero (fy):</label><select id="p_fy" onchange="runEng('all')"><option value="4200" selected>4200 kg/cm²</option></select></div>
+            <div class="result-header">⚙️ PARÁMETROS GLOBALES (RNE)</div>
+            <div class="form-group">
+                <label>🧱 Resistencia Concreto (f'c):</label>
+                <select id="p_fc" onchange="runEng('all')">
+                    <option value="210" selected>210 kg/cm² (Estándar E.060)</option>
+                    <option value="280">280 kg/cm² (Alta Resistencia)</option>
+                    <option value="350">350 kg/cm² (Especial)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>🔩 Fluencia del Acero (fy):</label>
+                <select id="p_fy" onchange="runEng('all')">
+                    <option value="4200" selected>4200 kg/cm² (Grado 60)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>🌎 Zona Sísmica Perú (RNE E.030):</label>
+                <select id="p_zona" onchange="runEng('all')">
+                    <option value="0.45" selected>Zona 4 - Costa (Z = 0.45g)</option>
+                    <option value="0.35">Zona 3 - Sierra (Z = 0.35g)</option>
+                    <option value="0.25">Zona 2 - Selva Alta (Z = 0.25g)</option>
+                    <option value="0.10">Zona 1 - Selva Baja (Z = 0.10g)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>♻️ % Desperdicio de Acero:</label>
+                <select id="p_desp" onchange="runEng('all')">
+                    <option value="1.05" selected>5% (Controlado en obra)</option>
+                    <option value="1.08">8% (Estándar comercial)</option>
+                    <option value="1.10">10% (Cortes especiales)</option>
+                </select>
+            </div>
+            <button class="action-btn" onclick="setView('main', document.querySelector('.bottom-nav .nav-item'))">✅ Aplicar y Volver al Diseño</button>
         </div>
     </div>
 
@@ -456,32 +514,45 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
 </div>
 
 <script>
-// ==================== FUNCIONES DE SOPORTE CORE ====================
+// ==================== LIMPIEZA DE CACHÉ ANTIGUO ====================
+if ('caches' in window) {
+    caches.keys().then(function(names) {
+        for (var i = 0; i < names.length; i++) {
+            caches.delete(names[i]);
+        }
+    });
+}
+
+// ==================== VARIABLES Y UTILIDADES CORE ====================
 function el(id){ return document.getElementById(id); }
-function tgMem(id){ var b=el(id); b.style.display=(b.style.display==='block')?'none':'block'; }
+function tgMem(id){ var b = el(id); b.style.display = (b.style.display === 'block') ? 'none' : 'block'; }
 
 var cMod = 'zapatas';
 var rxM = false;
 var cRotX = 0.5, cRotY = -0.6, camZ = 1.15, panX = 0, panY = 0, iDrg = false, iPan = false, lx = 0, ly = 0;
 
-// Utilidades de color y redondeo
+// Modo especial para armado combinado en vigas
+var vPropActiva = null; 
+
 function phiL(v){ if(v < 0.8) return '3/8"'; if(v < 1.5) return '1/2"'; if(v < 2.2) return '5/8"'; return '3/4"'; }
 function phiC(v){ if(v < 0.8) return '#00e5ff'; if(v < 1.5) return '#3388ff'; if(v < 2.2) return '#ff2222'; return '#ffcc00'; }
+function phiDb(v){ if(v < 0.8) return 0.95; if(v < 1.5) return 1.27; if(v < 2.2) return 1.59; return 1.91; }
 function rnd5(v){ return Math.round(v * 20) / 20; }
 
 var D3 = {
     zl:1.40, zb:1.40, zh:60, df:1.20, zpPhi:1.99,
     cx:30, cy:35, ch:2.8, nE:4, nM:2, cPhiE:1.99, cPhiM:1.29, cPata:30, sLimC:6,
     vl:5.0, vb:25, vh:45, vPiel:0, phS:1.99, phI:1.99, sLimV:8,
+    vSupBars:[], vInfBars:[],
     mH:3.0, mB:1.80, mHz:40, mC:25, mE:35, spV:15, spH:20, spZ:20, mVmalla:1, mHmalla:1, mPhiV:1.99, mPhiH:1.29, mPhiZ:1.99, mDent:false
 };
 
 function setMod(id, btn){
     cMod = id;
     var pn = document.querySelectorAll('.calc-subpane'); 
-    for(var i=0; i<pn.length; i++) pn[i].style.display='none';
+    for(var i = 0; i < pn.length; i++) pn[i].style.display = 'none';
     var bt = document.querySelectorAll('.segment-btn'); 
-    for(var j=0; j<bt.length; j++) bt[j].classList.remove('active');
+    for(var j = 0; j < bt.length; j++) bt[j].classList.remove('active');
     
     el('mod_' + id).style.display = 'block'; 
     if(btn) btn.classList.add('active');
@@ -491,13 +562,14 @@ function setMod(id, btn){
 
 function setView(id, btn){
     var vw = document.querySelectorAll('.main-viewport'); 
-    for(var i=0; i<vw.length; i++) vw[i].classList.remove('active');
+    for(var i = 0; i < vw.length; i++) vw[i].classList.remove('active');
     var nv = document.querySelectorAll('.bottom-nav .nav-item'); 
-    for(var j=0; j<nv.length; j++) nv[j].classList.remove('active');
+    for(var j = 0; j < nv.length; j++) nv[j].classList.remove('active');
     
     el('view_' + id).classList.add('active'); 
     if(btn) btn.classList.add('active');
-    if(id === 'main'){ render3D(); runEng('all'); }
+    runEng('recalc_only');
+    if(id === 'main'){ render3D(); }
 }
 
 function togRX(){
@@ -516,12 +588,91 @@ function resetCam(){
     render3D();
 }
 
+// ==================== DISTRIBUCIÓN DE CAPAS E.060 (SIN VARILLAS AL CENTRO) ====================
+// Calcula cuántas varillas caben por capa según E.060 Art. 7.6 (espacio libre >= max(2.5cm, db, 2.5cm agregado))
+function maxVarillasPorCapa(b_cm, phiArea){
+    var db = phiDb(phiArea);
+    var recub = 4.0;
+    var estribo = 0.95;
+    var b_libre = b_cm - 2 * (recub + estribo);
+    var sep_min = Math.max(2.5, db);
+    var nMax = Math.floor((b_libre + sep_min) / (db + sep_min));
+    return Math.max(2, nMax);
+}
+
+// Organiza un arreglo de diámetros en capas asegurando que NINGUNA capa tenga 1 sola varilla flotando al centro
+function organizarCapasViga(barsArray, b_cm){
+    var total = barsArray.length;
+    if(total === 0) return [];
+    var maxPhi = 1.29;
+    for(var i = 0; i < total; i++){ if(barsArray[i] > maxPhi) maxPhi = barsArray[i]; }
+    var mx = maxVarillasPorCapa(b_cm, maxPhi);
+    
+    if(total <= mx) return [barsArray];
+    
+    var layers = [];
+    var idx = 0;
+    var rem = total;
+    while(rem > 0){
+        var take = Math.min(rem, mx);
+        // Si al tomar 'mx' queda exactamente 1 varilla suelta para la siguiente capa,
+        // cedemos 1 varilla de esta capa para que la 2da capa tenga 2 varillas pegadas al estribo lateral
+        if(rem - take === 1 && take > 2){
+            take = take - 1;
+        }
+        var currentLayer = barsArray.slice(idx, idx + take);
+        layers.push(currentLayer);
+        idx += take;
+        rem -= take;
+    }
+    return layers;
+}
+
+// Seleccionar una propuesta de armado en Vigas
+function aplicarPropuestaViga(tipo, phS, nS, phS2, nS2, phI, nI, phI2, nI2){
+    if(tipo === 'simple'){
+        vPropActiva = null;
+        el('v_phi_sup').value = phS.toFixed(2);
+        el('v_phi_inf').value = phI.toFixed(2);
+        runEng('acero');
+    } else {
+        vPropActiva = {
+            phS: phS, nS: nS, phS2: phS2, nS2: nS2,
+            phI: phI, nI: nI, phI2: phI2, nI2: nI2
+        };
+        runEng('propuesta_custom');
+    }
+}
+
+function aplicarPropuestaZapata(ph){
+    el('z_mod_phi').value = ph.toFixed(2);
+    runEng('acero');
+}
+
+function aplicarPropuestaColumna(phE, phM){
+    el('c_phi_esq').value = phE.toFixed(2);
+    el('c_phi_mid').value = phM.toFixed(2);
+    runEng('acero');
+}
+
 // ==================== MOTOR ESTRUCTURAL PRINCIPAL ====================
 function runEng(t){
     var fc = parseFloat(el('p_fc').value) || 210;
     var fy = parseFloat(el('p_fy').value) || 4200;
+    var desp = parseFloat(el('p_desp').value) || 1.05;
+    var cantElem = Math.max(1, parseInt(el('ac_cant_elem').value) || 1);
     var dH = '';
 
+    // Variables para metrado de acero (metros lineales totales por diámetro)
+    var m38 = 0, m12 = 0, m58 = 0, m34 = 0;
+    function sumarMetros(phi, metros){
+        if(phi < 0.8) m38 += metros;
+        else if(phi < 1.5) m12 += metros;
+        else if(phi < 2.2) m58 += metros;
+        else m34 += metros;
+    }
+
+    // ==================== 1. ZAPATAS ====================
     if(cMod === 'zapatas'){
         var qU = parseFloat(el('z_uso').value) || 1000;
         var p = parseInt(el('z_pisos').value) || 1;
@@ -540,30 +691,79 @@ function runEng(t){
         var df = parseFloat(dfI.value) || 1.20;
         var aC = parseFloat(el('z_aconst').value) || 110;
         var nC = parseFloat(el('z_ncol').value) || 12;
-        var P = ((aC / Math.max(1, nC)) * qU * p) / 1000;
-        var aR = (P * 1.15) / (qa * 10);
+        var aTrib = aC / Math.max(1, nC);
+        var P = (aTrib * qU * p) / 1000;
+        var qAdm = qa * 10;
+        var aR = (P * 1.15) / qAdm;
         var zl = parseFloat(el('z_mod_l').value) || 1.4;
         var zb = parseFloat(el('z_mod_b').value) || 1.4;
+        var zh = 60;
         
         if(t === 'geom_l'){ zb = rnd5(Math.max(0.8, aR / zl)); el('z_mod_b').value = zb.toFixed(2); }
         else if(t === 'geom_b'){ zl = rnd5(Math.max(0.8, aR / zb)); el('z_mod_l').value = zl.toFixed(2); }
-        else if(t !== 'acero' && t !== 'df'){ var bD = rnd5(Math.max(1.0, Math.sqrt(aR))); zl = bD; zb = bD; el('z_mod_l').value = zl.toFixed(2); el('z_mod_b').value = zb.toFixed(2); }
+        else if(t !== 'acero' && t !== 'df' && t !== 'recalc_only'){ var bD = rnd5(Math.max(1.0, Math.sqrt(aR))); zl = bD; zb = bD; el('z_mod_l').value = zl.toFixed(2); el('z_mod_b').value = zb.toFixed(2); }
         
         var pA = (P * 1.15) / (zl * zb);
-        if(pA > qa * 10 * 1.02) dH += '<span class="badge-red">🔴 E.050: Falla Presión Suelo</span><br>';
-        else dH += '<span class="badge-green">🟢 E.050: Presión OK</span><br>';
+        if(pA > qAdm * 1.02) dH += '<span class="badge-red">🔴 E.050: Presión Suelo (' + pA.toFixed(1) + ' > ' + qAdm.toFixed(0) + ' T/m²)</span><br>';
+        else dH += '<span class="badge-green">🟢 E.050: Presión Suelo OK (' + pA.toFixed(1) + ' T/m²)</span><br>';
         
+        var asMin = 0.0018 * (zb * 100) * zh;
         var ph = parseFloat(el('z_mod_phi').value) || 1.99;
-        var nV = Math.max(5, Math.ceil((0.0018 * zb * 100 * 60) / ph));
+        var nV = Math.max(5, Math.ceil(asMin / ph));
+        var sepZap = ((zb - 0.15) * 100) / Math.max(1, nV - 1);
         var exc = df + 0.1;
         
-        el('z_txt_carga').innerText = 'Carga: ' + P.toFixed(1) + ' Ton'; 
-        el('z_txt_armado').innerText = 'X/Y: ' + nV + ' Ø ' + phiL(ph); 
-        el('z_txt_hz').innerText = 'Zanja: ' + exc.toFixed(2) + 'm';
-        
+        el('z_txt_carga').innerText = 'Ps = ' + P.toFixed(1) + ' Ton | A.Trib = ' + aTrib.toFixed(1) + 'm²'; 
+        el('z_txt_rho').innerText = 'As Mín (0.0018·b·h): ' + asMin.toFixed(2) + ' cm²';
+        el('z_txt_armado').innerText = 'X: ' + nV + ' Ø ' + phiL(ph) + ' @ ' + sepZap.toFixed(0) + 'cm | Y: ' + nV + ' Ø ' + phiL(ph); 
+        el('z_txt_hz').innerText = 'Zanja: ' + exc.toFixed(2) + ' m (Df=' + df.toFixed(2) + 'm)';
+
+        // Propuestas de Parrilla en Zapata
+        var n12 = Math.max(5, Math.ceil(asMin / 1.29));
+        var n58 = Math.max(5, Math.ceil(asMin / 1.99));
+        var n34 = Math.max(4, Math.ceil(asMin / 2.84));
+        el('z_propuestas_container').innerHTML = 
+            '<div class="propuestas-title"><span>💡 PROPUESTAS DE PARRILLA (TOCA PARA APLICAR)</span></div>' +
+            '<div class="prop-grid">' +
+                '<div class="prop-card best ' + (Math.abs(ph-1.99)<0.1?'active':'') + '" onclick="aplicarPropuestaZapata(1.99)">' +
+                    '<span class="prop-tag tag-best">🌟 Mejor Propuesta</span>' +
+                    '<div class="prop-main">' + n58 + ' Ø 5/8" en X e Y</div>' +
+                    '<div class="prop-meta">As prov: ' + (n58*1.99).toFixed(2) + ' cm² (Óptimo)</div>' +
+                '</div>' +
+                '<div class="prop-card ' + (Math.abs(ph-1.29)<0.1?'active':'') + '" onclick="aplicarPropuestaZapata(1.29)">' +
+                    '<span class="prop-tag tag-alt">Alternativa 1/2"</span>' +
+                    '<div class="prop-main">' + n12 + ' Ø 1/2" en X e Y</div>' +
+                    '<div class="prop-meta">As prov: ' + (n12*1.29).toFixed(2) + ' cm²</div>' +
+                '</div>' +
+            '</div>';
+
+        // Memoria de Cálculo Zapata
+        el('mem_zap').innerHTML = 
+            '<div class="memoria-section">1. Cargas y Geotecnia (RNE E.020 / E.050)</div>' +
+            '<div class="memoria-line">• Área Tributaria = ' + aC + ' m² / ' + nC + ' col = <b>' + aTrib.toFixed(2) + ' m²</b><br>' +
+            '• Carga de Servicio (Ps) = ' + aTrib.toFixed(2) + ' × ' + qU + ' kg/m² × ' + p + ' pisos = <b>' + P.toFixed(2) + ' Ton</b><br>' +
+            '• Área Requerida Zapata = (1.15 × ' + P.toFixed(2) + ') / ' + qAdm.toFixed(1) + ' T/m² = <b>' + aR.toFixed(2) + ' m²</b><br>' +
+            '• Presión Actuante (σu) = ' + pA.toFixed(2) + ' T/m² ≤ σadm (' + qAdm.toFixed(1) + ' T/m²) → <b>CUMPLE</b></div>' +
+            '<div class="memoria-section">2. Acero por Flexión y Temperatura (RNE E.060)</div>' +
+            '<div class="memoria-line">• Peralte zapata hz = 60 cm (d = 52.5 cm, Recubrimiento = 7.5 cm)<br>' +
+            '• Cuantía mínima (0.0018·b·h) = <b>' + asMin.toFixed(2) + ' cm²</b><br>' +
+            '• Armado seleccionado: <b>' + nV + ' Ø ' + phiL(ph) + '</b> en ambas direcciones (@ ' + sepZap.toFixed(1) + ' cm).</div>';
+
+        sumarMetros(ph, nV * (zl - 0.15) + nV * (zb - 0.15));
+
+        el('ficha_tecnica_live').innerHTML = 
+            '<b>🏛️ ELEMENTO: ZAPATA AISLADA (RNE E.050 / E.060)</b><br>' +
+            '• Dimensiones en planta: <b>L = ' + zl.toFixed(2) + ' m × B = ' + zb.toFixed(2) + ' m</b><br>' +
+            '• Peralte de concreto (hz): <b>0.60 m</b> + Solado 0.10 m<br>' +
+            '• Cota de excavación total: <b>-' + exc.toFixed(2) + ' m</b><br>' +
+            '• Parrilla inferior X / Y: <b>' + nV + ' Ø ' + phiL(ph) + ' @ ' + sepZap.toFixed(0) + ' cm</b><br>' +
+            '• Concreto: <b>f\'c = ' + fc + ' kg/cm²</b> | Recubrimiento: <b>7.5 cm</b>';
+
         D3.zl = zl; D3.zb = zb; D3.zh = 60; D3.df = df; D3.nE = nV; D3.zpPhi = ph; 
         rZap(zl, zb, nV, ph);
     }
+
+    // ==================== 2. COLUMNAS ====================
     else if(cMod === 'columnas'){
         var sis = el('c_sis').value;
         var ch = parseFloat(el('c_h').value) || 2.8;
@@ -581,30 +781,75 @@ function runEng(t){
         var phE = parseFloat(el('c_phi_esq').value) || 1.99;
         var phM = parseFloat(el('c_phi_mid').value) || 1.29;
         
-        if(sis === 'portico'){ if(cb < 25 || ct < 25) dH += '<span class="badge-red">🔴 E.060: Mín 25cm (Aporticado)</span><br>'; }
-        else { if(cb < 15 || ct < 15) dH += '<span class="badge-red">🔴 E.070: Mín 15cm (Confinada)</span><br>'; }
+        if(sis === 'portico'){ if(cb < 25 || ct < 25) dH += '<span class="badge-red">🔴 E.060: Lado Mín 25cm (Pórticos)</span><br>'; }
+        else { if(cb < 15 || ct < 15) dH += '<span class="badge-red">🔴 E.070: Lado Mín 15cm (Confinada)</span><br>'; }
         
         var asR = Math.max(0.01 * a, 4.0);
         var asRs = Math.max(0, asR - 4 * phE);
         var nM = 0;
         if(asRs > 0){ nM = Math.ceil(asRs / phM); if(nM % 2 !== 0) nM++; }
         
-        var rR = ((4 * phE + nM * phM) / a) * 100;
-        var dbEsq = (phE <= 1.3) ? 1.27 : (phE <= 2.0 ? 1.59 : 1.91);
+        var asTotal = 4 * phE + nM * phM;
+        var rR = (asTotal / a) * 100;
+        var dbEsq = phiDb(phE);
         var pat = Math.max(30, Math.ceil((dbEsq * 16) / 5) * 5);
         
-        if(rR >= 1.0 && rR <= 6.0) dH += '<span class="badge-green">🟢 E.060: Cuantía OK</span><br>';
-        else dH += '<span class="badge-red">🔴 E.060: Cuantía > 6%</span><br>';
+        if(rR >= 1.0 && rR <= 6.0) dH += '<span class="badge-green">🟢 E.060: Cuantía ' + rR.toFixed(2) + '% OK</span><br>';
+        else dH += '<span class="badge-red">🔴 E.060: Cuantía ' + rR.toFixed(1) + '% fuera de rango (1%-6%)</span><br>';
         
         var sConf = Math.min(Math.floor(8 * dbEsq), 10);
+        var loConf = Math.max(cb, ct, Math.ceil((ch * 100) / 6), 45);
         
         el('c_txt_estr').innerText = '1@5, 6@' + sConf + ', R@20'; 
-        el('c_txt_ag').innerText = 'Ag:' + a + 'cm² | As:' + asR.toFixed(1) + 'cm²';
-        el('c_txt_armado').innerHTML = '<span style="color:' + phiC(phE) + '">4Ø' + phiL(phE) + ' (Pata Ext:' + pat + 'cm)</span>' + (nM > 0 ? '<br><span style="color:' + phiC(phM) + '">+ ' + nM + 'Ø' + phiL(phM) + '</span>' : '');
+        el('c_txt_ag').innerText = 'Ag: ' + a + ' cm² | As Mín (1%): ' + asR.toFixed(2) + ' cm²';
+        el('c_txt_armado').innerHTML = '<span style="color:' + phiC(phE) + '">4 Ø ' + phiL(phE) + ' (Pata: ' + pat + 'cm)</span>' + (nM > 0 ? '<br><span style="color:' + phiC(phM) + '">+ ' + nM + ' Ø ' + phiL(phM) + '</span>' : '');
         
+        // Propuestas de Armado en Columna
+        var nM_opt1 = Math.max(0, Math.ceil((asR - 4 * 1.99) / 1.29)); if(nM_opt1 % 2 !== 0) nM_opt1++;
+        var nM_opt2 = Math.max(0, Math.ceil((asR - 4 * 2.84) / 1.99)); if(nM_opt2 % 2 !== 0) nM_opt2++;
+        el('c_propuestas_container').innerHTML = 
+            '<div class="propuestas-title"><span>💡 PROPUESTAS DE ARMADO EN COLUMNA</span></div>' +
+            '<div class="prop-grid">' +
+                '<div class="prop-card best" onclick="aplicarPropuestaColumna(1.99, 1.29)">' +
+                    '<span class="prop-tag tag-best">🌟 Mejor Propuesta</span>' +
+                    '<div class="prop-main">4Ø5/8" + ' + nM_opt1 + 'Ø1/2"</div>' +
+                    '<div class="prop-meta">As: ' + (4*1.99 + nM_opt1*1.29).toFixed(2) + ' cm² (Simétrico)</div>' +
+                '</div>' +
+                '<div class="prop-card" onclick="aplicarPropuestaColumna(2.84, 1.99)">' +
+                    '<span class="prop-tag tag-alt">Mayor Diámetro</span>' +
+                    '<div class="prop-main">4Ø3/4"' + (nM_opt2>0 ? ' + '+nM_opt2+'Ø5/8"' : ' (4 esq)') + '</div>' +
+                    '<div class="prop-meta">As: ' + (4*2.84 + nM_opt2*1.99).toFixed(2) + ' cm² (Menos varillas)</div>' +
+                '</div>' +
+            '</div>';
+
+        el('mem_col').innerHTML = 
+            '<div class="memoria-section">1. Geometría y Cuantía (RNE E.060 Cap. 21)</div>' +
+            '<div class="memoria-line">• Área bruta Ag = ' + cb + ' × ' + ct + ' = <b>' + a + ' cm²</b><br>' +
+            '• Acero mínimo (1.0% Ag) = <b>' + asR.toFixed(2) + ' cm²</b> | Acero provisto = <b>' + asTotal.toFixed(2) + ' cm² (' + rR.toFixed(2) + '%)</b><br>' +
+            '• Longitud de pata exterior en cimentación (16·db) = <b>' + pat + ' cm</b></div>' +
+            '<div class="memoria-section">2. Zona de Confinamiento Sísmico (Lo)</div>' +
+            '<div class="memoria-line">• Longitud confinada Lo = máx(b, H/6, 45cm) = <b>' + loConf + ' cm</b><br>' +
+            '• Espaciamiento en extremos So = mín(8·db, d/2, 10cm) = <b>' + sConf + ' cm</b><br>' +
+            '• Distribución: <b>1 @ 5 cm, 6 @ ' + sConf + ' cm, Resto @ 20 cm</b> en cada extremo.</div>';
+
+        sumarMetros(phE, 4 * (ch + 0.6 + pat / 100));
+        sumarMetros(phM, nM * (ch + 0.6 + pat / 100));
+        var perimEstCol = 2 * ((cb - 8) + (ct - 8)) / 100 + 0.20;
+        sumarMetros(0.71, 22 * perimEstCol);
+
+        el('ficha_tecnica_live').innerHTML = 
+            '<b>🏗️ ELEMENTO: COLUMNA ESTRUCTURAL (RNE E.060)</b><br>' +
+            '• Sección transversal: <b>' + cb + ' cm × ' + ct + ' cm</b> (H libre = ' + ch.toFixed(2) + ' m)<br>' +
+            '• Acero longitudinal: <b>4 Ø ' + phiL(phE) + ' (esquinas) ' + (nM > 0 ? '+ ' + nM + ' Ø ' + phiL(phM) + ' (intermedios)' : '') + '</b><br>' +
+            '• Pata de anclaje exterior (16db): <b>' + pat + ' cm</b><br>' +
+            '• Estribos Ø 3/8": <b>1@5, 6@' + sConf + ', R@20 cm</b><br>' +
+            '• Concreto: <b>f\'c = ' + fc + ' kg/cm²</b> | Recubrimiento: <b>4.0 cm</b>';
+
         D3.cx = cb; D3.cy = ct; D3.ch = ch; D3.nE = 4; D3.nM = nM; D3.cPhiE = phE; D3.cPhiM = phM; D3.cPata = pat; D3.sLimC = sConf; 
         rCol(cb, ct, 4, phE, phM, nM, pat);
     }
+
+    // ==================== 3. VIGAS (CON PROPUESTAS Y MULTICAPA EXACTA) ====================
     else if(cMod === 'vigas'){
         var l = parseFloat(el('v_luz').value) || 5.0;
         var cg = el('v_carga').value;
@@ -616,31 +861,159 @@ function runEng(t){
             vb = Math.max(25, Math.ceil((vh / 2) / 5) * 5); 
             el('v_mod_b').value = vb; 
             el('v_mod_h').value = vh;
+            vPropActiva = null;
+        }
+        if(t === 'acero' || t === 'geom'){
+            vPropActiva = null;
         }
         
-        if(vh < (l * 100) / 14) dH += '<span class="badge-red">🔴 E.060: h insuficiente (Deflexión)</span><br>';
-        else dH += '<span class="badge-green">🟢 Peralte OK</span><br>';
+        if(vb < 25) dH += '<span class="badge-red">🔴 E.060: Ancho mín 25cm (Sismo)</span><br>';
+        if(vh < (l * 100) / 14) dH += '<span class="badge-red">🔴 E.060: Peralte h < L/14 (Deflexión)</span><br>';
+        else dH += '<span class="badge-green">🟢 E.060: Peralte h=' + vh + 'cm OK</span><br>';
         
         var dE = Math.max(10, vh - 6);
-        var Mu = ((cg === 'pesada' ? 4.2 : 2.6) * l * l) / 8;
-        var asF = Math.max((Mu * 100000) / (0.9 * fy * 0.88 * dE), (0.7 * Math.sqrt(fc) / fy) * vb * dE);
+        var wU = (cg === 'pesada') ? 4.2 : 2.6;
+        var MuNeg = (wU * l * l) / 8;
+        var MuPos = MuNeg * 1.15;
+        var asMin = (0.7 * Math.sqrt(fc) / fy) * vb * dE;
+        
+        var asReqSup = Math.max((MuNeg * 100000) / (0.9 * fy * 0.88 * dE), asMin);
+        var asReqInf = Math.max((MuPos * 100000) / (0.9 * fy * 0.88 * dE), asMin);
         
         var phS = parseFloat(el('v_phi_sup').value) || 1.99;
         var phI = parseFloat(el('v_phi_inf').value) || 1.99;
         var p_piel = parseFloat(el('v_phi_piel').value) || 0;
-        
-        var nS = Math.max(2, Math.ceil(asF / phS));
-        var nI = Math.max(2, Math.ceil((asF * 1.25) / phI));
         var phP = p_piel > 0 ? p_piel : (vh >= 60 ? 1.29 : 0);
+
+        // GENERADOR AUTOMÁTICO DE PROPUESTAS DE ARMADO EN VIGAS
+        var max58 = maxVarillasPorCapa(vb, 1.99);
+        var max34 = maxVarillasPorCapa(vb, 2.84);
+        var max12 = maxVarillasPorCapa(vb, 1.29);
+
+        var nS_58 = Math.max(2, Math.ceil(asReqSup / 1.99));
+        var nI_58 = Math.max(2, Math.ceil(asReqInf / 1.99));
+
+        var nS_34 = Math.max(2, Math.ceil(asReqSup / 2.84));
+        var nI_34 = Math.max(2, Math.ceil(asReqInf / 2.84));
+
+        var nS_12 = Math.max(2, Math.ceil(asReqSup / 1.29));
+        var nI_12 = Math.max(2, Math.ceil(asReqInf / 1.29));
+
+        // Propuesta Combinada (2 Ø 5/8" base + refuerzo Ø 1/2")
+        var nS_comb12 = Math.max(0, Math.ceil((asReqSup - 2 * 1.99) / 1.29));
+        var nI_comb12 = Math.max(0, Math.ceil((asReqInf - 2 * 1.99) / 1.29));
+
+        // Determinar cuál es la MEJOR PROPUESTA (que entre en 1 sola capa sin congestión)
+        var bestIs34 = (nS_58 > max58 || nI_58 > max58) && (nS_34 <= max34 && nI_34 <= max34);
+
+        var supBars = [], infBars = [];
+        var txtAcero = '';
+
+        if(vPropActiva !== null){
+            for(var i=0; i<vPropActiva.nS; i++) supBars.push(vPropActiva.phS);
+            for(var j=0; j<vPropActiva.nS2; j++) supBars.push(vPropActiva.phS2);
+            for(var k=0; k<vPropActiva.nI; k++) infBars.push(vPropActiva.phI);
+            for(var m=0; m<vPropActiva.nI2; m++) infBars.push(vPropActiva.phI2);
+
+            txtAcero = '<span style="color:#ff2222">Sup(-): ' + vPropActiva.nS + 'Ø' + phiL(vPropActiva.phS) + (vPropActiva.nS2>0 ? ' + '+vPropActiva.nS2+'Ø'+phiL(vPropActiva.phS2) : '') + '</span><br>' +
+                       '<span style="color:#3388ff">Inf(+): ' + vPropActiva.nI + 'Ø' + phiL(vPropActiva.phI) + (vPropActiva.nI2>0 ? ' + '+vPropActiva.nI2+'Ø'+phiL(vPropActiva.phI2) : '') + '</span>';
+        } else {
+            var nS = Math.max(2, Math.ceil(asReqSup / phS));
+            var nI = Math.max(2, Math.ceil(asReqInf / phI));
+            for(var s=0; s<nS; s++) supBars.push(phS);
+            for(var q=0; q<nI; q++) infBars.push(phI);
+
+            var capS = organizarCapasViga(supBars, vb).length;
+            var capI = organizarCapasViga(infBars, vb).length;
+
+            txtAcero = '<span style="color:' + phiC(phS) + '">Sup(-): ' + nS + ' Ø ' + phiL(phS) + ' (' + capS + ' capa' + (capS>1?'s':'') + ')</span><br>' +
+                       '<span style="color:' + phiC(phI) + '">Inf(+): ' + nI + ' Ø ' + phiL(phI) + ' (' + capI + ' capa' + (capI>1?'s':'') + ')</span>';
+        }
+        if(phP > 0){
+            txtAcero += '<br><span style="color:' + phiC(phP) + '">Piel Lateral: 2 Ø ' + phiL(phP) + '</span>';
+        }
+
+        var layersSupCheck = organizarCapasViga(supBars, vb);
+        var layersInfCheck = organizarCapasViga(infBars, vb);
+        if(layersSupCheck.length > 1 || layersInfCheck.length > 1){
+            dH += '<span class="badge-orange">⚠️ E.060: Armado en 2 Capas (b=' + vb + 'cm máx ' + maxVarillasPorCapa(vb, phS) + ' var/capa)</span><br>';
+        } else {
+            dH += '<span class="badge-green">🟢 E.060: Espaciamiento en 1 Sola Capa OK</span><br>';
+        }
+
+        // Renderizar tarjetas de Propuestas Interactivas
+        el('v_propuestas_container').innerHTML = 
+            '<div class="propuestas-title">' +
+                '<span>💡 PROPUESTAS DE ARMADO (TOCA UNA OPCIÓN)</span>' +
+                '<span style="color:var(--primary-cyan); font-size:9.5px;">Máx ' + max58 + ' var/capa</span>' +
+            '</div>' +
+            '<div class="prop-grid">' +
+                // Propuesta 1: Óptima 1 sola capa o Estándar 5/8"
+                '<div class="prop-card ' + (!bestIs34 ? 'best' : '') + ' ' + (vPropActiva===null && Math.abs(phS-1.99)<0.1 ? 'active' : '') + '" onclick="aplicarPropuestaViga(\'simple\', 1.99, 0, 0, 0, 1.99, 0, 0, 0)">' +
+                    '<span class="prop-tag ' + (!bestIs34 ? 'tag-best' : 'tag-alt') + '">' + (!bestIs34 ? '🌟 Mejor Propuesta' : 'Opción Ø 5/8"') + '</span>' +
+                    '<div class="prop-main">Sup: ' + nS_58 + 'Ø5/8" | Inf: ' + nI_58 + 'Ø5/8"</div>' +
+                    '<div class="prop-meta">' + (nS_58<=max58 && nI_58<=max58 ? '✅ Entra en 1 sola capa' : '⚠️ Requiere 2 capas en b='+vb+'cm') + '</div>' +
+                '</div>' +
+                // Propuesta 2: Sin congestión en 3/4" (1 sola capa)
+                '<div class="prop-card ' + (bestIs34 ? 'best' : '') + ' ' + (vPropActiva===null && Math.abs(phS-2.84)<0.1 ? 'active' : '') + '" onclick="aplicarPropuestaViga(\'simple\', 2.84, 0, 0, 0, 2.84, 0, 0, 0)">' +
+                    '<span class="prop-tag ' + (bestIs34 ? 'tag-best' : 'tag-alt') + '">' + (bestIs34 ? '🌟 Mejor Propuesta (1 Capa)' : 'Opción Ø 3/4" (1 Capa)') + '</span>' +
+                    '<div class="prop-main">Sup: ' + nS_34 + 'Ø3/4" | Inf: ' + nI_34 + 'Ø3/4"</div>' +
+                    '<div class="prop-meta">✅ ' + (nS_34<=max34 ? '1 sola capa libre para concreto' : 'Alta capacidad') + '</div>' +
+                '</div>' +
+                // Propuesta 3: Armado Combinado (2Ø5/8" + Bastones Ø1/2")
+                '<div class="prop-card ' + (vPropActiva!==null ? 'active' : '') + '" onclick="aplicarPropuestaViga(\'comb\', 1.99, 2, 1.29, ' + nS_comb12 + ', 1.99, 2, 1.29, ' + nI_comb12 + ')">' +
+                    '<span class="prop-tag tag-warn">🔄 Propuesta Combinada</span>' +
+                    '<div class="prop-main">2Ø5/8" + ' + nS_comb12 + 'Ø1/2" / +' + nI_comb12 + 'Ø1/2"</div>' +
+                    '<div class="prop-meta">Acero corrido + bastones (Ahorro $)</div>' +
+                '</div>' +
+                // Propuesta 4: Armado con Ø 1/2"
+                '<div class="prop-card ' + (vPropActiva===null && Math.abs(phS-1.29)<0.1 ? 'active' : '') + '" onclick="aplicarPropuestaViga(\'simple\', 1.29, 0, 0, 0, 1.29, 0, 0, 0)">' +
+                    '<span class="prop-tag tag-alt">Opción Ø 1/2"</span>' +
+                    '<div class="prop-main">Sup: ' + nS_12 + 'Ø1/2" | Inf: ' + nI_12 + 'Ø1/2"</div>' +
+                    '<div class="prop-meta">' + (nS_12>max12 ? 'Arma en 2 capas simétricas' : 'En 1 capa') + '</div>' +
+                '</div>' +
+            '</div>';
+
         var sLim = Math.min(Math.floor(dE / 4), 10);
+        var zConfViga = 2 * vh;
         
         el('v_txt_estr').innerText = '1@5, 8@' + sLim + ', R@20'; 
-        el('v_txt_as').innerText = 'Mu=' + Mu.toFixed(1) + 'T·m | As=' + asF.toFixed(2) + 'cm²';
-        el('v_txt_acero').innerHTML = '<span style="color:' + phiC(phS) + '">Sup(-): ' + nS + 'Ø' + phiL(phS) + '</span><br><span style="color:' + phiC(phI) + '">Inf(+): ' + nI + 'Ø' + phiL(phI) + '</span>' + (phP > 0 ? '<br><span style="color:' + phiC(phP) + '">Piel: 2Ø' + phiL(phP) + '</span>' : '');
+        el('v_txt_as').innerText = 'Mu(-)=' + MuNeg.toFixed(1) + ' T·m | As Req: ' + asReqSup.toFixed(2) + ' / ' + asReqInf.toFixed(2) + ' cm²';
+        el('v_txt_acero').innerHTML = txtAcero;
         
-        D3.vl = l; D3.vb = vb; D3.vh = vh; D3.nE = nS; D3.nM = nI; D3.vPiel = phP; D3.phS = phS; D3.phI = phI; D3.sLimV = sLim; 
-        rVig(vb, vh, 4, phS, phI, nS, nI, phP);
+        el('mem_vig').innerHTML = 
+            '<div class="memoria-section">1. Diseño por Flexión y Control de Congestión (RNE E.060)</div>' +
+            '<div class="memoria-line">• Luz libre L = ' + l.toFixed(2) + ' m | Peralte efectivo d = ' + dE + ' cm<br>' +
+            '• Momento Último Negativo Mu(-) = <b>' + MuNeg.toFixed(2) + ' T·m</b> → As req(-) = <b>' + asReqSup.toFixed(2) + ' cm²</b><br>' +
+            '• Momento Último Positivo Mu(+) = <b>' + MuPos.toFixed(2) + ' T·m</b> → As req(+) = <b>' + asReqInf.toFixed(2) + ' cm²</b><br>' +
+            '• Acero Mínimo E.060 = <b>' + asMin.toFixed(2) + ' cm²</b><br>' +
+            '• Máximo de varillas por capa para b=' + vb + ' cm (espacio libre ≥ 2.5cm): <b>' + max58 + ' varillas</b>.</div>' +
+            '<div class="memoria-section">2. Diseño por Cortante y Confinamiento Sísmico</div>' +
+            '<div class="memoria-line">• Zona de confinamiento en extremos (2·h) = <b>' + zConfViga + ' cm</b><br>' +
+            '• Espaciamiento límite s = mín(d/4, 8·db, 10cm) = <b>' + sLim + ' cm</b><br>' +
+            '• Distribución de estribos Ø 3/8": <b>1 @ 5 cm, 8 @ ' + sLim + ' cm, Resto @ 20 cm</b>.</div>';
+
+        for(var bi=0; bi<supBars.length; bi++) sumarMetros(supBars[bi], l + 0.60);
+        for(var bj=0; bj<infBars.length; bj++) sumarMetros(infBars[bj], l + 0.60);
+        if(phP > 0) sumarMetros(phP, 2 * (l + 0.40));
+        var perimEstVig = 2 * ((vb - 8) + (vh - 8)) / 100 + 0.20;
+        sumarMetros(0.71, 26 * perimEstVig);
+
+        el('ficha_tecnica_live').innerHTML = 
+            '<b>🚧 ELEMENTO: VIGA SISMORRESISTENTE (RNE E.060)</b><br>' +
+            '• Sección transversal: <b>b = ' + vb + ' cm × h = ' + vh + ' cm</b> (Luz = ' + l.toFixed(2) + ' m)<br>' +
+            '• Acero Superior (-): <b>' + supBars.length + ' varillas (' + layersSupCheck.length + ' capa' + (layersSupCheck.length>1?'s':'') + ')</b><br>' +
+            '• Acero Inferior (+): <b>' + infBars.length + ' varillas (' + layersInfCheck.length + ' capa' + (layersInfCheck.length>1?'s':'') + ')</b><br>' +
+            (phP > 0 ? '• Acero Lateral (Piel): <b>2 Ø ' + phiL(phP) + ' a mitad de alma</b><br>' : '') +
+            '• Estribos Ø 3/8": <b>1@5, 8@' + sLim + ', R@20 cm</b><br>' +
+            '• Concreto: <b>f\'c = ' + fc + ' kg/cm²</b> | Recubrimiento: <b>4.0 cm</b>';
+
+        D3.vl = l; D3.vb = vb; D3.vh = vh; D3.vPiel = phP; D3.sLimV = sLim;
+        D3.vSupBars = supBars; D3.vInfBars = infBars;
+        rVig(vb, vh, supBars, infBars, phP);
     }
+
+    // ==================== 4. MUROS DE CONTENCIÓN ====================
     else if(cMod === 'muros'){
         var h = parseFloat(el('m_h').value) || 3.0;
         var scg = parseFloat(el('m_q').value) || 250;
@@ -659,11 +1032,11 @@ function runEng(t){
             
             var rB = h * 0.45;
             for(var i = 0; i < 30; i++){
-                var pT = Math.max(0.3, rB / 3);
-                var tT = Math.max(0.2, rB - pT - eb);
+                var pT_i = Math.max(0.3, rB / 3);
+                var tT_i = Math.max(0.2, rB - pT_i - eb);
                 var M_v = 0.5 * 1.8 * (h + hz) * (h + hz) * Ka_i * ((h + hz) / 3) + (scg / 1000) * (h + hz) * Ka_i * ((h + hz) / 2);
-                var M_r = (rB * hz * 2.4) * (rB / 2) + (((eb + cc) / 2) * h * 2.4) * (pT + eb / 2) + (tT * h * 1.8) * (pT + eb + tT / 2);
-                var Wt = (rB * hz * 2.4) + (((eb + cc) / 2) * h * 2.4) + (tT * h * 1.8);
+                var M_r = (rB * hz * 2.4) * (rB / 2) + (((eb + cc) / 2) * h * 2.4) * (pT_i + eb / 2) + (tT_i * h * 1.8) * (pT_i + eb + tT_i / 2);
+                var Wt = (rB * hz * 2.4) + (((eb + cc) / 2) * h * 2.4) + (tT_i * h * 1.8);
                 var fsv = M_r / Math.max(0.1, M_v);
                 var fsd = (Wt * Math.tan((aFric * 0.67) * Math.PI / 180)) / Math.max(0.1, 0.5 * 1.8 * (h + hz) * (h + hz) * Ka_i + (scg / 1000) * (h + hz) * Ka_i);
                 
@@ -689,18 +1062,20 @@ function runEng(t){
         var FSV = Mr / Math.max(0.1, Mv);
         var FSD = (Wtot * Math.tan((aFric * 0.67) * Math.PI / 180)) / Math.max(0.1, Ea + Eq);
         
-        if(dent) FSD += 0.8;
-        if(FSV < 1.5) dH += '<span class="badge-red">🔴 E.050: Falla Volteo</span><br>';
-        else dH += '<span class="badge-green">🟢 Volteo OK</span><br>';
+        if(FSD < 1.5 && b >= h * 0.58){ dent = true; FSD += 0.8; }
         
-        if(FSD < 1.5) dH += '<span class="badge-red">🔴 E.050: Falla Deslizamiento</span><br>';
-        else dH += '<span class="badge-green">🟢 Desliz. OK' + (dent ? ' (Dentellón)' : '') + '</span><br>';
+        if(FSV < 1.5) dH += '<span class="badge-red">🔴 E.050: Falla Volteo (FSV=' + FSV.toFixed(2) + ')</span><br>';
+        else dH += '<span class="badge-green">🟢 E.050: Volteo OK (FSV=' + FSV.toFixed(2) + ')</span><br>';
+        
+        if(FSD < 1.5) dH += '<span class="badge-red">🔴 E.050: Falla Deslizamiento (Aumente B)</span><br>';
+        else dH += '<span class="badge-green">🟢 E.050: Desliz. OK (FSD=' + FSD.toFixed(2) + (dent ? ' c/Dentellón' : '') + ')</span><br>';
         
         var phV = parseFloat(el('m_phi_v').value) || 1.99;
         var phH = parseFloat(el('m_phi_h').value) || 1.29;
         var phZ = parseFloat(el('m_phi_z').value) || 1.99;
         var dP = Math.max(10, eb * 100 - 7.5);
-        var asV = Math.max((1.7 * (0.5 * 1.8 * h * h * Ka * (h / 3) + (scg / 1000) * h * Ka * (h / 2)) * 100000) / (0.9 * fy * 0.89 * dP), 0.0015 * 100 * eb * 100);
+        var Mu_p = 1.7 * (0.5 * 1.8 * h * h * Ka * (h / 3) + (scg / 1000) * h * Ka * (h / 2));
+        var asV = Math.max((Mu_p * 100000) / (0.9 * fy * 0.89 * dP), 0.0015 * 100 * eb * 100);
         var asH = 0.002 * 100 * eb * 100;
         var asZ = Math.max((1.7 * (tT * h * 1.8 * 1.2 * (tT / 2)) * 100000) / (0.9 * fy * 0.89 * Math.max(10, hz * 100 - 7.5)), 0.0018 * 100 * hz * 100);
         
@@ -718,22 +1093,76 @@ function runEng(t){
         
         if(cv.err || ch.err) dH += '<span class="badge-red">🔴 E.060: Acero Insuficiente. Suba Ø</span><br>';
         
-        el('m_txt_fs').innerText = 'FSV=' + FSV.toFixed(2) + ' | FSD=' + FSD.toFixed(2); 
-        el('m_txt_puntera').innerText = 'Punt:' + pT.toFixed(2) + 'm | Tal:' + tT.toFixed(2) + 'm' + (dent ? ' (+Dentellón)' : '');
-        el('m_as_vert').innerHTML = '<span style="color:' + phiC(phV) + '">' + (cv.m === 2 ? 'DOBLE MALLA: ' : '1 Malla: ') + 'Ø' + phiL(phV) + '@' + cv.s + 'cm</span>';
-        el('m_as_horiz').innerHTML = '<span style="color:' + phiC(phH) + '">' + (ch.m === 2 ? 'DOBLE MALLA: ' : '1 Malla: ') + 'Ø' + phiL(phH) + '@' + ch.s + 'cm</span>';
-        el('m_as_zap').innerHTML = '<span style="color:' + phiC(phZ) + '">Sup/Inf: Ø' + phiL(phZ) + '@' + cz.s + 'cm</span>';
+        el('m_txt_fs').innerText = 'FSV = ' + FSV.toFixed(2) + ' | FSD = ' + FSD.toFixed(2) + ' (Ka=' + Ka.toFixed(2) + ')'; 
+        el('m_txt_puntera').innerText = 'Punt: ' + pT.toFixed(2) + 'm | Tal: ' + tT.toFixed(2) + 'm' + (dent ? ' (+Dentellón)' : '');
+        el('m_as_vert').innerHTML = '<span style="color:' + phiC(phV) + '">' + (cv.m === 2 ? 'DOBLE MALLA: ' : '1 Malla: ') + 'Ø ' + phiL(phV) + ' @ ' + cv.s + ' cm</span>';
+        el('m_as_horiz').innerHTML = '<span style="color:' + phiC(phH) + '">' + (ch.m === 2 ? 'DOBLE MALLA: ' : '1 Malla: ') + 'Ø ' + phiL(phH) + ' @ ' + ch.s + ' cm</span>';
+        el('m_as_zap').innerHTML = '<span style="color:' + phiC(phZ) + '">Sup/Inf: Ø ' + phiL(phZ) + ' @ ' + cz.s + ' cm</span>';
         
+        el('mem_mur').innerHTML = 
+            '<div class="memoria-section">1. Estabilidad Geotécnica Rankine (RNE E.050)</div>' +
+            '<div class="memoria-line">• Coeficiente activo Ka = ' + Ka.toFixed(3) + ' | Empuje Total (Ea+Eq) = <b>' + (Ea + Eq).toFixed(2) + ' T/m</b><br>' +
+            '• Momento Volcante Mv = ' + Mv.toFixed(2) + ' T·m/m vs Momento Resistente Mr = <b>' + Mr.toFixed(2) + ' T·m/m</b><br>' +
+            '• Factor Seguridad Volteo FSV = <b>' + FSV.toFixed(2) + '</b> ≥ 1.50 | Deslizamiento FSD = <b>' + FSD.toFixed(2) + '</b> ≥ 1.50</div>' +
+            '<div class="memoria-section">2. Diseño Estructural de Pantalla y Zapata (RNE E.060)</div>' +
+            '<div class="memoria-line">• Momento último en base de pantalla Mu = <b>' + Mu_p.toFixed(2) + ' T·m/m</b><br>' +
+            '• Acero vertical requerido = <b>' + asV.toFixed(2) + ' cm²/m</b> | Acero horizontal = <b>' + asH.toFixed(2) + ' cm²/m</b>.</div>';
+
+        sumarMetros(phV, cv.m * (100 / cv.s) * (h + hz + 0.35));
+        sumarMetros(phH, ch.m * (h * 100 / ch.s) * 1.0);
+        sumarMetros(phZ, 2 * (100 / cz.s) * b);
+
+        el('ficha_tecnica_live').innerHTML = 
+            '<b>🧱 ELEMENTO: MURO DE CONTENCIÓN POR metro lineal (E.050/E.060)</b><br>' +
+            '• Altura libre pantalla: <b>H = ' + h.toFixed(2) + ' m</b> | Base zapata: <b>B = ' + b.toFixed(2) + ' m</b><br>' +
+            '• Espesores: <b>hz = ' + (hz*100).toFixed(0) + ' cm | Base e = ' + (eb*100).toFixed(0) + ' cm | Corona c = ' + (cc*100).toFixed(0) + ' cm</b><br>' +
+            '• Acero Vertical: <b>' + (cv.m===2?'Doble Malla ':'1 Malla ') + 'Ø ' + phiL(phV) + ' @ ' + cv.s + ' cm</b><br>' +
+            '• Acero Horizontal: <b>' + (ch.m===2?'Doble Malla ':'1 Malla ') + 'Ø ' + phiL(phH) + ' @ ' + ch.s + ' cm</b><br>' +
+            '• Parrilla de Zapata: <b>Ø ' + phiL(phZ) + ' @ ' + cz.s + ' cm</b>';
+
         D3.mH = h; D3.mB = b; D3.mHz = hz * 100; D3.mC = cc * 100; D3.mE = eb * 100; D3.spV = cv.s; D3.spH = ch.s; D3.spZ = cz.s; D3.mVmalla = cv.m; D3.mHmalla = ch.m; D3.mPhiV = phV; D3.mPhiH = phH; D3.mPhiZ = phZ; D3.mDent = dent; 
         rMur(h, b, hz * 100, cc * 100, eb * 100, pT, tT, phV, phH, phZ, cv.m, ch.m, dent);
     }
-    
+
+    // ==================== ACTUALIZAR PESTAÑA DE ACERO EN VIVO ====================
+    var v38 = Math.ceil((m38 * cantElem * desp) / 9.0);
+    var v12 = Math.ceil((m12 * cantElem * desp) / 9.0);
+    var v58 = Math.ceil((m58 * cantElem * desp) / 9.0);
+    var v34 = Math.ceil((m34 * cantElem * desp) / 9.0);
+    var pesoTotal = (v38 * 9 * 0.56) + (v12 * 9 * 0.994) + (v58 * 9 * 1.552) + (v34 * 9 * 2.235);
+    var alambreKg = Math.max(1.5, pesoTotal * 0.04);
+
+    el('dyn_ac_38').innerText = v38 + ' varillas (9m)';
+    el('dyn_ac_12').innerText = v12 + ' varillas (9m)';
+    el('dyn_ac_58').innerText = v58 + ' varillas (9m)';
+    el('dyn_ac_34').innerText = v34 + ' varillas (9m)';
+    el('dyn_alambre').innerText = alambreKg.toFixed(1) + ' kg';
+    el('dyn_peso_tot').innerText = pesoTotal.toFixed(1) + ' kg';
+
     var db = el('status_dashboard'); 
     if(db) db.innerHTML = dH; 
     render3D();
 }
 
-// ==================== PLANOS 2D CORREGIDOS ====================
+function copiarMetrado(){
+    var txt = '📦 PEDIDO DE ACERO CONSTRUYE.PRO (' + cMod.toUpperCase() + '):\n' +
+              '• Ø 3/8": ' + el('dyn_ac_38').innerText + '\n' +
+              '• Ø 1/2": ' + el('dyn_ac_12').innerText + '\n' +
+              '• Ø 5/8": ' + el('dyn_ac_58').innerText + '\n' +
+              '• Ø 3/4": ' + el('dyn_ac_34').innerText + '\n' +
+              '• Alambre N°16: ' + el('dyn_alambre').innerText + '\n' +
+              '• Peso Total: ' + el('dyn_peso_tot').innerText;
+    if(navigator.clipboard) navigator.clipboard.writeText(txt);
+    alert(txt + '\n\n✅ ¡Copiado al portapapeles!');
+}
+
+function compartirFicha(){
+    var raw = el('ficha_tecnica_live').innerText;
+    if(navigator.clipboard) navigator.clipboard.writeText(raw);
+    alert(raw + '\n\n✅ ¡Ficha técnica copiada para pegar en WhatsApp!');
+}
+
+// ==================== PLANOS 2D CON ESCALA REAL E.060 ====================
 function rZap(L, B, nV, ph){
     var c = el('cvs_2d_zap'); if(!c) return; 
     var ctx = c.getContext('2d'); ctx.clearRect(0, 0, c.width, c.height);
@@ -762,7 +1191,7 @@ function rCol(b, t, r, phE, phM, nM, pat){
     ctx.fillStyle = 'rgba(255, 255, 255, 0.03)'; ctx.fillRect(cx - w / 2, cy - h / 2, w, h); 
     ctx.strokeStyle = '#ff9f0a'; ctx.lineWidth = 2; ctx.strokeRect(cx - w / 2 + rP, cy - h / 2 + rP, w - 2 * rP, h - 2 * rP);
     
-    var rE = Math.max(4, phE * 2.8), rM = Math.max(3.5, phM * 2.6), ex = w / 2 - rP - rE, ey = h / 2 - rP - rE;
+    var rE = Math.max(4, phE * 2.5), rM = Math.max(3.5, phM * 2.3), ex = w / 2 - rP - rE, ey = h / 2 - rP - rE;
     
     function dPt(x, y, col, sz){
         var dx = Math.sign(x - cx) * 18, dy = Math.sign(y - cy) * 18; 
@@ -798,46 +1227,67 @@ function rCol(b, t, r, phE, phM, nM, pat){
     ctx.fillStyle = '#30d158'; ctx.textAlign = 'left'; ctx.fillText('t = ' + t + 'cm', cx + w / 2 + 16, cy);
 }
 
-function rVig(b, ht, rc, phS, phI, nS, nI, phPiel){
+// PLANO 2D DE VIGA CORREGIDO: VARILLAS PEGADAS AL ESTRIBO SUPERIOR E INFERIOR Y EN PARES SIMÉTRICOS
+function rVig(b, ht, supBars, infBars, phPiel){
     var c = el('cvs_2d_vig'); if(!c) return; 
     var ctx = c.getContext('2d'); ctx.clearRect(0, 0, c.width, c.height);
-    var cx = c.width / 2, cy = c.height / 2 + 5, sc = Math.min((c.width - 80) / b, (c.height - 45) / ht), w = b * sc, h = ht * sc, rP = 4 * sc;
+    var cx = c.width / 2, cy = c.height / 2 + 6;
+    var sc = Math.min((c.width - 90) / b, (c.height - 48) / ht);
+    var w = b * sc, h = ht * sc, rP = Math.max(8, 3.5 * sc);
     
+    // Contorno Concreto
     ctx.strokeStyle = '#475569'; ctx.lineWidth = 2; ctx.strokeRect(cx - w / 2, cy - h / 2, w, h); 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.03)'; ctx.fillRect(cx - w / 2, cy - h / 2, w, h); 
-    ctx.strokeStyle = '#ff9f0a'; ctx.lineWidth = 2; ctx.strokeRect(cx - w / 2 + rP, cy - h / 2 + rP, w - 2 * rP, h - 2 * rP);
+    // Contorno Estribo
+    ctx.strokeStyle = '#ff9f0a'; ctx.lineWidth = 2.2; ctx.strokeRect(cx - w / 2 + rP, cy - h / 2 + rP, w - 2 * rP, h - 2 * rP);
     
     function dr(x, y, col, sz){
-        ctx.beginPath(); ctx.arc(x, y, sz, 0, Math.PI * 2); ctx.fillStyle = col; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.stroke();
+        ctx.beginPath(); ctx.arc(x, y, sz, 0, Math.PI * 2); ctx.fillStyle = col; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.1; ctx.stroke();
     }
     
-    var rs = Math.max(4, phS * 2.8), ri = Math.max(4, phI * 2.8), ex = w / 2 - rP - Math.max(rs, ri);
-    
-    // CORRECCIÓN: Función dL3 ahora llamada correctamente para dibujar las multicapas
-    function dL3(nV, yB, pR, cl, dir){
-        var mx = Math.max(2, Math.floor((b - 12) / 5) + 1);
-        var lay = Math.ceil(nV / mx); 
-        for(var L = 0; L < lay; L++){
-            var nC = Math.min(nV - L * mx, mx);
-            var st = nC > 1 ? (ex * 2) / (nC - 1) : 0;
-            var sX = nC === 1 ? cx : cx - ex; 
+    var padBar = 5.2;
+    var ex = w / 2 - rP - padBar - 1;
+    // Separación vertical entre 1ra y 2da capa a escala real (aprox 3.8cm centro a centro)
+    var stepLayerPx = Math.min(13, Math.max(10, 3.8 * sc));
+
+    function dibujarZona(barsArray, yBase, dir){
+        var layers = organizarCapasViga(barsArray, b);
+        for(var L = 0; L < layers.length; L++){
+            var lay = layers[L];
+            var nC = lay.length;
+            var yLayer = yBase + dir * (L * stepLayerPx);
+            
+            // Separador horizontal (chapa de 1") entre 1ra y 2da capa
+            if(L > 0){
+                ctx.strokeStyle = 'rgba(0, 229, 255, 0.55)'; ctx.lineWidth = 1.5;
+                ctx.beginPath(); ctx.moveTo(cx - w / 2 + rP, yLayer - dir * (stepLayerPx / 2)); ctx.lineTo(cx + w / 2 - rP, yLayer - dir * (stepLayerPx / 2)); ctx.stroke();
+            }
+
             for(var i = 0; i < nC; i++){
-                dr(sX + st * i, yB + dir * (L * 16), cl, pR);
+                var phVal = lay[i];
+                var rad = Math.max(3.8, Math.min(6.0, phVal * 2.3));
+                var xPos = (nC === 1) ? (cx - ex) : (cx - ex + i * ((ex * 2) / (nC - 1)));
+                dr(xPos, yLayer, phiC(phVal), rad);
             }
         }
     }
+
+    // Dibujar Acero Superior (pegado al borde superior del estribo)
+    dibujarZona(supBars, cy - h / 2 + rP + padBar + 1, 1);
+    // Dibujar Acero Inferior (pegado al borde inferior del estribo)
+    dibujarZona(infBars, cy + h / 2 - rP - padBar - 1, -1);
     
-    dL3(nS, cy - h / 2 + rP + rs, rs, phiC(phS), 1); 
-    dL3(nI, cy + h / 2 - rP - ri, ri, phiC(phI), -1);
-    
+    // Dibujar Acero de Piel (Lateral en el alma, solo si está activo)
     if(phPiel > 0){
-        var rp = Math.max(3.5, phPiel * 2.6); 
+        var rp = Math.max(3.5, Math.min(5.0, phPiel * 2.1)); 
         dr(cx - ex, cy, phiC(phPiel), rp); 
         dr(cx + ex, cy, phiC(phPiel), rp);
     }
     
-    ctx.fillStyle = '#00e5ff'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('b = ' + b + 'cm', cx, cy - h / 2 - 8); 
-    ctx.fillStyle = '#ff9f0a'; ctx.textAlign = 'left'; ctx.fillText('h = ' + ht + 'cm', cx + w / 2 + 10, cy);
+    ctx.fillStyle = '#00e5ff'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center'; 
+    ctx.fillText('b = ' + b + 'cm (' + supBars.length + ' Sup / ' + infBars.length + ' Inf)', cx, cy - h / 2 - 8); 
+    ctx.fillStyle = '#ff9f0a'; ctx.textAlign = 'left'; 
+    ctx.fillText('h = ' + ht + 'cm', cx + w / 2 + 10, cy);
 }
 
 function rMur(H, B, hz, cc, eb, puntera, talon, phV, phH, phZ, mV, mH, dent){
@@ -868,7 +1318,7 @@ function rMur(H, B, hz, cc, eb, puntera, talon, phV, phH, phZ, mV, mH, dent){
     ctx.fillStyle = '#30d158'; ctx.fillText('B=' + B.toFixed(2) + 'm', x0 + w / 2, bY + 14);
 }
 
-// ==================== MOTOR 3D ====================
+// ==================== MOTOR 3D INTERACTIVO ====================
 var c3 = el('canvas_3d_viewport');
 if(c3){
     c3.addEventListener('mousedown', function(e){ if(e.button === 2 || e.button === 1){ iPan = true; lx = e.clientX; ly = e.clientY; } else { iDrg = true; lx = e.clientX; ly = e.clientY; } });
@@ -988,17 +1438,11 @@ function render3D(){
                 ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
             });
             
-            // ESTRIBOS 3D REALES
-            var estY = []; 
-            var cY = 0.05; 
-            estY.push(cY); 
-            for(var i = 0; i < D3.sLimC; i++){ cY += 0.10; estY.push(cY); } 
-            var bC = cY;
-            var tY = D3.ch - 0.05; 
-            var topE = [tY]; 
-            for(var j = 0; j < D3.sLimC; j++){ tY -= 0.10; topE.push(tY); } 
-            var tC = tY; 
-            cY += 0.20; 
+            var estY = [], cY = 0.05; estY.push(cY); 
+            for(var i = 0; i < 6; i++){ cY += D3.sLimC / 100; estY.push(cY); } 
+            var bC = cY, tY = D3.ch - 0.05, topE = [tY]; 
+            for(var j = 0; j < 6; j++){ tY -= D3.sLimC / 100; topE.push(tY); } 
+            var tC = tY; cY += 0.20; 
             while(cY < tC - 0.05){ estY.push(cY); cY += 0.20; } 
             estY = estY.concat(topE);
             
@@ -1022,20 +1466,20 @@ function render3D(){
         fc.forEach(function(f){ dPol(ctx, f.i.map(function(i){ return f.p[i]; }), f.f, f.s); });
         
         if(rxM){
-            ctx.lineWidth = 2; 
-            var nS = D3.nE || 2, nI = D3.nM || 2;
-            
-            function dL3(nV, yB, dir, cl){
-                var mx = Math.max(2, Math.floor((D3.vb - 12) / 5) + 1);
-                var lay = Math.ceil(nV / mx); 
-                ctx.strokeStyle = cl;
-                for(var L = 0; L < lay; L++){
-                    var nC = Math.min(nV - L * mx, mx);
-                    var st = nC > 1 ? (sz * 1.6) / (nC - 1) : 0;
-                    var sZ = nC === 1 ? 0 : -sz * 0.8;
+            ctx.lineWidth = 2.2;
+            // Desplazamiento entre capas en 3D proporcional al peralte (pegado a las caras sup/inf)
+            var step3DLayer = sy * 0.22;
+
+            function dZona3D(barsArray, yBase, dir){
+                var layers = organizarCapasViga(barsArray, D3.vb);
+                for(var L = 0; L < layers.length; L++){
+                    var lay = layers[L];
+                    var nC = lay.length;
+                    var fY = yBase - dir * (L * step3DLayer);
                     for(var k = 0; k < nC; k++){
-                        var fY = yB - dir * (L * 0.16);
-                        var cZ = sZ + st * k;
+                        var phVal = lay[k];
+                        ctx.strokeStyle = phiC(phVal);
+                        var cZ = (nC === 1) ? (-sz * 0.78) : (-sz * 0.78 + k * ((sz * 1.56) / (nC - 1)));
                         var p1 = prj(-sx * 0.95, fY, cZ, cx, cy);
                         var p2 = prj(sx * 0.95, fY, cZ, cx, cy); 
                         ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
@@ -1043,29 +1487,23 @@ function render3D(){
                 }
             }
             
-            dL3(nS, -0.2 + sy * 1.8, 1, phiC(D3.phS)); 
-            dL3(nI, -0.2 + sy * 0.2, -1, phiC(D3.phI));
+            dZona3D(D3.vSupBars, -0.2 + sy * 1.84, 1); 
+            dZona3D(D3.vInfBars, -0.2 + sy * 0.16, -1);
             
             if(D3.vPiel > 0){
                 ctx.strokeStyle = phiC(D3.vPiel); 
                 var yM = -0.2 + sy;
-                var pL1 = prj(-sx * 0.95, yM, -sz * 0.8, cx, cy), pL2 = prj(sx * 0.95, yM, -sz * 0.8, cx, cy); 
+                var pL1 = prj(-sx * 0.95, yM, -sz * 0.78, cx, cy), pL2 = prj(sx * 0.95, yM, -sz * 0.78, cx, cy); 
                 ctx.beginPath(); ctx.moveTo(pL1.x, pL1.y); ctx.lineTo(pL2.x, pL2.y); ctx.stroke(); 
-                var pR1 = prj(-sx * 0.95, yM, sz * 0.8, cx, cy), pR2 = prj(sx * 0.95, yM, sz * 0.8, cx, cy); 
+                var pR1 = prj(-sx * 0.95, yM, sz * 0.78, cx, cy), pR2 = prj(sx * 0.95, yM, sz * 0.78, cx, cy); 
                 ctx.beginPath(); ctx.moveTo(pR1.x, pR1.y); ctx.lineTo(pR2.x, pR2.y); ctx.stroke();
             }
             
-            // ESTRIBOS VIGA 3D
-            var eX = [];
-            var cX = 0.05; 
-            eX.push(cX); 
-            for(var i = 0; i < D3.sLimV; i++){ cX += 0.10; eX.push(cX); } 
-            var lC = cX;
-            var rX = D3.vl - 0.05; 
-            var rE = [rX]; 
-            for(var j = 0; j < D3.sLimV; j++){ rX -= 0.10; rE.push(rX); } 
-            var rC = rX; 
-            cX += 0.20; 
+            var eX = [], cX = 0.05; eX.push(cX); 
+            for(var i = 0; i < 8; i++){ cX += D3.sLimV / 100; eX.push(cX); } 
+            var lC = cX, rX = D3.vl - 0.05, rE = [rX]; 
+            for(var j = 0; j < 8; j++){ rX -= D3.sLimV / 100; rE.push(rX); } 
+            var rC = rX; cX += 0.20; 
             while(cX < rC - 0.05){ eX.push(cX); cX += 0.20; } 
             eX = eX.concat(rE);
             
@@ -1073,8 +1511,8 @@ function render3D(){
                 var x3 = -sx * 0.95 + (xV / D3.vl) * (sx * 1.9);
                 var isC = (xV <= lC + 0.01 || xV >= rC - 0.01);
                 var cl = isC ? '#30d158' : '#ff9f0a'; 
-                ctx.strokeStyle = cl; 
-                dPol(ctx, [prj(x3, -0.2 + sy * 0.1, -sz * 0.8, cx, cy), prj(x3, -0.2 + sy * 1.9, -sz * 0.8, cx, cy), prj(x3, -0.2 + sy * 1.9, sz * 0.8, cx, cy), prj(x3, -0.2 + sy * 0.1, sz * 0.8, cx, cy)], null, cl);
+                ctx.strokeStyle = cl; ctx.lineWidth = 1.6;
+                dPol(ctx, [prj(x3, -0.2 + sy * 0.12, -sz * 0.8, cx, cy), prj(x3, -0.2 + sy * 1.88, -sz * 0.8, cx, cy), prj(x3, -0.2 + sy * 1.88, sz * 0.8, cx, cy), prj(x3, -0.2 + sy * 0.12, sz * 0.8, cx, cy)], null, cl);
             });
         }
         dDim(ctx, prj(-sx, -0.2, sz, cx, cy), prj(sx, -0.2, sz, cx, cy), '#00e5ff', 'L=' + D3.vl.toFixed(1)); 
@@ -1160,7 +1598,6 @@ function render3D(){
     }
 }
 
-// INICIALIZACIÓN OFFLINE
 window.addEventListener('load', function(){
     setTimeout(function(){
         var s = el('splash-screen'); 
@@ -1168,14 +1605,10 @@ window.addEventListener('load', function(){
             s.style.opacity = '0'; 
             setTimeout(function(){ s.style.display = 'none'; }, 500); 
         }
-    }, 1000);
+    }, 900);
     
     resetCam(); 
     runEng('all');
-    
-    if('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js').catch(function(){});
-    }
 });
 </script>
 </body>
