@@ -29,14 +29,17 @@ jobs:
           sudo apt-get update && sudo apt-get install -y imagemagick
           npm install -g cordova
           
+          # Crear contenedor nativo Android
           cordova create app_build com.construyepro.estruc "C.PRO Estruc"
           cd app_build
           rm -rf www/*
           
+          # Copiar tu código maestro
           cp ../index.html www/
           if [ -f ../manifest.json ]; then cp ../manifest.json www/; fi
           if [ -f ../sw.js ]; then cp ../sw.js www/; fi
           
+          # Detectar tu imagen y estandarizarla para Android
           ICON_FILE=$(find .. -maxdepth 1 -type f \( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" \) | head -n 1)
           if [ -n "$ICON_FILE" ]; then
             convert "$ICON_FILE" -resize 512x512! PNG32:icon.png
@@ -45,8 +48,9 @@ jobs:
           fi
           cp icon.png www/icono-estructuras.png
 
+          # Configurar XML
           printf '<?xml version="1.0" encoding="utf-8"?>\n' > config.xml
-          printf '<widget id="com.construyepro.estruc" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/cordova/1.0">\n' >> config.xml
+          printf '<widget id="com.construyepro.estruc" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">\n' >> config.xml
           printf '    <name>C.PRO Estruc</name>\n' >> config.xml
           printf '    <description>Ingenieria Estructural Avanzada RNE</description>\n' >> config.xml
           printf '    <author email="soporte@construye.pro" href="https://construye.pro">CONSTRUYE.PRO</author>\n' >> config.xml
@@ -63,11 +67,15 @@ jobs:
           printf '    </platform>\n' >> config.xml
           printf '</widget>\n' >> config.xml
 
+          # Compilación y firmado forzando APK
           cordova platform add android@13.0.0
           keytool -genkey -v -keystore cpro.keystore -alias cpro -keyalg RSA -keysize 2048 -validity 10000 -storepass 123456 -keypass 123456 -dname "CN=ConstruyePro, OU=Ingenieria, O=ConstruyePro, L=Lima, S=Lima, C=PE"
-          cordova build android --release -- --keystore=cpro.keystore --storePassword=123456 --password=123456 --alias=cpro
           
-          cp platforms/android/app/build/outputs/apk/release/app-release.apk ../CPRO-Estruc.apk
+          # Fuerza explícitamente el paquete APK (--packageType=apk)
+          cordova build android --release -- --packageType=apk --keystore=cpro.keystore --storePassword=123456 --password=123456 --alias=cpro
+          
+          # Extrae de forma dinámica el .apk exacto sin importar la subcarpeta generada
+          find platforms/android/app/build/outputs -name "*.apk" -exec cp {} ../CPRO-Estruc.apk \;
 
       - name: 5. Subir APK listo para descargar
         uses: actions/upload-artifact@v4
