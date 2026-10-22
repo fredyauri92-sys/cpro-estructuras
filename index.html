@@ -13,13 +13,13 @@
 <link rel="icon" type="image/png" href="icono-estructuras.png">
 <link rel="manifest" href="manifest.json">
 
-<title>CONSTRUYE.PRO - BIM Móvil (RNE)</title>
+<title>CONSTRUYE.PRO - BIM Móvil Premium (RNE)</title>
 <style>
 :root { --bg-color:#0b0e14; --card-bg:#151a23; --card-border:#232d3f; --text-main:#f0f4f8; --text-muted:#94a3b8; --primary-orange:#ff9f0a; --primary-green:#30d158; --primary-cyan:#00e5ff; --primary-red:#ff453a; --input-bg:#1c2331; }
 * { box-sizing:border-box; margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; -webkit-tap-highlight-color:transparent; }
 html, body { width:100%; height:100%; background-color:var(--bg-color); color:var(--text-main); overflow:hidden; }
 
-/* ELIMINACIÓN RADICAL DE FLECHAS (SPINNERS) */
+/* ELIMINACIÓN TOTAL DE SPINNERS EN INPUTS NUMÉRICOS */
 input[type=number]::-webkit-inner-spin-button, 
 input[type=number]::-webkit-outer-spin-button { -webkit-appearance:none !important; margin:0 !important; display:none !important; }
 input[type=number] { -moz-appearance:textfield !important; }
@@ -36,20 +36,24 @@ header { flex:0 0 auto; background-color:var(--card-bg); padding:10px 14px; bord
 .rotating-circle { position:absolute; top:0; left:0; width:30px; height:30px; border:2px dashed var(--primary-orange); border-radius:50%; animation:spinSlow 6s linear infinite; }
 .brand-y-letter { font-size:15px; font-weight:900; color:var(--primary-orange); z-index:2; }
 
-.main-viewport { flex:1 1 auto; overflow-y:auto; padding:14px; padding-bottom:85px; display:none; }
+.main-viewport { flex:1 1 auto; overflow-y:auto; padding:14px; padding-bottom:88px; display:none; }
 .main-viewport.active { display:block; }
 
 .segmented-control { display:flex; background-color:var(--input-bg); border:1px solid var(--card-border); border-radius:8px; padding:4px; margin-bottom:14px; overflow-x:auto; white-space:nowrap; scrollbar-width:none; }
 .segmented-control::-webkit-scrollbar { display:none; }
-.segment-btn { flex:1 0 auto; padding:12px 8px; background:none; border:none; color:var(--text-muted); font-size:11px; font-weight:800; border-radius:6px; cursor:pointer; text-transform:uppercase; transition:all 0.2s; }
+.segment-btn { flex:1 0 auto; padding:11px 8px; background:none; border:none; color:var(--text-muted); font-size:11px; font-weight:800; border-radius:6px; cursor:pointer; text-transform:uppercase; transition:all 0.2s; }
 .segment-btn.active { background-color:var(--primary-cyan); color:#000; font-weight:900; }
 
-.form-group { margin-bottom:12px; }
-label { display:flex; align-items:center; gap:6px; font-size:10px; font-weight:800; color:var(--text-muted); margin-bottom:5px; text-transform:uppercase; }
-select, input { width:100%; padding:10px 12px; background-color:var(--input-bg); border:1px solid var(--card-border); border-radius:8px; color:var(--text-main); font-size:13px; font-weight:700; outline:none; transition:border-color 0.2s; }
+.form-group { margin-bottom:10px; }
+label { display:flex; align-items:center; gap:5px; font-size:9.6px; font-weight:800; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase; }
+select, input { width:100%; padding:9px 10px; background-color:var(--input-bg); border:1px solid var(--card-border); border-radius:8px; color:var(--text-main); font-size:12.5px; font-weight:700; outline:none; transition:border-color 0.2s; }
 select:focus, input:focus { border-color:var(--primary-cyan); }
-.input-inline { background:rgba(0,0,0,0.4); border:1px solid var(--card-border); color:var(--primary-orange); padding:4px 6px; border-radius:6px; font-size:12px; font-weight:900; width:76px; text-align:center; }
-.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.input-inline { background:rgba(0,0,0,0.45); border:1px solid var(--card-border); color:var(--primary-orange); padding:4px 6px; border-radius:6px; font-size:12px; font-weight:900; width:72px; text-align:center; }
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+.grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+
+.global-banner { background:rgba(0,229,255,0.05); border:1px dashed rgba(0,229,255,0.32); border-radius:9px; padding:10px; margin-bottom:12px; }
+.global-banner-title { font-size:9.5px; font-weight:900; color:var(--primary-cyan); text-transform:uppercase; margin-bottom:8px; letter-spacing:0.5px; display:flex; justify-content:space-between; }
 
 .schematic-container { position:relative; background-color:var(--card-bg); border:1px solid var(--card-border); border-radius:12px; margin-bottom:14px; overflow:hidden; box-shadow:0 8px 25px rgba(0,0,0,0.3); }
 .pill-badge { position:absolute; font-size:10px; font-weight:800; padding:6px 14px; border-radius:14px; background:rgba(15,23,42,0.9); border:1px solid rgba(0,229,255,0.4); z-index:10; cursor:pointer; color:var(--primary-cyan); text-transform:uppercase; }
@@ -80,17 +84,23 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
 .prop-main { font-size:11.5px; font-weight:900; color:#fff; line-height:1.35; }
 .prop-meta { font-size:9.5px; color:var(--text-muted); margin-top:3px; }
 
-.btn-auditor { width:100%; background:#1e293b; color:#00e5ff; border:1px solid rgba(0,229,255,0.4); padding:13px; border-radius:8px; font-size:12px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:12px; }
-.memoria-box { background:rgba(0,0,0,0.35); border:1px solid var(--card-border); border-radius:8px; padding:14px; margin-top:12px; display:none; border-left:3px solid var(--primary-orange); }
-.memoria-section { font-size:11px; font-weight:900; color:var(--primary-orange); margin-bottom:6px; text-transform:uppercase; border-bottom:1px solid rgba(255,159,10,0.2); padding-bottom:4px; margin-top:8px; }
-.memoria-line { font-size:11px; color:var(--text-main); margin-bottom:6px; line-height:1.5; }
+/* ESTILOS DE MEMORIA DE CÁLCULO UNIVERSITARIA PASO A PASO */
+.btn-auditor { width:100%; background:linear-gradient(90deg, #1e293b, #0f172a); color:#00e5ff; border:1px solid rgba(0,229,255,0.5); padding:14px; border-radius:8px; font-size:12px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:12px; letter-spacing:0.5px; box-shadow:0 4px 12px rgba(0,0,0,0.25); }
+.memoria-box { background:#090d16; border:1px solid var(--card-border); border-radius:8px; padding:14px; margin-top:12px; display:none; border-left:4px solid var(--primary-orange); font-size:11.5px; line-height:1.65; color:#e2e8f0; }
+.mem-title-main { font-size:12.5px; font-weight:900; color:#fff; background:rgba(255,159,10,0.15); border:1px solid rgba(255,159,10,0.4); padding:8px 10px; border-radius:6px; margin-bottom:12px; text-align:center; text-transform:uppercase; letter-spacing:0.5px; }
+.memoria-section { font-size:11.5px; font-weight:900; color:var(--primary-orange); margin:14px 0 8px 0; text-transform:uppercase; border-bottom:1px solid rgba(255,159,10,0.3); padding-bottom:4px; }
+.mem-step { margin-bottom:10px; padding-bottom:8px; border-bottom:1px dotted rgba(148,163,184,0.2); }
+.mem-step-title { font-weight:800; color:var(--primary-cyan); font-size:11px; margin-bottom:4px; }
+.mem-eq { font-family:"Courier New", Courier, monospace; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-left:3px solid var(--primary-cyan); padding:6px 9px; border-radius:5px; margin:5px 0; font-size:11px; color:#ffd700; overflow-x:auto; white-space:pre-wrap; }
+.mem-verdict-ok { color:var(--primary-green); font-weight:900; background:rgba(48,209,88,0.1); padding:3px 7px; border-radius:4px; display:inline-block; margin-top:3px; font-size:10.5px; }
+.mem-verdict-err { color:var(--primary-red); font-weight:900; background:rgba(255,69,58,0.15); padding:3px 7px; border-radius:4px; display:inline-block; margin-top:3px; font-size:10.5px; }
 
 .bottom-nav { position:absolute; bottom:0; left:0; right:0; background-color:var(--card-bg); border-top:1px solid var(--card-border); display:flex; height:70px; z-index:999; padding-bottom:env(safe-area-inset-bottom); }
 .nav-item { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; background:none; border:none; color:var(--text-muted); font-size:10px; font-weight:700; cursor:pointer; gap:4px; transition:color 0.2s; }
 .nav-item.active { color:var(--primary-orange); background-color:rgba(255,159,10,0.08); border-top:2px solid var(--primary-orange); }
 .canvas-2d-section { width:100%; height:215px; border-radius:8px; background-color:#0f172a; margin-top:12px; border:1px solid rgba(51,65,85,0.6); }
 .action-btn { background:var(--primary-cyan); color:#000; border:none; padding:12px; border-radius:8px; font-weight:900; font-size:12px; width:100%; cursor:pointer; text-transform:uppercase; margin-top:10px; }
-.ui-caja-naranja { background:rgba(255,159,10,0.1); padding:10px; border-radius:8px; border:1px solid rgba(255,159,10,0.3); text-align:center; display:flex; flex-direction:column; justify-content:center; }
+.ui-caja-naranja { background:rgba(255,159,10,0.1); padding:8px; border-radius:8px; border:1px solid rgba(255,159,10,0.3); text-align:center; display:flex; flex-direction:column; justify-content:center; }
 </style>
 </head>
 <body>
@@ -101,7 +111,7 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
             <div style="font-size:52px; font-weight:900; color:var(--primary-orange);">Y</div>
         </div>
         <div style="font-size:24px; font-weight:900; letter-spacing:3px;">CONSTRUYE.PRO</div>
-        <div style="font-size:10px; font-weight:800; color:#ffd700; margin-top:6px; letter-spacing:2px;">INGENIERÍA ESTRUCTURAL AVANZADA</div>
+        <div style="font-size:10px; font-weight:800; color:#ffd700; margin-top:6px; letter-spacing:2px;">INGENIERÍA ESTRUCTURAL AVANZADA RNE</div>
     </div>
 </div>
 
@@ -109,7 +119,7 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
     <header>
         <div style="display:flex; align-items:center; gap:8px;">
             <div class="brand-title">CONSTRUYE.PRO</div>
-            <span class="badge-green" style="margin:0;">BIM RNE</span>
+            <span class="badge-green" style="margin:0;">PREMIUM RNE</span>
         </div>
         <div class="rotating-y-wrapper">
             <div class="rotating-circle"></div>
@@ -123,7 +133,7 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
             <div style="position:absolute; top:12px; right:12px; z-index:20;">
                 <button class="pill-badge" onclick="togRX()" id="btn_rayosx">👁️ Rayos X</button>
             </div>
-            <div id="status_dashboard" style="position:absolute; bottom:12px; left:12px; z-index:20; display:flex; flex-direction:column; gap:4px; max-width:72%;"></div>
+            <div id="status_dashboard" style="position:absolute; bottom:12px; left:12px; z-index:20; display:flex; flex-direction:column; gap:4px; max-width:76%;"></div>
             <canvas id="canvas_3d_viewport" width="360" height="280" style="width:100%; height:280px; display:block; cursor:grab;"></canvas>
         </div>
 
@@ -136,58 +146,83 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
 
         <!-- ==================== MÓDULO ZAPATAS ==================== -->
         <div id="mod_zapatas" class="calc-subpane">
+            <div class="global-banner">
+                <div class="global-banner-title"><span>📋 DATOS DEL EDIFICIO (SINCRONIZADO)</span><span>E.020 / E.030</span></div>
+                <div class="form-group grid-2">
+                    <div>
+                        <label>🏢 Uso Edificación:</label>
+                        <select id="z_uso" onchange="syncGlobal('uso', this.value)">
+                            <option value="1000" selected>Vivienda (1.0 T/m²)</option>
+                            <option value="1300">Comercio/Ofic. (1.3 T/m²)</option>
+                            <option value="1500">Colegio/Salud (1.5 T/m²)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>📊 N° Pisos Totales:</label>
+                        <input type="number" id="z_pisos" value="4" min="1" oninput="syncGlobal('pisos', this.value)">
+                    </div>
+                </div>
+                <div class="form-group grid-2" style="margin-bottom:0;">
+                    <div>
+                        <label>📐 Área Construida (m²):</label>
+                        <input type="number" id="z_aconst" value="120" oninput="syncGlobal('area', this.value)">
+                    </div>
+                    <div>
+                        <label>📝 N° Columnas Piso:</label>
+                        <input type="number" id="z_ncol" value="12" min="1" oninput="syncGlobal('ncol', this.value)">
+                    </div>
+                </div>
+            </div>
+
             <div class="form-group grid-2">
                 <div>
-                    <label>🏢 Uso Edificación (RNE):</label>
-                    <select id="z_uso" onchange="runEng('uso')">
-                        <option value="1000" selected>Vivienda (C-1.0)</option>
-                        <option value="1300">Comercio (B-1.3)</option>
-                        <option value="1500">Educ/Salud (A-1.5)</option>
+                    <label>📍 Ubicación en Lote:</label>
+                    <select id="z_ubic" onchange="runEng('ubic')">
+                        <option value="centrica" selected>Céntrica (Interior)</option>
+                        <option value="medianera">Medianera (Lindero)</option>
+                        <option value="esquina">Esquina de Lote</option>
                     </select>
                 </div>
                 <div>
-                    <label>📊 N° Pisos:</label>
-                    <input type="number" id="z_pisos" value="4" oninput="runEng('pisos')">
+                    <label>🧪 Condición Suelo / Salitre:</label>
+                    <select id="z_salitre" onchange="runEng('salitre')">
+                        <option value="normal" selected>Seco Normal (Cem. Tipo I)</option>
+                        <option value="humedo">Húmedo / Salitre Mod. (MS)</option>
+                        <option value="agresivo">Sulfatos Severo (Tipo V)</option>
+                    </select>
                 </div>
             </div>
+
             <div class="form-group grid-2">
                 <div>
-                    <label>📐 Área Const (m²):</label>
-                    <input type="number" id="z_aconst" value="110" oninput="runEng('area')">
-                </div>
-                <div>
-                    <label>📝 N° Columnas:</label>
-                    <input type="number" id="z_ncol" value="12" oninput="runEng('ncol')">
-                </div>
-            </div>
-            <div class="form-group grid-2">
-                <div>
-                    <label>🌍 Suelo (σt E.050):</label>
+                    <label>🌍 Cap. Portante (σt E.050):</label>
                     <select id="z_suelo" onchange="runEng('suelo')">
-                        <option value="3.0">Rígido (3.0 kg/cm²)</option>
-                        <option value="2.0" selected>Duro (2.0 kg/cm²)</option>
-                        <option value="1.3">Blando (1.3 kg/cm²)</option>
+                        <option value="3.0">Rígido / Grava (3.0 kg/cm²)</option>
+                        <option value="2.0" selected>Duro / Interm. (2.0 kg/cm²)</option>
+                        <option value="1.3">Blando / Arena (1.3 kg/cm²)</option>
                     </select>
                 </div>
                 <div class="ui-caja-naranja" onclick="el('z_df_input').focus()">
-                    <label style="justify-content:center; color:var(--primary-orange); cursor:text;">Excavación Calculada</label>
+                    <label style="justify-content:center; color:var(--primary-orange); cursor:text;">Prof. Desplante (Df)</label>
                     <div style="display:flex; justify-content:center; font-size:16px; font-weight:900; color:#fff;">
                         <input type="number" id="z_df_input" step="0.05" style="width:60px; background:none; border:none; color:#fff; font-size:16px; font-weight:900; text-align:center; padding:0; margin:0; outline:none;" oninput="runEng('df')">m
                     </div>
                 </div>
             </div>
+
             <div class="result-card">
                 <div class="result-header">✅ DISEÑO ZAPATA (E.050 / E.060)</div>
                 <table class="res-table">
                     <tr>
-                        <td style="width:45%;">Geometría Base:<br><span class="val-sub" id="z_txt_carga">Carga: -- Ton</span></td>
+                        <td style="width:46%;">Dimensiones (L × B × hz):<br><span class="val-sub" id="z_txt_carga">Carga y Punzonamiento</span></td>
                         <td>
                             <div style="display:flex; justify-content:flex-end; gap:4px; margin-bottom:4px; align-items:center;">L: <input type="number" id="z_mod_l" value="1.40" step="0.05" class="input-inline" oninput="runEng('geom_l')"> m</div>
-                            <div style="display:flex; justify-content:flex-end; gap:4px; align-items:center;">B: <input type="number" id="z_mod_b" value="1.40" step="0.05" class="input-inline" oninput="runEng('geom_b')"> m</div>
+                            <div style="display:flex; justify-content:flex-end; gap:4px; margin-bottom:4px; align-items:center;">B: <input type="number" id="z_mod_b" value="1.40" step="0.05" class="input-inline" oninput="runEng('geom_b')"> m</div>
+                            <div style="display:flex; justify-content:flex-end; gap:4px; align-items:center;">hz: <input type="number" id="z_mod_hz" value="60" step="5" class="input-inline" oninput="runEng('geom_hz')"> cm</div>
                         </td>
                     </tr>
                     <tr>
-                        <td>Profundidad Zanja:<br><span class="val-sub">Solado (0.10m) + Df</span></td>
+                        <td>Excavación y Cemento:<br><span class="val-sub" id="z_txt_cemento">Solado 10cm + Df</span></td>
                         <td style="text-align:right;"><span id="z_txt_hz" style="color:var(--primary-orange);">Cota Final: -- m</span></td>
                     </tr>
                     <tr>
@@ -205,24 +240,60 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
                     </tr>
                 </table>
                 <div id="z_propuestas_container" class="propuestas-box"></div>
-                <canvas id="cvs_2d_zap" width="320" height="200" class="canvas-2d-section"></canvas>
-                <button class="btn-auditor" onclick="tgMem('mem_zap')">📄 Auditar Memoria de Cálculo</button>
+                <canvas id="cvs_2d_zap" width="320" height="205" class="canvas-2d-section"></canvas>
+                <button class="btn-auditor" onclick="tgMem('mem_zap')">📄 Auditar Memoria Universitaria Paso a Paso</button>
                 <div id="mem_zap" class="memoria-box"></div>
             </div>
         </div>
 
         <!-- ==================== MÓDULO COLUMNAS ==================== -->
         <div id="mod_columnas" class="calc-subpane" style="display:none;">
+            <div class="global-banner">
+                <div class="global-banner-title"><span>📋 CARGA TRIBUTARIA MEDIBLE EN CAMPO</span><span>E.020 / E.060</span></div>
+                <div class="form-group grid-3">
+                    <div>
+                        <label>📊 N° Pisos:</label>
+                        <input type="number" id="c_pisos" value="4" min="1" oninput="syncGlobal('pisos', this.value)">
+                    </div>
+                    <div>
+                        <label>📐 Área (m²):</label>
+                        <input type="number" id="c_aconst" value="120" oninput="syncGlobal('area', this.value)">
+                    </div>
+                    <div>
+                        <label>📝 N° Cols:</label>
+                        <input type="number" id="c_ncol" value="12" min="1" oninput="syncGlobal('ncol', this.value)">
+                    </div>
+                </div>
+                <div class="form-group grid-2" style="margin-bottom:0;">
+                    <div>
+                        <label>📍 Ubicación en Planta:</label>
+                        <select id="c_ubic" onchange="runEng('ubic')">
+                            <option value="central" selected>Central / Interior</option>
+                            <option value="perimetral">Perimetral / Borde</option>
+                            <option value="esquina">Esquina (Sísmica)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>🏢 Uso Edificación:</label>
+                        <select id="c_uso" onchange="syncGlobal('uso', this.value)">
+                            <option value="1000" selected>Vivienda</option>
+                            <option value="1300">Comercio/Ofic.</option>
+                            <option value="1500">Colegio/Salud</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
             <div class="form-group grid-2">
                 <div>
-                    <label>🏗️ Sistema:</label>
+                    <label>🏗️ Sistema Estructural:</label>
                     <select id="c_sis" onchange="runEng('sistema')">
-                        <option value="portico" selected>Aporticado</option>
-                        <option value="confinada">Albañilería Conf.</option>
+                        <option value="portico" selected>Aporticado (E.060)</option>
+                        <option value="confinada">Albañilería Conf. (E.070)</option>
                     </select>
                 </div>
                 <div>
-                    <label>📏 Altura Libre (H):</label>
+                    <label>📏 Altura Libre Piso (H):</label>
                     <input type="number" id="c_h" value="2.80" step="0.05" oninput="runEng('altura')">
                 </div>
             </div>
@@ -245,10 +316,10 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
                 </div>
             </div>
             <div class="result-card">
-                <div class="result-header">✅ DISEÑO COLUMNA (E.060)</div>
+                <div class="result-header">✅ DISEÑO COLUMNA (E.060 CAP. 10 y 21)</div>
                 <table class="res-table">
                     <tr>
-                        <td style="width:42%;">Sección (b × t):<br><span class="val-sub" id="c_txt_ag">Área</span></td>
+                        <td style="width:45%;">Sección (b × t):<br><span class="val-sub" id="c_txt_ag">Área y Carga Axial</span></td>
                         <td>
                             <div style="display:flex; justify-content:flex-end; gap:4px; align-items:center;">
                                 <input type="number" id="c_mod_b" value="30" step="5" class="input-inline" oninput="runEng('geom')"> ×
@@ -257,36 +328,92 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
                         </td>
                     </tr>
                     <tr>
-                        <td>Acero Vertical:<br><span class="val-sub">Pata 16db Exterior</span></td>
+                        <td>Acero y Traslape (Ld):<br><span class="val-sub" id="c_txt_traslape">Empalme en Tercio Central</span></td>
                         <td style="text-align:right;" id="c_txt_armado"></td>
                     </tr>
                     <tr>
-                        <td>Estribos Sismo:<br><span class="val-sub">Confinamiento Cap. 21</span></td>
+                        <td>Estribos y Esbeltez:<br><span class="val-sub" id="c_txt_esbeltez">Confinamiento Cap. 21</span></td>
                         <td style="text-align:right;"><span style="color:var(--primary-orange);" id="c_txt_estr"></span></td>
                     </tr>
                 </table>
                 <div id="c_propuestas_container" class="propuestas-box"></div>
-                <canvas id="cvs_2d_col" width="320" height="200" class="canvas-2d-section"></canvas>
-                <button class="btn-auditor" onclick="tgMem('mem_col')">📄 Auditar Memoria de Cálculo</button>
+                <canvas id="cvs_2d_col" width="320" height="205" class="canvas-2d-section"></canvas>
+                <button class="btn-auditor" onclick="tgMem('mem_col')">📄 Auditar Memoria Universitaria Paso a Paso</button>
                 <div id="mem_col" class="memoria-box"></div>
             </div>
         </div>
 
         <!-- ==================== MÓDULO VIGAS ==================== -->
         <div id="mod_vigas" class="calc-subpane" style="display:none;">
+            <div class="global-banner">
+                <div class="global-banner-title"><span>📋 DATOS DE CAMPO Y EDIFICIO</span><span>E.020 / E.030</span></div>
+                <div class="form-group grid-3">
+                    <div>
+                        <label>📊 N° Pisos:</label>
+                        <input type="number" id="v_pisos" value="4" min="1" oninput="syncGlobal('pisos', this.value)">
+                    </div>
+                    <div>
+                        <label>📐 Área (m²):</label>
+                        <input type="number" id="v_aconst" value="120" oninput="syncGlobal('area', this.value)">
+                    </div>
+                    <div>
+                        <label>📝 N° Cols:</label>
+                        <input type="number" id="v_ncol" value="12" min="1" oninput="syncGlobal('ncol', this.value)">
+                    </div>
+                </div>
+                <div class="form-group grid-2" style="margin-bottom:0;">
+                    <div>
+                        <label>↔️ Luz Libre (L) [m]:</label>
+                        <input type="number" id="v_luz" value="5.00" step="0.10" oninput="runEng('luz')">
+                    </div>
+                    <div>
+                        <label>📏 Ancho Trib. Losa [m]:</label>
+                        <input type="number" id="v_btrib" value="3.20" step="0.10" oninput="runEng('btrib')">
+                    </div>
+                </div>
+            </div>
+
             <div class="form-group grid-2">
                 <div>
-                    <label>↔️ Luz Libre (L):</label>
-                    <input type="number" id="v_luz" value="5.00" step="0.05" oninput="runEng('luz')">
+                    <label>🧱 Tipo y Espesor Losa:</label>
+                    <select id="v_losa" onchange="runEng('losa')">
+                        <option value="280">Aligerada e=17cm (280 kg/m²)</option>
+                        <option value="300" selected>Aligerada e=20cm (300 kg/m²)</option>
+                        <option value="350">Aligerada e=25cm (350 kg/m²)</option>
+                        <option value="360">Maciza e=15cm (360 kg/m²)</option>
+                        <option value="480">Maciza e=20cm (480 kg/m²)</option>
+                    </select>
                 </div>
                 <div>
-                    <label>🏗️ Nivel de Carga:</label>
-                    <select id="v_carga" onchange="runEng('carga')">
-                        <option value="normal" selected>Típica Vivienda (E.020)</option>
-                        <option value="pesada">Pesada / Comercio</option>
+                    <label>🧱 Muro Ladrillo Sobre Viga:</label>
+                    <select id="v_tabique" onchange="runEng('tabique')">
+                        <option value="0">Sin Muro sobre Viga</option>
+                        <option value="350" selected>Soga Pandereta (350 kg/m)</option>
+                        <option value="520">Soga King Kong (520 kg/m)</option>
+                        <option value="900">Cabeza King Kong (900 kg/m)</option>
                     </select>
                 </div>
             </div>
+
+            <div class="form-group grid-2">
+                <div>
+                    <label>🏗️ Apoyo y Función:</label>
+                    <select id="v_rol" onchange="runEng('carga')">
+                        <option value="principal" selected>Continua Principal (Sismo)</option>
+                        <option value="secundaria">Continua Secundaria</option>
+                        <option value="voladizo">En Voladizo / Balcón</option>
+                    </select>
+                </div>
+                <div>
+                    <label>🏢 Uso / Sobrecarga:</label>
+                    <select id="v_uso" onchange="syncGlobal('uso', this.value)">
+                        <option value="1000" selected>Vivienda (S/C 200 kg)</option>
+                        <option value="1300">Comercio (S/C 400 kg)</option>
+                        <option value="1500">Colegio/Salud (S/C 500 kg)</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="form-group grid-2">
                 <div>
                     <label>🔴 Ø Sup (-):</label>
@@ -317,7 +444,7 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
                 <div class="result-header">✅ DISEÑO VIGA (E.060)</div>
                 <table class="res-table">
                     <tr>
-                        <td style="width:42%;">Sección (b × h):<br><span class="val-sub">Múltiplos de 5cm</span></td>
+                        <td style="width:45%;">Sección (b × h):<br><span class="val-sub" id="v_txt_wu">Carga distribuida wu</span></td>
                         <td>
                             <div style="display:flex; justify-content:flex-end; gap:4px; align-items:center;">
                                 <input type="number" id="v_mod_b" value="25" step="5" class="input-inline" oninput="runEng('geom')"> ×
@@ -326,20 +453,19 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
                         </td>
                     </tr>
                     <tr>
-                        <td>Armado Activo:<br><span class="val-sub" id="v_txt_as">As Requerido</span></td>
+                        <td>Armado y Bastones:<br><span class="val-sub" id="v_txt_as">As Requerido y Cortes</span></td>
                         <td style="text-align:right;" id="v_txt_acero"></td>
                     </tr>
                     <tr>
-                        <td>Estribos Auto:<br><span class="val-sub">Confinamiento 2h y d/4</span></td>
+                        <td>Cortante y Estribos:<br><span class="val-sub" id="v_txt_cortante">Vu vs ØVn</span></td>
                         <td style="text-align:right;"><span style="color:var(--primary-orange);" id="v_txt_estr"></span></td>
                     </tr>
                 </table>
 
-                <!-- SELECTOR DE MEJOR PROPUESTA Y OTRAS PROPUESTAS -->
                 <div id="v_propuestas_container" class="propuestas-box"></div>
 
                 <canvas id="cvs_2d_vig" width="320" height="215" class="canvas-2d-section"></canvas>
-                <button class="btn-auditor" onclick="tgMem('mem_vig')">📄 Auditar Memoria de Cálculo</button>
+                <button class="btn-auditor" onclick="tgMem('mem_vig')">📄 Auditar Memoria Universitaria Paso a Paso</button>
                 <div id="mem_vig" class="memoria-box"></div>
             </div>
         </div>
@@ -348,37 +474,46 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
         <div id="mod_muros" class="calc-subpane" style="display:none;">
             <div class="form-group grid-2">
                 <div>
-                    <label>📏 Altura Pantalla (H):</label>
+                    <label>📏 Altura Pantalla (H) [m]:</label>
                     <input type="number" id="m_h" value="3.00" step="0.05" oninput="runEng('muro_geom')">
                 </div>
                 <div>
-                    <label>🚗 Uso / Sobrecarga:</label>
+                    <label>🚗 Sobrecarga Superior (q):</label>
                     <select id="m_q" onchange="runEng('muro_geom')">
-                        <option value="250" selected>Jardín (250 kg/m²)</option>
-                        <option value="500">Vehicular (500 kg/m²)</option>
-                        <option value="1000">Pesada (1000 kg/m²)</option>
+                        <option value="250" selected>Jardín / Peat. (250 kg/m²)</option>
+                        <option value="500">Vehicular Liv. (500 kg/m²)</option>
+                        <option value="1000">Vía Pesada (1000 kg/m²)</option>
                     </select>
                 </div>
             </div>
-            <div class="form-group grid-2">
+            <div class="form-group grid-3">
                 <div>
                     <label>🌍 Suelo (φ):</label>
                     <select id="m_suelo" onchange="runEng('muro_geom')">
-                        <option value="35">Grava (φ=35°)</option>
-                        <option value="30" selected>Arena (φ=30°)</option>
-                        <option value="25">Fino (φ=25°)</option>
+                        <option value="35">Grava (35°)</option>
+                        <option value="30" selected>Arena (30°)</option>
+                        <option value="25">Fino (25°)</option>
                     </select>
                 </div>
                 <div>
-                    <label>👑 Corona (c) [m]:</label>
+                    <label>📐 Talud Sup (β):</label>
+                    <select id="m_talud" onchange="runEng('muro_geom')">
+                        <option value="0" selected>Plano (0°)</option>
+                        <option value="10">Talud 10°</option>
+                        <option value="15">Talud 15°</option>
+                        <option value="20">Talud 20°</option>
+                    </select>
+                </div>
+                <div>
+                    <label>👑 Corona (c):</label>
                     <input type="number" id="m_c" value="0.25" step="0.05" oninput="runEng('geom')">
                 </div>
             </div>
             
             <div style="font-size:10px; font-weight:800; color:var(--text-muted); margin:8px 0 6px; text-transform:uppercase;">DIÁMETROS DE ACERO EN OBRA:</div>
-            <div class="form-group grid-2" style="margin-bottom:8px;">
+            <div class="form-group grid-3" style="margin-bottom:8px;">
                 <div>
-                    <label>🔴 Pantalla (Vert):</label>
+                    <label>🔴 Pant (Vert):</label>
                     <select id="m_phi_v" onchange="runEng('acero')">
                         <option value="0.71">3/8"</option>
                         <option value="1.29">1/2"</option>
@@ -387,29 +522,29 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
                     </select>
                 </div>
                 <div>
-                    <label>🔵 Temp (Horiz):</label>
+                    <label>🔵 Temp (Hor):</label>
                     <select id="m_phi_h" onchange="runEng('acero')">
                         <option value="0.71">3/8"</option>
                         <option value="1.29" selected>1/2"</option>
                         <option value="1.99">5/8"</option>
                     </select>
                 </div>
-            </div>
-            <div class="form-group">
-                <label>🟡 Zapata (Puntera/Talón):</label>
-                <select id="m_phi_z" onchange="runEng('acero')">
-                    <option value="0.71">3/8"</option>
-                    <option value="1.29">1/2"</option>
-                    <option value="1.99" selected>5/8"</option>
-                    <option value="2.84">3/4"</option>
-                </select>
+                <div>
+                    <label>🟡 Zapata:</label>
+                    <select id="m_phi_z" onchange="runEng('acero')">
+                        <option value="0.71">3/8"</option>
+                        <option value="1.29">1/2"</option>
+                        <option value="1.99" selected>5/8"</option>
+                        <option value="2.84">3/4"</option>
+                    </select>
+                </div>
             </div>
 
             <div class="result-card">
-                <div class="result-header">✅ MURO VOLADIZO (E.050 / E.060)</div>
+                <div class="result-header">✅ MURO VOLADIZO (RANKINE + MONONOBE-OKABE)</div>
                 <table class="res-table">
                     <tr>
-                        <td style="width:42%;">Zapata (B × hz):<br><span class="val-sub" id="m_txt_fs">FSV y FSD</span></td>
+                        <td style="width:45%;">Zapata (B × hz):<br><span class="val-sub" id="m_txt_fs">FSV, FSD y Presión Puntera</span></td>
                         <td>
                             <div style="display:flex; justify-content:flex-end; gap:4px; margin-bottom:4px; align-items:center;">B: <input type="number" id="m_b" value="1.80" step="0.05" class="input-inline" oninput="runEng('geom')"> m</div>
                             <div style="display:flex; justify-content:flex-end; gap:4px; align-items:center;">hz: <input type="number" id="m_hz" value="0.40" step="0.05" class="input-inline" oninput="runEng('geom')"> m</div>
@@ -429,19 +564,19 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
                     <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700;"><span>Parrilla Zapata:</span><span id="m_as_zap"></span></div>
                 </div>
                 <canvas id="cvs_2d_mur" width="320" height="215" class="canvas-2d-section"></canvas>
-                <button class="btn-auditor" onclick="tgMem('mem_mur')">📄 Auditar Memoria de Cálculo</button>
+                <button class="btn-auditor" onclick="tgMem('mem_mur')">📄 Auditar Memoria Universitaria Paso a Paso</button>
                 <div id="mem_mur" class="memoria-box"></div>
             </div>
         </div>
     </div>
 
-    <!-- ==================== VISTA METRADO DE ACERO ==================== -->
+    <!-- ==================== VISTA METRADO DE ACERO Y CONCRETO ==================== -->
     <div id="view_acero" class="main-viewport">
         <div class="result-card">
-            <div class="result-header">✂️ PLANILLA DE METRADO EN VIVO</div>
-            <div style="font-size:11px; color:var(--text-muted); margin-bottom:12px;" id="acero_subtitulo">Despiece automático en varillas de 9.00 m del módulo activo.</div>
+            <div class="result-header">✂️ PLANILLA DE METRADO DE ACERO</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">Despiece automático en varillas comerciales de 9.00 m del módulo activo.</div>
             <div class="form-group">
-                <label>🔢 Cantidad de Elementos Iguales a Construir:</label>
+                <label>🔢 Cantidad de Elementos Iguales a Construir (o metros lineales en Muro):</label>
                 <input type="number" id="ac_cant_elem" value="1" min="1" oninput="runEng('acero')">
             </div>
             <table class="res-table">
@@ -449,10 +584,21 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
                 <tr><td>Varilla Ø 1/2" (0.99 kg/m):<span class="val-sub">Refuerzo / Temperatura / Piel</span></td><td style="color:#3388ff;" id="dyn_ac_12">-- und</td></tr>
                 <tr><td>Varilla Ø 5/8" (1.55 kg/m):<span class="val-sub">Refuerzo Principal</span></td><td style="color:#ff2222;" id="dyn_ac_58">-- und</td></tr>
                 <tr><td>Varilla Ø 3/4" (2.24 kg/m):<span class="val-sub">Refuerzo Mayor</span></td><td style="color:#ffcc00;" id="dyn_ac_34">-- und</td></tr>
-                <tr><td>Alambre Negro N° 16:<span class="val-sub">Para amarre estructural</span></td><td style="color:var(--primary-orange);" id="dyn_alambre">-- kg</td></tr>
+                <tr><td>Alambre Negro N° 16:<span class="val-sub">Para amarre estructural (4%)</span></td><td style="color:var(--primary-orange);" id="dyn_alambre">-- kg</td></tr>
                 <tr><td>Peso Total de Acero:<span class="val-sub">Incluye desperdicio configurado</span></td><td style="color:var(--primary-green); font-size:14px;" id="dyn_peso_tot">-- kg</td></tr>
             </table>
-            <button class="action-btn" onclick="copiarMetrado()">📋 Copiar Pedido de Acero para Obra</button>
+        </div>
+
+        <div class="result-card">
+            <div class="result-header">🧱 METRADO DE CONCRETO Y MATERIALES</div>
+            <table class="res-table">
+                <tr><td>Volumen de Concreto:<span class="val-sub">Incluye 5% desperdicio en vaciado</span></td><td style="color:var(--primary-cyan); font-size:14px;" id="dyn_vol_conc">-- m³</td></tr>
+                <tr><td>Cemento Portland (Bolsas 42.5kg):<span class="val-sub" id="dyn_tipo_cem">Dosificación según f'c</span></td><td style="color:var(--primary-orange); font-size:13px;" id="dyn_bolsas_cem">-- bls</td></tr>
+                <tr><td>Arena Gruesa Lavada:<span class="val-sub">Agregado fino</span></td><td id="dyn_arena">-- m³</td></tr>
+                <tr><td>Piedra Chancada 1/2" a 3/4":<span class="val-sub">Agregado grueso</span></td><td id="dyn_piedra">-- m³</td></tr>
+                <tr><td>Agua Potable Libre de Sales:<span class="val-sub">Relación a/c controlada</span></td><td id="dyn_agua">-- Lts</td></tr>
+            </table>
+            <button class="action-btn" onclick="copiarMetrado()">📋 Copiar Pedido Completo de Materiales</button>
         </div>
     </div>
     
@@ -474,14 +620,14 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
                 <label>🧱 Resistencia Concreto (f'c):</label>
                 <select id="p_fc" onchange="runEng('all')">
                     <option value="210" selected>210 kg/cm² (Estándar E.060)</option>
-                    <option value="280">280 kg/cm² (Alta Resistencia)</option>
+                    <option value="280">280 kg/cm² (Alta Resistencia / Salitre)</option>
                     <option value="350">350 kg/cm² (Especial)</option>
                 </select>
             </div>
             <div class="form-group">
                 <label>🔩 Fluencia del Acero (fy):</label>
                 <select id="p_fy" onchange="runEng('all')">
-                    <option value="4200" selected>4200 kg/cm² (Grado 60)</option>
+                    <option value="4200" selected>4200 kg/cm² (Grado 60 ASTM A615)</option>
                 </select>
             </div>
             <div class="form-group">
@@ -507,7 +653,7 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
 
     <div class="bottom-nav">
         <button class="nav-item active" onclick="setView('main',this)"><span>📐</span><span>Diseño</span></button>
-        <button class="nav-item" onclick="setView('acero',this)"><span>✂️</span><span>Acero</span></button>
+        <button class="nav-item" onclick="setView('acero',this)"><span>✂️</span><span>Metrados</span></button>
         <button class="nav-item" onclick="setView('pdf',this)"><span>📄</span><span>Exportar</span></button>
         <button class="nav-item" onclick="setView('params',this)"><span>⚙️</span><span>Params</span></button>
     </div>
@@ -523,16 +669,80 @@ if ('caches' in window) {
     });
 }
 
-// ==================== VARIABLES Y UTILIDADES CORE ====================
+// ==================== VARIABLES Y PERSISTENCIA ====================
 function el(id){ return document.getElementById(id); }
 function tgMem(id){ var b = el(id); b.style.display = (b.style.display === 'block') ? 'none' : 'block'; }
 
 var cMod = 'zapatas';
 var rxM = false;
 var cRotX = 0.5, cRotY = -0.6, camZ = 1.15, panX = 0, panY = 0, iDrg = false, iPan = false, lx = 0, ly = 0;
+var vPropActiva = null;
 
-// Modo especial para armado combinado en vigas
-var vPropActiva = null; 
+var INPUT_IDS = [
+    'p_fc','p_fy','p_zona','p_desp','ac_cant_elem',
+    'z_uso','z_pisos','z_aconst','z_ncol','z_ubic','z_salitre','z_suelo','z_df_input','z_mod_l','z_mod_b','z_mod_hz','z_mod_phi',
+    'c_pisos','c_aconst','c_ncol','c_ubic','c_uso','c_sis','c_h','c_phi_esq','c_phi_mid','c_mod_b','c_mod_t',
+    'v_pisos','v_aconst','v_ncol','v_luz','v_btrib','v_losa','v_tabique','v_rol','v_uso','v_phi_sup','v_phi_inf','v_phi_piel','v_mod_b','v_mod_h',
+    'm_h','m_q','m_suelo','m_talud','m_c','m_phi_v','m_phi_h','m_phi_z','m_b','m_hz','m_e'
+];
+
+function guardarEstadoLocal(){
+    try {
+        var data = {};
+        for(var i = 0; i < INPUT_IDS.length; i++){
+            var id = INPUT_IDS[i];
+            if(el(id)) data[id] = el(id).value;
+        }
+        localStorage.setItem('cpro_estruc_state_v5', JSON.stringify(data));
+    } catch(e){}
+}
+
+function cargarEstadoLocal(){
+    try {
+        var raw = localStorage.getItem('cpro_estruc_state_v5');
+        if(!raw) return false;
+        var data = JSON.parse(raw);
+        for(var k in data){
+            if(el(k) && data[k] !== undefined && data[k] !== '') el(k).value = data[k];
+        }
+        return true;
+    } catch(e){ return false; }
+}
+
+// Sincroniza Pisos, Área, N° Columnas y Uso entre Zapatas, Columnas y Vigas
+function syncGlobal(campo, valor){
+    if(campo === 'pisos'){
+        el('z_pisos').value = valor;
+        el('c_pisos').value = valor;
+        el('v_pisos').value = valor;
+        runEng('pisos');
+    } else if(campo === 'area'){
+        el('z_aconst').value = valor;
+        el('c_aconst').value = valor;
+        el('v_aconst').value = valor;
+        actualizarAnchoTribViga();
+        runEng('area');
+    } else if(campo === 'ncol'){
+        el('z_ncol').value = valor;
+        el('c_ncol').value = valor;
+        el('v_ncol').value = valor;
+        actualizarAnchoTribViga();
+        runEng('ncol');
+    } else if(campo === 'uso'){
+        el('z_uso').value = valor;
+        el('c_uso').value = valor;
+        el('v_uso').value = valor;
+        runEng('uso');
+    }
+}
+
+function actualizarAnchoTribViga(){
+    var aC = parseFloat(el('z_aconst').value) || 120;
+    var nC = Math.max(1, parseFloat(el('z_ncol').value) || 12);
+    var aTrib = aC / nC;
+    var bEst = Math.max(1.5, Math.min(6.0, Math.sqrt(aTrib)));
+    el('v_btrib').value = (Math.round(bEst * 10) / 10).toFixed(1);
+}
 
 function phiL(v){ if(v < 0.8) return '3/8"'; if(v < 1.5) return '1/2"'; if(v < 2.2) return '5/8"'; return '3/4"'; }
 function phiC(v){ if(v < 0.8) return '#00e5ff'; if(v < 1.5) return '#3388ff'; if(v < 2.2) return '#ff2222'; return '#ffcc00'; }
@@ -540,9 +750,9 @@ function phiDb(v){ if(v < 0.8) return 0.95; if(v < 1.5) return 1.27; if(v < 2.2)
 function rnd5(v){ return Math.round(v * 20) / 20; }
 
 var D3 = {
-    zl:1.40, zb:1.40, zh:60, df:1.20, zpPhi:1.99,
-    cx:30, cy:35, ch:2.8, nE:4, nM:2, cPhiE:1.99, cPhiM:1.29, cPata:30, sLimC:6,
-    vl:5.0, vb:25, vh:45, vPiel:0, phS:1.99, phI:1.99, sLimV:8,
+    zl:1.40, zb:1.40, zh:60, df:1.20, zpPhi:1.99, zUbic:'centrica',
+    cx:30, cy:35, ch:2.8, nE:4, nM:2, cPhiE:1.99, cPhiM:1.29, cPata:30, sLimC:8, ldCol:65,
+    vl:5.0, vb:25, vh:45, vPiel:0, phS:1.99, phI:1.99, sLimV:10,
     vSupBars:[], vInfBars:[],
     mH:3.0, mB:1.80, mHz:40, mC:25, mE:35, spV:15, spH:20, spZ:20, mVmalla:1, mHmalla:1, mPhiV:1.99, mPhiH:1.29, mPhiZ:1.99, mDent:false
 };
@@ -557,7 +767,7 @@ function setMod(id, btn){
     el('mod_' + id).style.display = 'block'; 
     if(btn) btn.classList.add('active');
     resetCam(); 
-    runEng('all');
+    runEng('recalc_only');
 }
 
 function setView(id, btn){
@@ -589,7 +799,6 @@ function resetCam(){
 }
 
 // ==================== DISTRIBUCIÓN DE CAPAS E.060 (SIN VARILLAS AL CENTRO) ====================
-// Calcula cuántas varillas caben por capa según E.060 Art. 7.6 (espacio libre >= max(2.5cm, db, 2.5cm agregado))
 function maxVarillasPorCapa(b_cm, phiArea){
     var db = phiDb(phiArea);
     var recub = 4.0;
@@ -600,7 +809,6 @@ function maxVarillasPorCapa(b_cm, phiArea){
     return Math.max(2, nMax);
 }
 
-// Organiza un arreglo de diámetros en capas asegurando que NINGUNA capa tenga 1 sola varilla flotando al centro
 function organizarCapasViga(barsArray, b_cm){
     var total = barsArray.length;
     if(total === 0) return [];
@@ -615,8 +823,6 @@ function organizarCapasViga(barsArray, b_cm){
     var rem = total;
     while(rem > 0){
         var take = Math.min(rem, mx);
-        // Si al tomar 'mx' queda exactamente 1 varilla suelta para la siguiente capa,
-        // cedemos 1 varilla de esta capa para que la 2da capa tenga 2 varillas pegadas al estribo lateral
         if(rem - take === 1 && take > 2){
             take = take - 1;
         }
@@ -628,7 +834,6 @@ function organizarCapasViga(barsArray, b_cm){
     return layers;
 }
 
-// Seleccionar una propuesta de armado en Vigas
 function aplicarPropuestaViga(tipo, phS, nS, phS2, nS2, phI, nI, phI2, nI2){
     if(tipo === 'simple'){
         vPropActiva = null;
@@ -655,16 +860,24 @@ function aplicarPropuestaColumna(phE, phM){
     runEng('acero');
 }
 
-// ==================== MOTOR ESTRUCTURAL PRINCIPAL ====================
+// ==================== MOTOR ESTRUCTURAL INTEGRAL RNE ====================
 function runEng(t){
     var fc = parseFloat(el('p_fc').value) || 210;
     var fy = parseFloat(el('p_fy').value) || 4200;
+    var zSismo = parseFloat(el('p_zona').value) || 0.45;
     var desp = parseFloat(el('p_desp').value) || 1.05;
     var cantElem = Math.max(1, parseInt(el('ac_cant_elem').value) || 1);
     var dH = '';
 
-    // Variables para metrado de acero (metros lineales totales por diámetro)
+    // Parámetros globales del edificio sincronizados
+    var qU = parseFloat(el('z_uso').value) || 1000;
+    var p = Math.max(1, parseInt(el('z_pisos').value) || 1);
+    var aC = Math.max(10, parseFloat(el('z_aconst').value) || 120);
+    var nC = Math.max(1, parseFloat(el('z_ncol').value) || 12);
+    var aTrib = aC / nC;
+
     var m38 = 0, m12 = 0, m58 = 0, m34 = 0;
+    var volConcretoElem = 0;
     function sumarMetros(phi, metros){
         if(phi < 0.8) m38 += metros;
         else if(phi < 1.5) m12 += metros;
@@ -674,9 +887,9 @@ function runEng(t){
 
     // ==================== 1. ZAPATAS ====================
     if(cMod === 'zapatas'){
-        var qU = parseFloat(el('z_uso').value) || 1000;
-        var p = parseInt(el('z_pisos').value) || 1;
         var qa = parseFloat(el('z_suelo').value) || 2.0;
+        var zUbic = el('z_ubic').value;
+        var salitre = el('z_salitre').value;
         var dfI = el('z_df_input');
         
         if(t === 'all' || t === 'pisos' || t === 'suelo' || t === 'uso' || dfI.value === ''){
@@ -689,91 +902,170 @@ function runEng(t){
         }
         
         var df = parseFloat(dfI.value) || 1.20;
-        var aC = parseFloat(el('z_aconst').value) || 110;
-        var nC = parseFloat(el('z_ncol').value) || 12;
-        var aTrib = aC / Math.max(1, nC);
-        var P = (aTrib * qU * p) / 1000;
-        var qAdm = qa * 10;
-        var aR = (P * 1.15) / qAdm;
+        var P_serv = (aTrib * qU * p) / 1000; // Ton
+        var Pu_zap = P_serv * 1.25; // Ton mayorada
+        var qAdm = qa * 10; // Ton/m2
+        
+        // Factor de excentricidad por ubicación en lote (Céntrica=1.15, Medianera=1.35, Esquina=1.50)
+        var fExc = (zUbic === 'centrica') ? 1.15 : ((zUbic === 'medianera') ? 1.35 : 1.50);
+        var aR = (P_serv * fExc) / qAdm;
+        
         var zl = parseFloat(el('z_mod_l').value) || 1.4;
         var zb = parseFloat(el('z_mod_b').value) || 1.4;
-        var zh = 60;
+        var zh = parseFloat(el('z_mod_hz').value) || 60;
         
         if(t === 'geom_l'){ zb = rnd5(Math.max(0.8, aR / zl)); el('z_mod_b').value = zb.toFixed(2); }
         else if(t === 'geom_b'){ zl = rnd5(Math.max(0.8, aR / zb)); el('z_mod_l').value = zl.toFixed(2); }
-        else if(t !== 'acero' && t !== 'df' && t !== 'recalc_only'){ var bD = rnd5(Math.max(1.0, Math.sqrt(aR))); zl = bD; zb = bD; el('z_mod_l').value = zl.toFixed(2); el('z_mod_b').value = zb.toFixed(2); }
+        else if(t === 'all' || t === 'pisos' || t === 'area' || t === 'ncol' || t === 'suelo' || t === 'uso' || t === 'ubic'){
+            if(zUbic === 'medianera'){
+                zb = rnd5(Math.max(1.0, Math.sqrt(aR / 1.3)));
+                zl = rnd5(Math.max(1.2, aR / zb));
+            } else {
+                var bD = rnd5(Math.max(1.0, Math.sqrt(aR)));
+                zl = bD; zb = bD;
+            }
+            zh = Math.max(40, Math.min(90, Math.ceil((35 + p * 5) / 5) * 5));
+            el('z_mod_l').value = zl.toFixed(2);
+            el('z_mod_b').value = zb.toFixed(2);
+            el('z_mod_hz').value = zh;
+        }
         
-        var pA = (P * 1.15) / (zl * zb);
+        var d_zap = Math.max(15, zh - 7.5 - 1.6); // Peralte efectivo descontando recubrimiento 7.5cm y db
+        var pA = (P_serv * fExc) / (zl * zb);
+        var qu_neta = Pu_zap / (zl * zb); // Ton/m2 última
+
+        // Verificación de Punzonamiento Bidireccional (E.060 Art. 11.12)
+        var c_col1 = parseFloat(el('c_mod_b').value) || 30;
+        var c_col2 = parseFloat(el('c_mod_t').value) || 35;
+        var b0 = 2 * ((c_col1 + d_zap) + (c_col2 + d_zap)); // Perímetro crítico en cm
+        var areaCritica_m2 = ((c_col1 + d_zap) * (c_col2 + d_zap)) / 10000;
+        var Vu_punz = Math.max(0.1, Pu_zap - qu_neta * areaCritica_m2); // Ton
+        var phiVc_punz = (0.85 * 1.06 * Math.sqrt(fc) * b0 * d_zap) / 1000; // Ton
+
         if(pA > qAdm * 1.02) dH += '<span class="badge-red">🔴 E.050: Presión Suelo (' + pA.toFixed(1) + ' > ' + qAdm.toFixed(0) + ' T/m²)</span><br>';
         else dH += '<span class="badge-green">🟢 E.050: Presión Suelo OK (' + pA.toFixed(1) + ' T/m²)</span><br>';
-        
-        var asMin = 0.0018 * (zb * 100) * zh;
-        var ph = parseFloat(el('z_mod_phi').value) || 1.99;
-        var nV = Math.max(5, Math.ceil(asMin / ph));
-        var sepZap = ((zb - 0.15) * 100) / Math.max(1, nV - 1);
-        var exc = df + 0.1;
-        
-        el('z_txt_carga').innerText = 'Ps = ' + P.toFixed(1) + ' Ton | A.Trib = ' + aTrib.toFixed(1) + 'm²'; 
-        el('z_txt_rho').innerText = 'As Mín (0.0018·b·h): ' + asMin.toFixed(2) + ' cm²';
-        el('z_txt_armado').innerText = 'X: ' + nV + ' Ø ' + phiL(ph) + ' @ ' + sepZap.toFixed(0) + 'cm | Y: ' + nV + ' Ø ' + phiL(ph); 
-        el('z_txt_hz').innerText = 'Zanja: ' + exc.toFixed(2) + ' m (Df=' + df.toFixed(2) + 'm)';
 
-        // Propuestas de Parrilla en Zapata
-        var n12 = Math.max(5, Math.ceil(asMin / 1.29));
-        var n58 = Math.max(5, Math.ceil(asMin / 1.99));
-        var n34 = Math.max(4, Math.ceil(asMin / 2.84));
+        if(Vu_punz > phiVc_punz) dH += '<span class="badge-red">🔴 E.060: Falla Punzonamiento (Vu=' + Vu_punz.toFixed(1) + 'T > ØVc=' + phiVc_punz.toFixed(1) + 'T). Suba hz</span><br>';
+        else dH += '<span class="badge-green">🟢 E.060: Punzonamiento OK (ØVc=' + phiVc_punz.toFixed(0) + 'T ≥ Vu=' + Vu_punz.toFixed(0) + 'T)</span><br>';
+
+        if(zUbic !== 'centrica') dH += '<span class="badge-orange">⚠️ E.050: Zapata ' + zUbic.toUpperCase() + ' requiere Viga de Cimentación</span><br>';
+        if(salitre === 'agresivo' && fc < 280) dH += '<span class="badge-red">🔴 E.060 Cap.4: Sulfatos exige f\'c ≥ 280 kg/cm² y Cemento Tipo V</span><br>';
+
+        // Diseño por Flexión de Voladizo de Zapata
+        var lv = (zUbic === 'centrica') ? (( Math.max(zl, zb) - (c_col2 / 100) ) / 2) : (Math.max(zl, zb) - (c_col2 / 100));
+        var Mu_zap = qu_neta * zb * (lv * lv) / 2; // Ton-m
+        var asFlex = (Mu_zap * 100000) / (0.90 * fy * 0.90 * d_zap);
+        var asMin = 0.0018 * (zb * 100) * zh;
+        var asReqZap = Math.max(asFlex, asMin);
+
+        var ph = parseFloat(el('z_mod_phi').value) || 1.99;
+        var nV = Math.max(5, Math.ceil(asReqZap / ph));
+        var sepZap = ((zb - 0.15) * 100) / Math.max(1, nV - 1);
+        var exc = df + 0.10;
+        var tipoCemTxt = (salitre === 'normal') ? 'Cemento Tipo I' : ((salitre === 'humedo') ? 'Cemento Tipo MS / IP' : 'Cemento Tipo V (Antisulfatos)');
+        
+        el('z_txt_carga').innerText = 'Ps=' + P_serv.toFixed(1) + 'T | Vu.Punz=' + Vu_punz.toFixed(1) + 'T ≤ ØVc=' + phiVc_punz.toFixed(1) + 'T'; 
+        el('z_txt_cemento').innerText = 'Solado 10cm | Usar ' + tipoCemTxt;
+        el('z_txt_rho').innerText = 'Mu=' + Mu_zap.toFixed(2) + 'T·m | As Req: ' + asReqZap.toFixed(2) + ' cm²';
+        el('z_txt_armado').innerText = 'X: ' + nV + ' Ø ' + phiL(ph) + ' @ ' + sepZap.toFixed(0) + 'cm | Y: ' + nV + ' Ø ' + phiL(ph); 
+        el('z_txt_hz').innerText = 'Zanja: -' + exc.toFixed(2) + ' m (Df=' + df.toFixed(2) + 'm)';
+
+        var n12 = Math.max(5, Math.ceil(asReqZap / 1.29));
+        var n58 = Math.max(5, Math.ceil(asReqZap / 1.99));
+        var n34 = Math.max(4, Math.ceil(asReqZap / 2.84));
         el('z_propuestas_container').innerHTML = 
             '<div class="propuestas-title"><span>💡 PROPUESTAS DE PARRILLA (TOCA PARA APLICAR)</span></div>' +
             '<div class="prop-grid">' +
                 '<div class="prop-card best ' + (Math.abs(ph-1.99)<0.1?'active':'') + '" onclick="aplicarPropuestaZapata(1.99)">' +
                     '<span class="prop-tag tag-best">🌟 Mejor Propuesta</span>' +
                     '<div class="prop-main">' + n58 + ' Ø 5/8" en X e Y</div>' +
-                    '<div class="prop-meta">As prov: ' + (n58*1.99).toFixed(2) + ' cm² (Óptimo)</div>' +
+                    '<div class="prop-meta">As prov: ' + (n58*1.99).toFixed(2) + ' cm² (@ ' + (((zb-0.15)*100)/Math.max(1,n58-1)).toFixed(0) + 'cm)</div>' +
                 '</div>' +
                 '<div class="prop-card ' + (Math.abs(ph-1.29)<0.1?'active':'') + '" onclick="aplicarPropuestaZapata(1.29)">' +
-                    '<span class="prop-tag tag-alt">Alternativa 1/2"</span>' +
+                    '<span class="prop-tag tag-alt">Opción Ø 1/2"</span>' +
                     '<div class="prop-main">' + n12 + ' Ø 1/2" en X e Y</div>' +
-                    '<div class="prop-meta">As prov: ' + (n12*1.29).toFixed(2) + ' cm²</div>' +
+                    '<div class="prop-meta">As prov: ' + (n12*1.29).toFixed(2) + ' cm² (@ ' + (((zb-0.15)*100)/Math.max(1,n12-1)).toFixed(0) + 'cm)</div>' +
                 '</div>' +
             '</div>';
 
-        // Memoria de Cálculo Zapata
+        // MEMORIA UNIVERSITARIA PASO A PASO - ZAPATA
+        var a_whitney_z = (nV * ph * fy) / (0.85 * fc * (zb * 100));
+        var phiMn_z = (0.90 * (nV * ph) * fy * (d_zap - a_whitney_z / 2)) / 100000;
         el('mem_zap').innerHTML = 
-            '<div class="memoria-section">1. Cargas y Geotecnia (RNE E.020 / E.050)</div>' +
-            '<div class="memoria-line">• Área Tributaria = ' + aC + ' m² / ' + nC + ' col = <b>' + aTrib.toFixed(2) + ' m²</b><br>' +
-            '• Carga de Servicio (Ps) = ' + aTrib.toFixed(2) + ' × ' + qU + ' kg/m² × ' + p + ' pisos = <b>' + P.toFixed(2) + ' Ton</b><br>' +
-            '• Área Requerida Zapata = (1.15 × ' + P.toFixed(2) + ') / ' + qAdm.toFixed(1) + ' T/m² = <b>' + aR.toFixed(2) + ' m²</b><br>' +
-            '• Presión Actuante (σu) = ' + pA.toFixed(2) + ' T/m² ≤ σadm (' + qAdm.toFixed(1) + ' T/m²) → <b>CUMPLE</b></div>' +
-            '<div class="memoria-section">2. Acero por Flexión y Temperatura (RNE E.060)</div>' +
-            '<div class="memoria-line">• Peralte zapata hz = 60 cm (d = 52.5 cm, Recubrimiento = 7.5 cm)<br>' +
-            '• Cuantía mínima (0.0018·b·h) = <b>' + asMin.toFixed(2) + ' cm²</b><br>' +
-            '• Armado seleccionado: <b>' + nV + ' Ø ' + phiL(ph) + '</b> en ambas direcciones (@ ' + sepZap.toFixed(1) + ' cm).</div>';
+            '<div class="mem-title-main">🎓 MEMORIA DE CÁLCULO DETALLADA: ZAPATA AISLADA</div>' +
+            '<div class="memoria-section">PASO 1: METRADO DE CARGAS GRAVITACIONALES (NORMA RNE E.020)</div>' +
+            '<div class="mem-step">' +
+                '<div class="mem-step-title">1.1 Determinación del Área Tributaria (Atrib):</div>' +
+                'Dividimos el área techada por piso entre el número total de columnas de la planta:' +
+                '<div class="mem-eq">Atrib = Área_Construida / N°_Columnas\nAtrib = ' + aC.toFixed(2) + ' m² / ' + nC + ' col = ' + aTrib.toFixed(2) + ' m²</div>' +
+                '<div class="mem-step-title">1.2 Carga Axial en Servicio Acumulada (Ps) y Última Mayorada (Pu):</div>' +
+                'Multiplicamos el área tributaria por la carga unitaria según uso (' + qU + ' kg/m²) y por el número de niveles (' + p + ' pisos):' +
+                '<div class="mem-eq">Ps = Atrib × q_unitaria × N°_Pisos\nPs = ' + aTrib.toFixed(2) + ' m² × ' + (qU/1000).toFixed(2) + ' Ton/m² × ' + p + ' pisos = ' + P_serv.toFixed(2) + ' Ton\n\nPu = 1.25 × Ps (Criterio E.060 Cap. 9)\nPu = 1.25 × ' + P_serv.toFixed(2) + ' Ton = ' + Pu_zap.toFixed(2) + ' Ton</div>' +
+            '</div>' +
+            '<div class="memoria-section">PASO 2: DIMENSIONAMIENTO GEOTÉCNICO EN PLANTA (NORMA RNE E.050)</div>' +
+            '<div class="mem-step">' +
+                '<div class="mem-step-title">2.1 Conversión de Capacidad Portante Admisible (q_adm):</div>' +
+                '<div class="mem-eq">q_adm = σt (kg/cm²) × 10 = ' + qa.toFixed(2) + ' × 10 = ' + qAdm.toFixed(2) + ' Ton/m²</div>' +
+                '<div class="mem-step-title">2.2 Área de Cimentación Requerida (A_req) y Presión Actuante:</div>' +
+                'Considerando el factor de peso propio y excentricidad por ubicación (' + zUbic.toUpperCase() + ', k = ' + fExc.toFixed(2) + '):' +
+                '<div class="mem-eq">A_req = (k × Ps) / q_adm = (' + fExc.toFixed(2) + ' × ' + P_serv.toFixed(2) + ' Ton) / ' + qAdm.toFixed(2) + ' Ton/m² = ' + aR.toFixed(2) + ' m²\nÁrea Provista (L × B) = ' + zl.toFixed(2) + ' m × ' + zb.toFixed(2) + ' m = ' + (zl*zb).toFixed(2) + ' m²\nσ_actuante = (' + fExc.toFixed(2) + ' × ' + P_serv.toFixed(2) + ') / ' + (zl*zb).toFixed(2) + ' = ' + pA.toFixed(2) + ' Ton/m²</div>' +
+                (pA <= qAdm*1.02 ? '<span class="mem-verdict-ok">✅ VERIFICACIÓN E.050: σ_actuante (' + pA.toFixed(2) + ' T/m²) ≤ q_adm (' + qAdm.toFixed(2) + ' T/m²) → CUMPLE</span>' : '<span class="mem-verdict-err">❌ FALLA E.050: σ_actuante SUPERA q_adm → AUMENTAR L o B</span>') +
+            '</div>' +
+            '<div class="memoria-section">PASO 3: VERIFICACIÓN POR PUNZONAMIENTO BIDIRECCIONAL (E.060 ART. 11.12)</div>' +
+            '<div class="mem-step">' +
+                '<div class="mem-step-title">3.1 Peralte Efectivo (d) y Perímetro Crítico (b0) a d/2 de la cara de columna:</div>' +
+                '<div class="mem-eq">d = hz - Recubrimiento - db = ' + zh + ' - 7.5 - 1.6 = ' + d_zap.toFixed(2) + ' cm\nb0 = 2·(c1 + d) + 2·(c2 + d) = 2·(' + c_col1 + ' + ' + d_zap.toFixed(1) + ') + 2·(' + c_col2 + ' + ' + d_zap.toFixed(1) + ') = ' + b0.toFixed(1) + ' cm</div>' +
+                '<div class="mem-step-title">3.2 Fuerza Cortante Última de Punzonamiento (Vu) vs Resistencia del Concreto (ØVc):</div>' +
+                '<div class="mem-eq">qu_neta = Pu / (L × B) = ' + Pu_zap.toFixed(2) + ' / ' + (zl*zb).toFixed(2) + ' = ' + qu_neta.toFixed(2) + ' Ton/m²\nVu = Pu - qu_neta × [(c1+d)·(c2+d)] = ' + Pu_zap.toFixed(2) + ' - ' + qu_neta.toFixed(2) + ' × ' + areaCritica_m2.toFixed(3) + ' = ' + Vu_punz.toFixed(2) + ' Ton\n\nØVc = Ø × 1.06 × √f\'c × b0 × d = 0.85 × 1.06 × √' + fc + ' × ' + b0.toFixed(1) + ' × ' + d_zap.toFixed(1) + ' / 1000\nØVc = ' + phiVc_punz.toFixed(2) + ' Ton</div>' +
+                (Vu_punz <= phiVc_punz ? '<span class="mem-verdict-ok">✅ VERIFICACIÓN PUNZONAMIENTO: ØVc (' + phiVc_punz.toFixed(2) + ' Ton) ≥ Vu (' + Vu_punz.toFixed(2) + ' Ton) → CUMPLE</span>' : '<span class="mem-verdict-err">❌ FALLA PUNZONAMIENTO: AUMENTAR PERALTE hz</span>') +
+            '</div>' +
+            '<div class="memoria-section">PASO 4: DISEÑO DE ACERO POR FLEXIÓN Y CUANTÍA MÍNIMA (E.060 CAP. 15)</div>' +
+            '<div class="mem-step">' +
+                '<div class="mem-step-title">4.1 Momento Último en la Cara de la Columna (Mu) con volado Lv = ' + lv.toFixed(2) + ' m:</div>' +
+                '<div class="mem-eq">Mu = (qu_neta × B × Lv²) / 2 = (' + qu_neta.toFixed(2) + ' × ' + zb.toFixed(2) + ' × ' + lv.toFixed(2) + '²) / 2 = ' + Mu_zap.toFixed(2) + ' Ton·m</div>' +
+                '<div class="mem-step-title">4.2 Acero por Flexión (As_flex) vs Acero Mínimo de Losa/Zapata (As_mín = 0.0018·B·hz):</div>' +
+                '<div class="mem-eq">As_flex = (Mu × 10⁵) / (Ø × fy × 0.90 × d) = ' + (Mu_zap*100000).toFixed(0) + ' / (0.90 × ' + fy + ' × 0.90 × ' + d_zap.toFixed(1) + ') = ' + asFlex.toFixed(2) + ' cm²\nAs_mín = 0.0018 × ' + (zb*100).toFixed(0) + ' cm × ' + zh + ' cm = ' + asMin.toFixed(2) + ' cm²\nAs_Requerido = máx(As_flex, As_mín) = ' + asReqZap.toFixed(2) + ' cm²</div>' +
+                '<div class="mem-step-title">4.3 Distribución de Varillas y Comprobación del Bloque de Whitney (a):</div>' +
+                '<div class="mem-eq">N° Varillas = As_Req / A_barra = ' + asReqZap.toFixed(2) + ' / ' + ph + ' cm² = ' + (asReqZap/ph).toFixed(2) + ' → Adoptamos ' + nV + ' Ø ' + phiL(ph) + ' (As_prov = ' + (nV*ph).toFixed(2) + ' cm²)\nBloque comprimido a = (As_prov × fy) / (0.85 × f\'c × B) = (' + (nV*ph).toFixed(2) + ' × ' + fy + ') / (0.85 × ' + fc + ' × ' + (zb*100).toFixed(0) + ') = ' + a_whitney_z.toFixed(2) + ' cm\nØMn = 0.90 × As_prov × fy × (d - a/2) = ' + phiMn_z.toFixed(2) + ' Ton·m ≥ Mu (' + Mu_zap.toFixed(2) + ' Ton·m)</div>' +
+                '<span class="mem-verdict-ok">✅ ARMADO FINAL: Parrilla Inferior ' + nV + ' Ø ' + phiL(ph) + ' @ ' + sepZap.toFixed(0) + ' cm en X e Y</span>' +
+            '</div>';
 
         sumarMetros(ph, nV * (zl - 0.15) + nV * (zb - 0.15));
+        volConcretoElem = zl * zb * (zh / 100);
 
         el('ficha_tecnica_live').innerHTML = 
-            '<b>🏛️ ELEMENTO: ZAPATA AISLADA (RNE E.050 / E.060)</b><br>' +
-            '• Dimensiones en planta: <b>L = ' + zl.toFixed(2) + ' m × B = ' + zb.toFixed(2) + ' m</b><br>' +
-            '• Peralte de concreto (hz): <b>0.60 m</b> + Solado 0.10 m<br>' +
-            '• Cota de excavación total: <b>-' + exc.toFixed(2) + ' m</b><br>' +
+            '<b>🏛️ ELEMENTO: ZAPATA ' + zUbic.toUpperCase() + ' (' + p + ' PISOS - RNE E.050/E.060)</b><br>' +
+            '• Dimensiones: <b>L = ' + zl.toFixed(2) + ' m × B = ' + zb.toFixed(2) + ' m × hz = ' + zh + ' cm</b><br>' +
+            '• Cota de excavación total: <b>-' + exc.toFixed(2) + ' m</b> (Incluye solado 10 cm)<br>' +
             '• Parrilla inferior X / Y: <b>' + nV + ' Ø ' + phiL(ph) + ' @ ' + sepZap.toFixed(0) + ' cm</b><br>' +
-            '• Concreto: <b>f\'c = ' + fc + ' kg/cm²</b> | Recubrimiento: <b>7.5 cm</b>';
+            '• Concreto: <b>f\'c = ' + fc + ' kg/cm² (' + tipoCemTxt + ')</b> | Recubrimiento: <b>7.5 cm</b>';
 
-        D3.zl = zl; D3.zb = zb; D3.zh = 60; D3.df = df; D3.nE = nV; D3.zpPhi = ph; 
+        D3.zl = zl; D3.zb = zb; D3.zh = zh; D3.df = df; D3.nE = nV; D3.zpPhi = ph; D3.zUbic = zUbic;
         rZap(zl, zb, nV, ph);
     }
 
     // ==================== 2. COLUMNAS ====================
     else if(cMod === 'columnas'){
         var sis = el('c_sis').value;
+        var ubic = el('c_ubic').value;
         var ch = parseFloat(el('c_h').value) || 2.8;
         var cb = parseFloat(el('c_mod_b').value) || 30;
         var ct = parseFloat(el('c_mod_t').value) || 35;
-        
-        if(t === 'sistema' || t === 'all'){
-            cb = (sis === 'portico') ? 30 : 15; 
-            ct = (sis === 'portico') ? 35 : 30; 
-            el('c_mod_b').value = cb; 
+
+        var Ps_ton = (aTrib * qU * p) / 1000;
+        var factorMayoracion = (ubic === 'esquina') ? 1.35 : 1.25;
+        var factorBlanco = (ubic === 'central') ? 0.45 : ((ubic === 'perimetral') ? 0.35 : 0.30);
+        var Pu_ton = Ps_ton * factorMayoracion;
+
+        var agReqGravedad = (Ps_ton * 1000) / (factorBlanco * fc);
+
+        if(t === 'sistema' || t === 'pisos' || t === 'area' || t === 'ncol' || t === 'uso' || t === 'ubic' || t === 'all'){
+            var minB = (sis === 'portico') ? 25 : 15;
+            var minArea = (sis === 'portico') ? Math.max(1000, agReqGravedad) : Math.max(450, agReqGravedad);
+            var ladoBase = Math.max(minB, Math.ceil(Math.sqrt(minArea) / 5) * 5);
+            cb = (sis === 'confinada') ? Math.max(15, Math.min(25, ladoBase - 5)) : ladoBase;
+            ct = Math.max(ladoBase, Math.ceil((minArea / cb) / 5) * 5);
+            el('c_mod_b').value = cb;
             el('c_mod_t').value = ct;
         }
         
@@ -781,30 +1073,66 @@ function runEng(t){
         var phE = parseFloat(el('c_phi_esq').value) || 1.99;
         var phM = parseFloat(el('c_phi_mid').value) || 1.29;
         
-        if(sis === 'portico'){ if(cb < 25 || ct < 25) dH += '<span class="badge-red">🔴 E.060: Lado Mín 25cm (Pórticos)</span><br>'; }
-        else { if(cb < 15 || ct < 15) dH += '<span class="badge-red">🔴 E.070: Lado Mín 15cm (Confinada)</span><br>'; }
-        
-        var asR = Math.max(0.01 * a, 4.0);
+        if(sis === 'portico'){
+            if(cb < 25 || ct < 25) dH += '<span class="badge-red">🔴 E.060: Lado Mín 25cm (Pórticos)</span><br>';
+            if(a < 1000) dH += '<span class="badge-red">🔴 E.060: Área Mín 1000cm²</span><br>';
+        } else {
+            if(cb < 15 || ct < 15) dH += '<span class="badge-red">🔴 E.070: Lado Mín 15cm (Confinada)</span><br>';
+        }
+
+        // Esbeltez (E.060 Art. 10.10): r = 0.30 * min(b, t), k = 1.0
+        var r_giro = 0.30 * Math.min(cb, ct);
+        var kl_r = (1.0 * (ch * 100)) / r_giro;
+        var fEsbeltez = (kl_r > 34) ? Math.min(1.5, 1 + (kl_r - 34) * 0.015) : 1.0;
+
+        var capConcretoPuro_kg = 0.56 * 0.85 * fc * a;
+        var asReqAxial = 0;
+        if(Pu_ton * 1000 * fEsbeltez > capConcretoPuro_kg){
+            asReqAxial = ((Pu_ton * 1000 * fEsbeltez) - capConcretoPuro_kg) / (0.56 * (fy - 0.85 * fc));
+        }
+        var factorMomentoSismo = ((ubic === 'esquina') ? 1.30 : ((ubic === 'perimetral') ? 1.15 : 1.05)) * fEsbeltez;
+        var asR = Math.max(0.01 * a * factorMomentoSismo, asReqAxial, 4.0);
+
         var asRs = Math.max(0, asR - 4 * phE);
         var nM = 0;
         if(asRs > 0){ nM = Math.ceil(asRs / phM); if(nM % 2 !== 0) nM++; }
         
         var asTotal = 4 * phE + nM * phM;
         var rR = (asTotal / a) * 100;
+        var phiPn_ton = (0.80 * 0.70 * (0.85 * fc * (a - asTotal) + fy * asTotal)) / 1000;
+
         var dbEsq = phiDb(phE);
         var pat = Math.max(30, Math.ceil((dbEsq * 16) / 5) * 5);
-        
-        if(rR >= 1.0 && rR <= 6.0) dH += '<span class="badge-green">🟢 E.060: Cuantía ' + rR.toFixed(2) + '% OK</span><br>';
-        else dH += '<span class="badge-red">🔴 E.060: Cuantía ' + rR.toFixed(1) + '% fuera de rango (1%-6%)</span><br>';
+        // Longitud de traslape en compresión/tracción E.060 Cap. 12 (Clase B = 1.3 Ld)
+        var ldTraslape = Math.max(45, Math.ceil((0.075 * fy / Math.sqrt(fc)) * dbEsq * 1.3 / 5) * 5);
+
+        // Verificación Sísmica Columna Fuerte - Viga Débil (E.060 Art. 21.6.2: Sum Mnc >= 1.2 Sum Mnb)
+        var d_col = ct - 5.0;
+        var Mn_col = (asTotal * 0.5 * fy * (d_col * 0.85)) / 100000 + (Pu_ton * (ct / 100) * 0.25);
+        var sumMnc = 2 * Mn_col;
+        var vh_ref = parseFloat(el('v_mod_h').value) || 45;
+        var Mn_vig_est = (3 * 1.99 * fy * ((vh_ref - 6) * 0.90)) / 100000;
+        var ratioCFVD = sumMnc / Math.max(1, 1.5 * Mn_vig_est);
+
+        if(Pu_ton > phiPn_ton){
+            dH += '<span class="badge-red">🔴 E.060: Falla Compresión (' + Pu_ton.toFixed(0) + 'T > ØPn ' + phiPn_ton.toFixed(0) + 'T). Aumente b×t</span><br>';
+        } else {
+            dH += '<span class="badge-green">🟢 E.060: Soporta ' + p + ' pisos (Pu=' + Pu_ton.toFixed(0) + 'T ≤ ØPn=' + phiPn_ton.toFixed(0) + 'T)</span><br>';
+        }
+
+        if(kl_r > 34) dH += '<span class="badge-orange">⚠️ E.060: Columna Esbelta (kl/r=' + kl_r.toFixed(0) + ' > 34, Amplif. ×' + fEsbeltez.toFixed(2) + ')</span><br>';
+        if(rR >= 1.0 && rR <= 6.0) dH += '<span class="badge-green">🟢 E.060: Cuantía ' + rR.toFixed(2) + '% OK | CF-VD=' + ratioCFVD.toFixed(2) + '</span><br>';
+        else dH += '<span class="badge-red">🔴 E.060: Cuantía ' + rR.toFixed(1) + '% > 6% (Aumente b×t)</span><br>';
         
         var sConf = Math.min(Math.floor(8 * dbEsq), 10);
         var loConf = Math.max(cb, ct, Math.ceil((ch * 100) / 6), 45);
         
         el('c_txt_estr').innerText = '1@5, 6@' + sConf + ', R@20'; 
-        el('c_txt_ag').innerText = 'Ag: ' + a + ' cm² | As Mín (1%): ' + asR.toFixed(2) + ' cm²';
+        el('c_txt_ag').innerText = 'Pu=' + Pu_ton.toFixed(1) + 'T (' + p + 'p) | ØPn=' + phiPn_ton.toFixed(1) + 'T | As=' + asTotal.toFixed(1) + 'cm²';
+        el('c_txt_traslape').innerText = 'Traslape Ld = ' + ldTraslape + ' cm (en Tercio Central)';
+        el('c_txt_esbeltez').innerText = 'kl/r = ' + kl_r.toFixed(1) + (kl_r <= 34 ? ' (Corta)' : ' (Esbelta)') + ' | Lo = ' + loConf + 'cm';
         el('c_txt_armado').innerHTML = '<span style="color:' + phiC(phE) + '">4 Ø ' + phiL(phE) + ' (Pata: ' + pat + 'cm)</span>' + (nM > 0 ? '<br><span style="color:' + phiC(phM) + '">+ ' + nM + ' Ø ' + phiL(phM) + '</span>' : '');
         
-        // Propuestas de Armado en Columna
         var nM_opt1 = Math.max(0, Math.ceil((asR - 4 * 1.99) / 1.29)); if(nM_opt1 % 2 !== 0) nM_opt1++;
         var nM_opt2 = Math.max(0, Math.ceil((asR - 4 * 2.84) / 1.99)); if(nM_opt2 % 2 !== 0) nM_opt2++;
         el('c_propuestas_container').innerHTML = 
@@ -822,88 +1150,147 @@ function runEng(t){
                 '</div>' +
             '</div>';
 
+        // MEMORIA UNIVERSITARIA PASO A PASO - COLUMNA
         el('mem_col').innerHTML = 
-            '<div class="memoria-section">1. Geometría y Cuantía (RNE E.060 Cap. 21)</div>' +
-            '<div class="memoria-line">• Área bruta Ag = ' + cb + ' × ' + ct + ' = <b>' + a + ' cm²</b><br>' +
-            '• Acero mínimo (1.0% Ag) = <b>' + asR.toFixed(2) + ' cm²</b> | Acero provisto = <b>' + asTotal.toFixed(2) + ' cm² (' + rR.toFixed(2) + '%)</b><br>' +
-            '• Longitud de pata exterior en cimentación (16·db) = <b>' + pat + ' cm</b></div>' +
-            '<div class="memoria-section">2. Zona de Confinamiento Sísmico (Lo)</div>' +
-            '<div class="memoria-line">• Longitud confinada Lo = máx(b, H/6, 45cm) = <b>' + loConf + ' cm</b><br>' +
-            '• Espaciamiento en extremos So = mín(8·db, d/2, 10cm) = <b>' + sConf + ' cm</b><br>' +
-            '• Distribución: <b>1 @ 5 cm, 6 @ ' + sConf + ' cm, Resto @ 20 cm</b> en cada extremo.</div>';
+            '<div class="mem-title-main">🎓 MEMORIA DE CÁLCULO DETALLADA: COLUMNA SISMORRESISTENTE</div>' +
+            '<div class="memoria-section">PASO 1: BAJADA DE CARGAS Y PREDIMENSIONAMIENTO (RNE E.020 / BLANCO BLASCO)</div>' +
+            '<div class="mem-step">' +
+                '<div class="mem-step-title">1.1 Carga Axial en Servicio (Ps) y Carga Mayorada Última (Pu):</div>' +
+                'Para una columna en posición <b>' + ubic.toUpperCase() + '</b> soportando <b>' + p + ' pisos</b> (Atrib = ' + aTrib.toFixed(2) + ' m²):' +
+                '<div class="mem-eq">Ps = Atrib × q_uso × N°_Pisos = ' + aTrib.toFixed(2) + ' × ' + (qU/1000).toFixed(2) + ' × ' + p + ' = ' + Ps_ton.toFixed(2) + ' Ton\nPu = ' + factorMayoracion.toFixed(2) + ' × Ps = ' + factorMayoracion.toFixed(2) + ' × ' + Ps_ton.toFixed(2) + ' = ' + Pu_ton.toFixed(2) + ' Ton</div>' +
+                '<div class="mem-step-title">1.2 Área Bruta Requerida por Gravedad y Sismo (Ag_req):</div>' +
+                '<div class="mem-eq">Ag_req = Ps / (' + factorBlanco.toFixed(2) + ' × f\'c) = ' + (Ps_ton*1000).toFixed(0) + ' kg / (' + factorBlanco.toFixed(2) + ' × ' + fc + ') = ' + agReqGravedad.toFixed(1) + ' cm²\nÁrea Bruta Provista (b × t) = ' + cb + ' cm × ' + ct + ' cm = ' + a + ' cm²</div>' +
+            '</div>' +
+            '<div class="memoria-section">PASO 2: EVALUACIÓN DE ESBELTEZ Y PANDEO (RNE E.060 ART. 10.10)</div>' +
+            '<div class="mem-step">' +
+                '<div class="mem-step-title">2.1 Radio de Giro (r) y Relación de Esbeltez (k·lu / r):</div>' +
+                '<div class="mem-eq">r = 0.30 × mín(b, t) = 0.30 × ' + Math.min(cb, ct) + ' cm = ' + r_giro.toFixed(2) + ' cm\nk·lu / r = (1.0 × ' + (ch*100).toFixed(0) + ' cm) / ' + r_giro.toFixed(2) + ' cm = ' + kl_r.toFixed(2) + '</div>' +
+                (kl_r <= 34 ? '<span class="mem-verdict-ok">✅ COLUMNA CORTA: k·lu/r (' + kl_r.toFixed(1) + ') ≤ 34 → No sufre pandeo secundario</span>' : '<span class="mem-verdict-err">⚠️ COLUMNA ESBELTA: k·lu/r (' + kl_r.toFixed(1) + ') > 34 → Amplificación δns = ' + fEsbeltez.toFixed(2) + '</span>') +
+            '</div>' +
+            '<div class="memoria-section">PASO 3: RESISTENCIA A COMPRESIÓN AXIAL Y CUANTÍA (E.060 ART. 10.3.5)</div>' +
+            '<div class="mem-step">' +
+                '<div class="mem-step-title">3.1 Ecuación Normativa de Capacidad Axial Nominal Máxima (ØPn_máx con Ø = 0.70):</div>' +
+                '<div class="mem-eq">ØPn_máx = 0.80 × Ø × [ 0.85 × f\'c × (Ag - Ast) + fy × Ast ]\nAst_provisto = 4×(' + phE + ') + ' + nM + '×(' + phM + ') = ' + asTotal.toFixed(2) + ' cm² (Cuantía ρ = ' + rR.toFixed(2) + '%)\nØPn_máx = 0.80 × 0.70 × [ 0.85 × ' + fc + ' × (' + a + ' - ' + asTotal.toFixed(2) + ') + ' + fy + ' × ' + asTotal.toFixed(2) + ' ] / 1000\nØPn_máx = ' + phiPn_ton.toFixed(2) + ' Ton</div>' +
+                (phiPn_ton >= Pu_ton ? '<span class="mem-verdict-ok">✅ VERIFICACIÓN AXIAL: ØPn_máx (' + phiPn_ton.toFixed(2) + ' Ton) ≥ Pu (' + Pu_ton.toFixed(2) + ' Ton) → CUMPLE</span>' : '<span class="mem-verdict-err">❌ FALLA POR APLASTAMIENTO: ØPn_máx < Pu → AUMENTAR SECCIÓN</span>') +
+            '</div>' +
+            '<div class="memoria-section">PASO 4: CONFINAMIENTO SÍSMICO Y LONGITUD DE TRASLAPE (E.060 CAP. 21)</div>' +
+            '<div class="mem-step">' +
+                '<div class="mem-step-title">4.1 Zona de Confinamiento en Nudos (Lo) y Espaciamiento (So):</div>' +
+                '<div class="mem-eq">Lo = máx(t, H_libre/6, 45 cm) = máx(' + ct + ', ' + ((ch*100)/6).toFixed(1) + ', 45) = ' + loConf + ' cm\nSo = mín(8·db, 0.5·b, 10 cm) = mín(' + (8*dbEsq).toFixed(1) + ', ' + (0.5*cb).toFixed(1) + ', 10) = ' + sConf + ' cm</div>' +
+                '<div class="mem-step-title">4.2 Longitud de Empalme Traslapado Clase B (Ld_traslape) en Tercio Central:</div>' +
+                '<div class="mem-eq">Ld = 1.3 × (0.075 × fy / √f\'c) × db = 1.3 × (0.075 × ' + fy + ' / √' + fc + ') × ' + dbEsq + ' ≈ ' + ldTraslape + ' cm\nPata de Anclaje en Zapata (16·db) = 16 × ' + dbEsq + ' cm ≈ ' + pat + ' cm</div>' +
+                '<span class="mem-verdict-ok">✅ ESTRIBOS Ø 3/8": 1 @ 5 cm, 6 @ ' + sConf + ' cm, Resto @ 20 cm en cada extremo</span>' +
+            '</div>';
 
         sumarMetros(phE, 4 * (ch + 0.6 + pat / 100));
         sumarMetros(phM, nM * (ch + 0.6 + pat / 100));
         var perimEstCol = 2 * ((cb - 8) + (ct - 8)) / 100 + 0.20;
         sumarMetros(0.71, 22 * perimEstCol);
+        volConcretoElem = (cb / 100) * (ct / 100) * ch;
 
         el('ficha_tecnica_live').innerHTML = 
-            '<b>🏗️ ELEMENTO: COLUMNA ESTRUCTURAL (RNE E.060)</b><br>' +
+            '<b>🏗️ ELEMENTO: COLUMNA (' + p + ' PISOS - UBIC. ' + ubic.toUpperCase() + ')</b><br>' +
             '• Sección transversal: <b>' + cb + ' cm × ' + ct + ' cm</b> (H libre = ' + ch.toFixed(2) + ' m)<br>' +
+            '• Demanda Axial Pu: <b>' + Pu_ton.toFixed(1) + ' Ton</b> vs Capacidad ØPn: <b>' + phiPn_ton.toFixed(1) + ' Ton</b><br>' +
             '• Acero longitudinal: <b>4 Ø ' + phiL(phE) + ' (esquinas) ' + (nM > 0 ? '+ ' + nM + ' Ø ' + phiL(phM) + ' (intermedios)' : '') + '</b><br>' +
-            '• Pata de anclaje exterior (16db): <b>' + pat + ' cm</b><br>' +
-            '• Estribos Ø 3/8": <b>1@5, 6@' + sConf + ', R@20 cm</b><br>' +
-            '• Concreto: <b>f\'c = ' + fc + ' kg/cm²</b> | Recubrimiento: <b>4.0 cm</b>';
+            '• Traslape en tercio central (Ld): <b>' + ldTraslape + ' cm</b> | Pata en zapata: <b>' + pat + ' cm</b><br>' +
+            '• Estribos Ø 3/8": <b>1@5, 6@' + sConf + ', R@20 cm</b> (Zona Lo = ' + loConf + ' cm)';
 
-        D3.cx = cb; D3.cy = ct; D3.ch = ch; D3.nE = 4; D3.nM = nM; D3.cPhiE = phE; D3.cPhiM = phM; D3.cPata = pat; D3.sLimC = sConf; 
+        D3.cx = cb; D3.cy = ct; D3.ch = ch; D3.nE = 4; D3.nM = nM; D3.cPhiE = phE; D3.cPhiM = phM; D3.cPata = pat; D3.sLimC = sConf; D3.ldCol = ldTraslape;
         rCol(cb, ct, 4, phE, phM, nM, pat);
     }
 
-    // ==================== 3. VIGAS (CON PROPUESTAS Y MULTICAPA EXACTA) ====================
+    // ==================== 3. VIGAS ====================
     else if(cMod === 'vigas'){
         var l = parseFloat(el('v_luz').value) || 5.0;
-        var cg = el('v_carga').value;
+        var bTrib = parseFloat(el('v_btrib').value) || 3.2;
+        var wLosa_kg = parseFloat(el('v_losa').value) || 300;
+        var wTabique_kgm = parseFloat(el('v_tabique').value) || 350;
+        var rol = el('v_rol').value;
         var vb = parseFloat(el('v_mod_b').value) || 25;
         var vh = parseFloat(el('v_mod_h').value) || 45;
-        
-        if(t === 'luz' || t === 'carga' || t === 'all'){
-            vh = Math.max(30, Math.ceil((l / (cg === 'pesada' ? 10 : 11.5)) * 100 / 5) * 5); 
+
+        if(t === 'luz' || t === 'carga' || t === 'pisos' || t === 'uso' || t === 'all'){
+            var divL = (rol === 'voladizo') ? 8.0 : ((rol === 'principal') ? (qU > 1000 ? 10.0 : 11.0) : 13.0);
+            var hBase = (l * 100 / divL) * (1 + Math.max(0, p - 2) * 0.025);
+            vh = Math.max(30, Math.ceil(hBase / 5) * 5); 
             vb = Math.max(25, Math.ceil((vh / 2) / 5) * 5); 
             el('v_mod_b').value = vb; 
             el('v_mod_h').value = vh;
             vPropActiva = null;
         }
-        if(t === 'acero' || t === 'geom'){
+        if(t === 'acero' || t === 'geom' || t === 'btrib' || t === 'losa' || t === 'tabique'){
             vPropActiva = null;
         }
+
+        // Metrado real de Cargas Muertas (CM) y Cargas Vivas (CV) por metro lineal de viga (RNE E.020)
+        var wAcabados_m2 = 0.10; // 100 kg/m2 piso terminado
+        var wLosa_Tm2 = (wLosa_kg / 1000) + wAcabados_m2;
+        var wPesoPropio_Tm = (vb / 100) * (vh / 100) * 2.40;
+        var wMuro_Tm = wTabique_kgm / 1000;
+        var wCM_Tm = (wLosa_Tm2 * bTrib) + wPesoPropio_Tm + wMuro_Tm;
+
+        var wCV_m2 = (qU <= 1000) ? 0.20 : ((qU <= 1300) ? 0.40 : 0.50);
+        var wCV_Tm = wCV_m2 * bTrib;
+
+        // Carga última mayorada wu = 1.4 CM + 1.7 CV (E.060 Cap. 9)
+        var wU_grav = 1.4 * wCM_Tm + 1.7 * wCV_Tm;
+        var factorSismoPisos = (rol === 'principal') ? (1.0 + Math.max(0, p - 1) * 0.08 * (zSismo / 0.45)) : 1.0;
         
+        var divDeflex = (rol === 'voladizo') ? 8 : 14;
         if(vb < 25) dH += '<span class="badge-red">🔴 E.060: Ancho mín 25cm (Sismo)</span><br>';
-        if(vh < (l * 100) / 14) dH += '<span class="badge-red">🔴 E.060: Peralte h < L/14 (Deflexión)</span><br>';
-        else dH += '<span class="badge-green">🟢 E.060: Peralte h=' + vh + 'cm OK</span><br>';
+        if(vh < (l * 100) / divDeflex) dH += '<span class="badge-red">🔴 E.060: Peralte h < L/' + divDeflex + ' (Deflexión)</span><br>';
+        else dH += '<span class="badge-green">🟢 E.060: Peralte h=' + vh + 'cm OK (' + p + ' pisos)</span><br>';
         
         var dE = Math.max(10, vh - 6);
-        var wU = (cg === 'pesada') ? 4.2 : 2.6;
-        var MuNeg = (wU * l * l) / 8;
-        var MuPos = MuNeg * 1.15;
+        var MuNeg = (rol === 'voladizo') ? ((wU_grav * l * l) / 2) : (((wU_grav * l * l) / 9) * factorSismoPisos);
+        var MuPos = (rol === 'voladizo') ? (MuNeg * 0.35) : (((wU_grav * l * l) / 11) * (rol === 'principal' ? (1 + Math.max(0, p - 1) * 0.04) : 1.0));
         var asMin = (0.7 * Math.sqrt(fc) / fy) * vb * dE;
         
-        var asReqSup = Math.max((MuNeg * 100000) / (0.9 * fy * 0.88 * dE), asMin);
-        var asReqInf = Math.max((MuPos * 100000) / (0.9 * fy * 0.88 * dE), asMin);
+        // Cálculo de acero con iteración de bloque de Whitney (a)
+        function calcAsExacto(Mu_tm){
+            var asEst = (Mu_tm * 100000) / (0.90 * fy * 0.90 * dE);
+            for(var it = 0; it < 4; it++){
+                var a_it = (asEst * fy) / (0.85 * fc * vb);
+                var brazo = Math.max(0.5 * dE, dE - a_it / 2);
+                asEst = (Mu_tm * 100000) / (0.90 * fy * brazo);
+            }
+            return Math.max(asEst, asMin);
+        }
+
+        var asReqSup = calcAsExacto(MuNeg);
+        var asReqInf = calcAsExacto(MuPos);
         
+        // Verificación por Fuerza Cortante (E.060 Cap. 11)
+        var Vu_cortante = (rol === 'voladizo') ? (wU_grav * l) : (1.15 * wU_grav * l / 2);
+        var phiVc_viga = (0.85 * 0.53 * Math.sqrt(fc) * vb * dE) / 1000; // Ton
+        var Vs_req_ton = Math.max(0, (Vu_cortante - phiVc_viga) / 0.85);
+        var Av_est = 2 * 0.71; // 2 ramas Ø 3/8" = 1.42 cm2
+        var sReqCortante = (Vs_req_ton > 0.1) ? Math.floor((Av_est * fy * dE) / (Vs_req_ton * 1000)) : 25;
+        var sLim = Math.max(6, Math.min(Math.floor(dE / 4), 10, sReqCortante));
+        var phiVn_total = phiVc_viga + (0.85 * Av_est * fy * dE) / (sLim * 1000);
+
+        if(Vu_cortante > phiVn_total) dH += '<span class="badge-red">🔴 E.060: Falla Cortante (Vu=' + Vu_cortante.toFixed(1) + 'T > ØVn=' + phiVn_total.toFixed(1) + 'T)</span><br>';
+        else dH += '<span class="badge-green">🟢 E.060: Cortante OK (Vu=' + Vu_cortante.toFixed(1) + 'T ≤ ØVn=' + phiVn_total.toFixed(1) + 'T)</span><br>';
+
         var phS = parseFloat(el('v_phi_sup').value) || 1.99;
         var phI = parseFloat(el('v_phi_inf').value) || 1.99;
         var p_piel = parseFloat(el('v_phi_piel').value) || 0;
         var phP = p_piel > 0 ? p_piel : (vh >= 60 ? 1.29 : 0);
 
-        // GENERADOR AUTOMÁTICO DE PROPUESTAS DE ARMADO EN VIGAS
         var max58 = maxVarillasPorCapa(vb, 1.99);
         var max34 = maxVarillasPorCapa(vb, 2.84);
         var max12 = maxVarillasPorCapa(vb, 1.29);
 
         var nS_58 = Math.max(2, Math.ceil(asReqSup / 1.99));
         var nI_58 = Math.max(2, Math.ceil(asReqInf / 1.99));
-
         var nS_34 = Math.max(2, Math.ceil(asReqSup / 2.84));
         var nI_34 = Math.max(2, Math.ceil(asReqInf / 2.84));
-
         var nS_12 = Math.max(2, Math.ceil(asReqSup / 1.29));
         var nI_12 = Math.max(2, Math.ceil(asReqInf / 1.29));
-
-        // Propuesta Combinada (2 Ø 5/8" base + refuerzo Ø 1/2")
         var nS_comb12 = Math.max(0, Math.ceil((asReqSup - 2 * 1.99) / 1.29));
         var nI_comb12 = Math.max(0, Math.ceil((asReqInf - 2 * 1.99) / 1.29));
 
-        // Determinar cuál es la MEJOR PROPUESTA (que entre en 1 sola capa sin congestión)
         var bestIs34 = (nS_58 > max58 || nI_58 > max58) && (nS_34 <= max34 && nI_34 <= max34);
 
         var supBars = [], infBars = [];
@@ -941,32 +1328,27 @@ function runEng(t){
             dH += '<span class="badge-green">🟢 E.060: Espaciamiento en 1 Sola Capa OK</span><br>';
         }
 
-        // Renderizar tarjetas de Propuestas Interactivas
         el('v_propuestas_container').innerHTML = 
             '<div class="propuestas-title">' +
                 '<span>💡 PROPUESTAS DE ARMADO (TOCA UNA OPCIÓN)</span>' +
                 '<span style="color:var(--primary-cyan); font-size:9.5px;">Máx ' + max58 + ' var/capa</span>' +
             '</div>' +
             '<div class="prop-grid">' +
-                // Propuesta 1: Óptima 1 sola capa o Estándar 5/8"
                 '<div class="prop-card ' + (!bestIs34 ? 'best' : '') + ' ' + (vPropActiva===null && Math.abs(phS-1.99)<0.1 ? 'active' : '') + '" onclick="aplicarPropuestaViga(\'simple\', 1.99, 0, 0, 0, 1.99, 0, 0, 0)">' +
                     '<span class="prop-tag ' + (!bestIs34 ? 'tag-best' : 'tag-alt') + '">' + (!bestIs34 ? '🌟 Mejor Propuesta' : 'Opción Ø 5/8"') + '</span>' +
                     '<div class="prop-main">Sup: ' + nS_58 + 'Ø5/8" | Inf: ' + nI_58 + 'Ø5/8"</div>' +
                     '<div class="prop-meta">' + (nS_58<=max58 && nI_58<=max58 ? '✅ Entra en 1 sola capa' : '⚠️ Requiere 2 capas en b='+vb+'cm') + '</div>' +
                 '</div>' +
-                // Propuesta 2: Sin congestión en 3/4" (1 sola capa)
                 '<div class="prop-card ' + (bestIs34 ? 'best' : '') + ' ' + (vPropActiva===null && Math.abs(phS-2.84)<0.1 ? 'active' : '') + '" onclick="aplicarPropuestaViga(\'simple\', 2.84, 0, 0, 0, 2.84, 0, 0, 0)">' +
                     '<span class="prop-tag ' + (bestIs34 ? 'tag-best' : 'tag-alt') + '">' + (bestIs34 ? '🌟 Mejor Propuesta (1 Capa)' : 'Opción Ø 3/4" (1 Capa)') + '</span>' +
                     '<div class="prop-main">Sup: ' + nS_34 + 'Ø3/4" | Inf: ' + nI_34 + 'Ø3/4"</div>' +
                     '<div class="prop-meta">✅ ' + (nS_34<=max34 ? '1 sola capa libre para concreto' : 'Alta capacidad') + '</div>' +
                 '</div>' +
-                // Propuesta 3: Armado Combinado (2Ø5/8" + Bastones Ø1/2")
                 '<div class="prop-card ' + (vPropActiva!==null ? 'active' : '') + '" onclick="aplicarPropuestaViga(\'comb\', 1.99, 2, 1.29, ' + nS_comb12 + ', 1.99, 2, 1.29, ' + nI_comb12 + ')">' +
                     '<span class="prop-tag tag-warn">🔄 Propuesta Combinada</span>' +
                     '<div class="prop-main">2Ø5/8" + ' + nS_comb12 + 'Ø1/2" / +' + nI_comb12 + 'Ø1/2"</div>' +
-                    '<div class="prop-meta">Acero corrido + bastones (Ahorro $)</div>' +
+                    '<div class="prop-meta">2 corridas + bastones (Ahorro $)</div>' +
                 '</div>' +
-                // Propuesta 4: Armado con Ø 1/2"
                 '<div class="prop-card ' + (vPropActiva===null && Math.abs(phS-1.29)<0.1 ? 'active' : '') + '" onclick="aplicarPropuestaViga(\'simple\', 1.29, 0, 0, 0, 1.29, 0, 0, 0)">' +
                     '<span class="prop-tag tag-alt">Opción Ø 1/2"</span>' +
                     '<div class="prop-main">Sup: ' + nS_12 + 'Ø1/2" | Inf: ' + nI_12 + 'Ø1/2"</div>' +
@@ -974,39 +1356,62 @@ function runEng(t){
                 '</div>' +
             '</div>';
 
-        var sLim = Math.min(Math.floor(dE / 4), 10);
         var zConfViga = 2 * vh;
+        var L_bastonSup = (l / 3).toFixed(2);
+        var L_bastonInf = (l - 2 * (l / 5)).toFixed(2);
         
+        el('v_txt_wu').innerText = 'wu = ' + wU_grav.toFixed(2) + ' T/m (CM=' + wCM_Tm.toFixed(2) + ', CV=' + wCV_Tm.toFixed(2) + ')';
         el('v_txt_estr').innerText = '1@5, 8@' + sLim + ', R@20'; 
-        el('v_txt_as').innerText = 'Mu(-)=' + MuNeg.toFixed(1) + ' T·m | As Req: ' + asReqSup.toFixed(2) + ' / ' + asReqInf.toFixed(2) + ' cm²';
+        el('v_txt_as').innerText = 'As: ' + asReqSup.toFixed(2) + ' / ' + asReqInf.toFixed(2) + 'cm² | Bastón Sup L/3=' + L_bastonSup + 'm';
+        el('v_txt_cortante').innerText = 'Vu = ' + Vu_cortante.toFixed(1) + 'T ≤ ØVn = ' + phiVn_total.toFixed(1) + 'T (ØVc=' + phiVc_viga.toFixed(1) + 'T)';
         el('v_txt_acero').innerHTML = txtAcero;
-        
+
+        var a_sup_w = (asReqSup * fy) / (0.85 * fc * vb);
+        var a_inf_w = (asReqInf * fy) / (0.85 * fc * vb);
+        var rhoMax = 0.75 * (0.85 * 0.85 * (fc / fy) * (6000 / (6000 + fy)));
+
+        // MEMORIA UNIVERSITARIA PASO A PASO - VIGA
         el('mem_vig').innerHTML = 
-            '<div class="memoria-section">1. Diseño por Flexión y Control de Congestión (RNE E.060)</div>' +
-            '<div class="memoria-line">• Luz libre L = ' + l.toFixed(2) + ' m | Peralte efectivo d = ' + dE + ' cm<br>' +
-            '• Momento Último Negativo Mu(-) = <b>' + MuNeg.toFixed(2) + ' T·m</b> → As req(-) = <b>' + asReqSup.toFixed(2) + ' cm²</b><br>' +
-            '• Momento Último Positivo Mu(+) = <b>' + MuPos.toFixed(2) + ' T·m</b> → As req(+) = <b>' + asReqInf.toFixed(2) + ' cm²</b><br>' +
-            '• Acero Mínimo E.060 = <b>' + asMin.toFixed(2) + ' cm²</b><br>' +
-            '• Máximo de varillas por capa para b=' + vb + ' cm (espacio libre ≥ 2.5cm): <b>' + max58 + ' varillas</b>.</div>' +
-            '<div class="memoria-section">2. Diseño por Cortante y Confinamiento Sísmico</div>' +
-            '<div class="memoria-line">• Zona de confinamiento en extremos (2·h) = <b>' + zConfViga + ' cm</b><br>' +
-            '• Espaciamiento límite s = mín(d/4, 8·db, 10cm) = <b>' + sLim + ' cm</b><br>' +
-            '• Distribución de estribos Ø 3/8": <b>1 @ 5 cm, 8 @ ' + sLim + ' cm, Resto @ 20 cm</b>.</div>';
+            '<div class="mem-title-main">🎓 MEMORIA DE CÁLCULO DETALLADA: VIGA DE CONCRETO ARMADO</div>' +
+            '<div class="memoria-section">PASO 1: METRADO DE CARGAS DISTRIBUIDAS (NORMA RNE E.020)</div>' +
+            '<div class="mem-step">' +
+                '<div class="mem-step-title">1.1 Carga Muerta por Metro Lineal (w_CM) con Ancho Tributario Btrib = ' + bTrib.toFixed(2) + ' m:</div>' +
+                '<div class="mem-eq">• Peso Losa + Acabados = (' + (wLosa_kg/1000).toFixed(2) + ' + 0.10 T/m²) × ' + bTrib.toFixed(2) + ' m = ' + (wLosa_Tm2 * bTrib).toFixed(2) + ' Ton/m\n• Peso Propio Viga (' + vb + '×' + vh + ' cm) = ' + (vb/100).toFixed(2) + ' × ' + (vh/100).toFixed(2) + ' × 2.40 T/m³ = ' + wPesoPropio_Tm.toFixed(2) + ' Ton/m\n• Tabiquería de Ladrillo sobre Viga = ' + wMuro_Tm.toFixed(2) + ' Ton/m\nw_CM Total = ' + wCM_Tm.toFixed(2) + ' Ton/m</div>' +
+                '<div class="mem-step-title">1.2 Carga Viva (w_CV) y Carga Última Mayorada (wu = 1.4 CM + 1.7 CV):</div>' +
+                '<div class="mem-eq">w_CV = ' + wCV_m2.toFixed(2) + ' T/m² × ' + bTrib.toFixed(2) + ' m = ' + wCV_Tm.toFixed(2) + ' Ton/m\nwu = 1.4 × (' + wCM_Tm.toFixed(2) + ') + 1.7 × (' + wCV_Tm.toFixed(2) + ') = ' + wU_grav.toFixed(2) + ' Ton/m</div>' +
+            '</div>' +
+            '<div class="memoria-section">PASO 2: ENVOLVENTE DE MOMENTOS Y DISEÑO POR FLEXIÓN (E.060 CAP. 10)</div>' +
+            '<div class="mem-step">' +
+                '<div class="mem-step-title">2.1 Momentos Últimos de Diseño para Luz L = ' + l.toFixed(2) + ' m (' + rol.toUpperCase() + '):</div>' +
+                '<div class="mem-eq">Mu(-) Apoyos = ' + MuNeg.toFixed(2) + ' Ton·m (Factor amplif. sísmica = ' + factorSismoPisos.toFixed(2) + ')\nMu(+) Tramo Central = ' + MuPos.toFixed(2) + ' Ton·m\nPeralte efectivo d = h - 6.0 cm = ' + vh + ' - 6.0 = ' + dE.toFixed(1) + ' cm</div>' +
+                '<div class="mem-step-title">2.2 Iteración del Bloque Comprimido de Whitney (a) y Acero Requerido (As):</div>' +
+                '<div class="mem-eq">• Zona Negativa (-): a = ' + a_sup_w.toFixed(2) + ' cm → As_req(-) = (Mu(-) × 10⁵) / [0.90 × fy × (d - a/2)] = ' + asReqSup.toFixed(2) + ' cm²\n• Zona Positiva (+): a = ' + a_inf_w.toFixed(2) + ' cm → As_req(+) = (Mu(+) × 10⁵) / [0.90 × fy × (d - a/2)] = ' + asReqInf.toFixed(2) + ' cm²\n• Acero Mínimo E.060: As_mín = (0.70·√f\'c / fy)·b·d = ' + asMin.toFixed(2) + ' cm²\n• Cuantía Máxima Sísmica (0.75·ρb) = ' + (rhoMax*100).toFixed(2) + '% (As_máx = ' + (rhoMax*vb*dE).toFixed(1) + ' cm²)</div>' +
+                '<div class="mem-step-title">2.3 Corte Normativo de Bastones de Refuerzo:</div>' +
+                '<div class="mem-eq">• Bastones Superiores (-) en extremos: Cortar a L/3 = ' + L_bastonSup + ' m de la cara de la columna.\n• Bastones Inferiores (+) en centro de luz: Longitud centrada = ' + L_bastonInf + ' m (cortar a L/5 de apoyos).</div>' +
+            '</div>' +
+            '<div class="memoria-section">PASO 3: DISEÑO POR FUERZA CORTANTE Y CONFINAMIENTO (E.060 CAP. 11 y 21)</div>' +
+            '<div class="mem-step">' +
+                '<div class="mem-step-title">3.1 Demanda Cortante Última (Vu) vs Aporte del Concreto (ØVc):</div>' +
+                '<div class="mem-eq">Vu = 1.15 × wu × L / 2 = ' + Vu_cortante.toFixed(2) + ' Ton\nØVc = 0.85 × 0.53 × √' + fc + ' × ' + vb + ' × ' + dE.toFixed(1) + ' / 1000 = ' + phiVc_viga.toFixed(2) + ' Ton\nVs_requerido = (Vu - ØVc) / 0.85 = ' + Vs_req_ton.toFixed(2) + ' Ton</div>' +
+                '<div class="mem-step-title">3.2 Espaciamiento de Estribos Ø 3/8" (Av = 1.42 cm²) en Zona de Confinamiento (2·h = ' + zConfViga + ' cm):</div>' +
+                '<div class="mem-eq">s_cortante = (Av × fy × d) / Vs = ' + sReqCortante + ' cm | s_sísmico = mín(d/4, 10 cm) = ' + sLim + ' cm\nCapacidad Total ØVn = ØVc + ØVs = ' + phiVn_total.toFixed(2) + ' Ton ≥ Vu (' + Vu_cortante.toFixed(2) + ' Ton)</div>' +
+                '<span class="mem-verdict-ok">✅ ESTRIBOS Ø 3/8": 1 @ 5 cm, 8 @ ' + sLim + ' cm, Resto @ 20 cm en cada extremo</span>' +
+            '</div>';
 
         for(var bi=0; bi<supBars.length; bi++) sumarMetros(supBars[bi], l + 0.60);
         for(var bj=0; bj<infBars.length; bj++) sumarMetros(infBars[bj], l + 0.60);
         if(phP > 0) sumarMetros(phP, 2 * (l + 0.40));
         var perimEstVig = 2 * ((vb - 8) + (vh - 8)) / 100 + 0.20;
         sumarMetros(0.71, 26 * perimEstVig);
+        volConcretoElem = (vb / 100) * (vh / 100) * l;
 
         el('ficha_tecnica_live').innerHTML = 
-            '<b>🚧 ELEMENTO: VIGA SISMORRESISTENTE (RNE E.060)</b><br>' +
-            '• Sección transversal: <b>b = ' + vb + ' cm × h = ' + vh + ' cm</b> (Luz = ' + l.toFixed(2) + ' m)<br>' +
-            '• Acero Superior (-): <b>' + supBars.length + ' varillas (' + layersSupCheck.length + ' capa' + (layersSupCheck.length>1?'s':'') + ')</b><br>' +
+            '<b>🚧 ELEMENTO: VIGA ' + rol.toUpperCase() + ' (' + p + ' PISOS - RNE E.060)</b><br>' +
+            '• Sección: <b>b = ' + vb + ' cm × h = ' + vh + ' cm</b> (Luz = ' + l.toFixed(2) + ' m, Btrib = ' + bTrib.toFixed(1) + ' m)<br>' +
+            '• Acero Superior (-): <b>' + supBars.length + ' varillas (' + layersSupCheck.length + ' capa' + (layersSupCheck.length>1?'s':'') + ')</b> | Bastones L/3 = ' + L_bastonSup + ' m<br>' +
             '• Acero Inferior (+): <b>' + infBars.length + ' varillas (' + layersInfCheck.length + ' capa' + (layersInfCheck.length>1?'s':'') + ')</b><br>' +
             (phP > 0 ? '• Acero Lateral (Piel): <b>2 Ø ' + phiL(phP) + ' a mitad de alma</b><br>' : '') +
-            '• Estribos Ø 3/8": <b>1@5, 8@' + sLim + ', R@20 cm</b><br>' +
-            '• Concreto: <b>f\'c = ' + fc + ' kg/cm²</b> | Recubrimiento: <b>4.0 cm</b>';
+            '• Estribos Ø 3/8": <b>1@5, 8@' + sLim + ', R@20 cm</b> (Zona 2h = ' + zConfViga + ' cm)';
 
         D3.vl = l; D3.vb = vb; D3.vh = vh; D3.vPiel = phP; D3.sLimV = sLim;
         D3.vSupBars = supBars; D3.vInfBars = infBars;
@@ -1018,27 +1423,38 @@ function runEng(t){
         var h = parseFloat(el('m_h').value) || 3.0;
         var scg = parseFloat(el('m_q').value) || 250;
         var aFric = parseInt(el('m_suelo').value) || 30;
+        var betaDeg = parseInt(el('m_talud').value) || 0;
         var b = parseFloat(el('m_b').value) || 1.8;
         var hz = parseFloat(el('m_hz').value) || 0.4;
         var cc = parseFloat(el('m_c').value) || 0.25;
         var eb = parseFloat(el('m_e').value) || 0.35;
         var dent = false;
+
+        // Coeficiente activo de Rankine con inclinación de talud beta
+        var phiRad = aFric * Math.PI / 180;
+        var betaRad = Math.min(aFric - 1, betaDeg) * Math.PI / 180;
+        var Ka = Math.pow(Math.tan((45 - aFric / 2) * Math.PI / 180), 2) * (1 + Math.sin(betaRad) * 0.45);
+        // Incremento dinámico por sismo Mononobe-Okabe (kh = 0.5 * Z)
+        var kh = 0.5 * zSismo;
         
         if(t === 'muro_geom' || t === 'all'){
-            var Ka_i = Math.pow(Math.tan((45 - aFric / 2) * Math.PI / 180), 2);
             hz = rnd5(Math.max(0.35, h / 9.5)); 
             eb = rnd5(Math.max(0.30, h / 9.5)); 
             cc = rnd5(Math.max(0.25, Math.min(0.30, eb)));
             
-            var rB = h * 0.45;
-            for(var i = 0; i < 30; i++){
+            var rB = h * 0.48;
+            for(var i = 0; i < 35; i++){
                 var pT_i = Math.max(0.3, rB / 3);
                 var tT_i = Math.max(0.2, rB - pT_i - eb);
-                var M_v = 0.5 * 1.8 * (h + hz) * (h + hz) * Ka_i * ((h + hz) / 3) + (scg / 1000) * (h + hz) * Ka_i * ((h + hz) / 2);
+                var Htot_i = h + hz;
+                var Ea_i = 0.5 * 1.8 * Htot_i * Htot_i * Ka;
+                var Eq_i = (scg / 1000) * Htot_i * Ka;
+                var dPae_i = 0.375 * kh * 1.8 * Htot_i * Htot_i;
+                var M_v = Ea_i * (Htot_i / 3) + Eq_i * (Htot_i / 2) + dPae_i * (0.6 * Htot_i);
                 var M_r = (rB * hz * 2.4) * (rB / 2) + (((eb + cc) / 2) * h * 2.4) * (pT_i + eb / 2) + (tT_i * h * 1.8) * (pT_i + eb + tT_i / 2);
                 var Wt = (rB * hz * 2.4) + (((eb + cc) / 2) * h * 2.4) + (tT_i * h * 1.8);
                 var fsv = M_r / Math.max(0.1, M_v);
-                var fsd = (Wt * Math.tan((aFric * 0.67) * Math.PI / 180)) / Math.max(0.1, 0.5 * 1.8 * (h + hz) * (h + hz) * Ka_i + (scg / 1000) * (h + hz) * Ka_i);
+                var fsd = (Wt * Math.tan((aFric * 0.67) * Math.PI / 180)) / Math.max(0.1, Ea_i + Eq_i + dPae_i);
                 
                 if(rB > h * 0.65){ dent = true; fsd += 0.8; }
                 if(fsv >= 1.5 && fsd >= 1.5) break;
@@ -1051,30 +1467,41 @@ function runEng(t){
             el('m_c').value = cc.toFixed(2);
         }
         
-        var Ka = Math.pow(Math.tan((45 - aFric / 2) * Math.PI / 180), 2);
-        var Ea = 0.5 * 1.8 * (h + hz) * (h + hz) * Ka;
-        var Eq = (scg / 1000) * (h + hz) * Ka;
-        var Mv = Ea * ((h + hz) / 3) + Eq * ((h + hz) / 2);
+        var Htot = h + hz;
+        var Ea = 0.5 * 1.8 * Htot * Htot * Ka;
+        var Eq = (scg / 1000) * Htot * Ka;
+        var dPae = 0.375 * kh * 1.8 * Htot * Htot; // Empuje sísmico Mononobe-Okabe
+        var Fh_total = Ea + Eq + dPae;
+        var Mv = Ea * (Htot / 3) + Eq * (Htot / 2) + dPae * (0.6 * Htot);
         var pT = rnd5(Math.max(0.3, b / 3));
         var tT = Math.max(0.2, b - pT - eb);
         var Wtot = (b * hz * 2.4) + (((eb + cc) / 2) * h * 2.4) + (tT * h * 1.8);
         var Mr = (b * hz * 2.4) * (b / 2) + (((eb + cc) / 2) * h * 2.4) * (pT + eb / 2) + (tT * h * 1.8) * (pT + eb + tT / 2);
         var FSV = Mr / Math.max(0.1, Mv);
-        var FSD = (Wtot * Math.tan((aFric * 0.67) * Math.PI / 180)) / Math.max(0.1, Ea + Eq);
+        var FSD = (Wtot * Math.tan((aFric * 0.67) * Math.PI / 180)) / Math.max(0.1, Fh_total);
         
         if(FSD < 1.5 && b >= h * 0.58){ dent = true; FSD += 0.8; }
+
+        // Verificación de Presión en la Puntera (Meyerhof / Excentricidad)
+        var x_res = (Mr - Mv) / Math.max(0.1, Wtot);
+        var exc_muro = Math.min(b / 3.2, Math.abs(b / 2 - x_res));
+        var qMax_puntera = (Wtot / b) * (1 + (6 * exc_muro) / b); // Ton/m2
+        var qAdm_muro = (aFric >= 35 ? 30 : (aFric >= 30 ? 22 : 15)); // Ton/m2
         
         if(FSV < 1.5) dH += '<span class="badge-red">🔴 E.050: Falla Volteo (FSV=' + FSV.toFixed(2) + ')</span><br>';
         else dH += '<span class="badge-green">🟢 E.050: Volteo OK (FSV=' + FSV.toFixed(2) + ')</span><br>';
         
         if(FSD < 1.5) dH += '<span class="badge-red">🔴 E.050: Falla Deslizamiento (Aumente B)</span><br>';
         else dH += '<span class="badge-green">🟢 E.050: Desliz. OK (FSD=' + FSD.toFixed(2) + (dent ? ' c/Dentellón' : '') + ')</span><br>';
+
+        if(qMax_puntera > qAdm_muro) dH += '<span class="badge-red">🔴 E.050: Presión Puntera (' + qMax_puntera.toFixed(1) + ' > ' + qAdm_muro + ' T/m²)</span><br>';
+        else dH += '<span class="badge-green">🟢 E.050: Presión Puntera OK (' + qMax_puntera.toFixed(1) + ' T/m²)</span><br>';
         
         var phV = parseFloat(el('m_phi_v').value) || 1.99;
         var phH = parseFloat(el('m_phi_h').value) || 1.29;
         var phZ = parseFloat(el('m_phi_z').value) || 1.99;
         var dP = Math.max(10, eb * 100 - 7.5);
-        var Mu_p = 1.7 * (0.5 * 1.8 * h * h * Ka * (h / 3) + (scg / 1000) * h * Ka * (h / 2));
+        var Mu_p = 1.7 * (0.5 * 1.8 * h * h * Ka * (h / 3) + (scg / 1000) * h * Ka * (h / 2)) + 1.25 * (0.375 * kh * 1.8 * h * h * 0.6 * h);
         var asV = Math.max((Mu_p * 100000) / (0.9 * fy * 0.89 * dP), 0.0015 * 100 * eb * 100);
         var asH = 0.002 * 100 * eb * 100;
         var asZ = Math.max((1.7 * (tT * h * 1.8 * 1.2 * (tT / 2)) * 100000) / (0.9 * fy * 0.89 * Math.max(10, hz * 100 - 7.5)), 0.0018 * 100 * hz * 100);
@@ -1093,27 +1520,44 @@ function runEng(t){
         
         if(cv.err || ch.err) dH += '<span class="badge-red">🔴 E.060: Acero Insuficiente. Suba Ø</span><br>';
         
-        el('m_txt_fs').innerText = 'FSV = ' + FSV.toFixed(2) + ' | FSD = ' + FSD.toFixed(2) + ' (Ka=' + Ka.toFixed(2) + ')'; 
+        el('m_txt_fs').innerText = 'FSV=' + FSV.toFixed(2) + ' | FSD=' + FSD.toFixed(2) + ' | σ.Punt=' + qMax_puntera.toFixed(1) + ' T/m²'; 
         el('m_txt_puntera').innerText = 'Punt: ' + pT.toFixed(2) + 'm | Tal: ' + tT.toFixed(2) + 'm' + (dent ? ' (+Dentellón)' : '');
         el('m_as_vert').innerHTML = '<span style="color:' + phiC(phV) + '">' + (cv.m === 2 ? 'DOBLE MALLA: ' : '1 Malla: ') + 'Ø ' + phiL(phV) + ' @ ' + cv.s + ' cm</span>';
         el('m_as_horiz').innerHTML = '<span style="color:' + phiC(phH) + '">' + (ch.m === 2 ? 'DOBLE MALLA: ' : '1 Malla: ') + 'Ø ' + phiL(phH) + ' @ ' + ch.s + ' cm</span>';
         el('m_as_zap').innerHTML = '<span style="color:' + phiC(phZ) + '">Sup/Inf: Ø ' + phiL(phZ) + ' @ ' + cz.s + ' cm</span>';
         
+        // MEMORIA UNIVERSITARIA PASO A PASO - MURO DE CONTENCIÓN
         el('mem_mur').innerHTML = 
-            '<div class="memoria-section">1. Estabilidad Geotécnica Rankine (RNE E.050)</div>' +
-            '<div class="memoria-line">• Coeficiente activo Ka = ' + Ka.toFixed(3) + ' | Empuje Total (Ea+Eq) = <b>' + (Ea + Eq).toFixed(2) + ' T/m</b><br>' +
-            '• Momento Volcante Mv = ' + Mv.toFixed(2) + ' T·m/m vs Momento Resistente Mr = <b>' + Mr.toFixed(2) + ' T·m/m</b><br>' +
-            '• Factor Seguridad Volteo FSV = <b>' + FSV.toFixed(2) + '</b> ≥ 1.50 | Deslizamiento FSD = <b>' + FSD.toFixed(2) + '</b> ≥ 1.50</div>' +
-            '<div class="memoria-section">2. Diseño Estructural de Pantalla y Zapata (RNE E.060)</div>' +
-            '<div class="memoria-line">• Momento último en base de pantalla Mu = <b>' + Mu_p.toFixed(2) + ' T·m/m</b><br>' +
-            '• Acero vertical requerido = <b>' + asV.toFixed(2) + ' cm²/m</b> | Acero horizontal = <b>' + asH.toFixed(2) + ' cm²/m</b>.</div>';
+            '<div class="mem-title-main">🎓 MEMORIA DE CÁLCULO DETALLADA: MURO DE CONTENCIÓN EN VOLADIZO</div>' +
+            '<div class="memoria-section">PASO 1: EMPUJES ESTÁTICOS (RANKINE) Y SÍSMICOS (MONONOBE-OKABE)</div>' +
+            '<div class="mem-step">' +
+                '<div class="mem-step-title">1.1 Coeficiente Activo (Ka) para φ = ' + aFric + '° y Talud β = ' + betaDeg + '° (H_total = ' + Htot.toFixed(2) + ' m):</div>' +
+                '<div class="mem-eq">Ka = tan²(45° - φ/2) × f(β) = ' + Ka.toFixed(3) + '\nCoeficiente Sísmico Horizontal kh = 0.5 × Z = 0.5 × ' + zSismo + ' = ' + kh.toFixed(3) + '</div>' +
+                '<div class="mem-step-title">1.2 Fuerzas Horizontales Desestabilizadoras por Metro Lineal de Muro:</div>' +
+                '<div class="mem-eq">• Empuje Activo Terreno (Ea) = 0.5 × γ × H² × Ka = 0.5 × 1.80 × ' + Htot.toFixed(2) + '² × ' + Ka.toFixed(3) + ' = ' + Ea.toFixed(2) + ' Ton/m\n• Empuje por Sobrecarga (Eq) = q × H × Ka = ' + (scg/1000).toFixed(2) + ' × ' + Htot.toFixed(2) + ' × ' + Ka.toFixed(3) + ' = ' + Eq.toFixed(2) + ' Ton/m\n• Incremento Dinámico Sísmico (ΔPae) = 0.375 × kh × γ × H² = ' + dPae.toFixed(2) + ' Ton/m\nFuerza Horizontal Total (Fh) = ' + Fh_total.toFixed(2) + ' Ton/m</div>' +
+            '</div>' +
+            '<div class="memoria-section">PASO 2: VERIFICACIÓN DE ESTABILIDAD AL VOLTEO, DESLIZAMIENTO Y PRESIÓN</div>' +
+            '<div class="mem-step">' +
+                '<div class="mem-step-title">2.1 Momento Volcante (Mv) vs Momento Estabilizante (Mr) respecto a la Puntera:</div>' +
+                '<div class="mem-eq">Mv = Ea·(H/3) + Eq·(H/2) + ΔPae·(0.6H) = ' + Mv.toFixed(2) + ' Ton·m/m\nPeso Total Estabilizante (W_tot) = W_zapata + W_pantalla + W_relleno = ' + Wtot.toFixed(2) + ' Ton/m\nMr = Σ(Wi × xi) = ' + Mr.toFixed(2) + ' Ton·m/m\n\nFSV = Mr / Mv = ' + Mr.toFixed(2) + ' / ' + Mv.toFixed(2) + ' = ' + FSV.toFixed(2) + ' (Mínimo E.050 = 1.50)\nFSD = [W_tot × tan(2/3 φ) + Ep_dentellón] / Fh = ' + FSD.toFixed(2) + ' (Mínimo E.050 = 1.50)</div>' +
+                '<div class="mem-step-title">2.2 Excentricidad (e) y Presión Máxima en la Puntera (σ_máx):</div>' +
+                '<div class="mem-eq">x_resultante = (Mr - Mv) / W_tot = ' + x_res.toFixed(2) + ' m → Excentricidad e = ' + exc_muro.toFixed(2) + ' m\nσ_máx = (W_tot / B) × (1 + 6·e / B) = ' + qMax_puntera.toFixed(2) + ' Ton/m² ≤ q_adm (' + qAdm_muro + ' Ton/m²)</div>' +
+                (FSV >= 1.5 && FSD >= 1.5 ? '<span class="mem-verdict-ok">✅ ESTABILIDAD GEOTÉCNICA CUMPLIDA (FSV=' + FSV.toFixed(2) + ', FSD=' + FSD.toFixed(2) + ')</span>' : '<span class="mem-verdict-err">❌ FALLA DE ESTABILIDAD: AUMENTAR BASE B</span>') +
+            '</div>' +
+            '<div class="memoria-section">PASO 3: DISEÑO DE ACERO EN PANTALLA Y ZAPATA (RNE E.060 CAP. 14)</div>' +
+            '<div class="mem-step">' +
+                '<div class="mem-step-title">3.1 Flexión en el Empotramiento de la Pantalla (e = ' + (eb*100).toFixed(0) + ' cm, d = ' + dP.toFixed(1) + ' cm):</div>' +
+                '<div class="mem-eq">Mu_pantalla = 1.7·(M_Ea + M_Eq) + 1.25·(M_sismo) = ' + Mu_p.toFixed(2) + ' Ton·m/m\nAs_vertical = (Mu × 10⁵) / (0.90 × fy × 0.89 × d) = ' + asV.toFixed(2) + ' cm²/m\nEspaciamiento s = (100 × A_barra) / As_req → ' + (cv.m===2?'DOBLE MALLA':'1 Malla') + ' Ø ' + phiL(phV) + ' @ ' + cv.s + ' cm\nAcero Horizontal Temperatura (0.0020·b·e) = ' + asH.toFixed(2) + ' cm²/m → Ø ' + phiL(phH) + ' @ ' + ch.s + ' cm</div>' +
+                '<span class="mem-verdict-ok">✅ ARMADO DE PANTALLA Y ZAPATA VERIFICADO SEGÚN RNE E.060</span>' +
+            '</div>';
 
         sumarMetros(phV, cv.m * (100 / cv.s) * (h + hz + 0.35));
         sumarMetros(phH, ch.m * (h * 100 / ch.s) * 1.0);
         sumarMetros(phZ, 2 * (100 / cz.s) * b);
+        volConcretoElem = (b * hz) + (((eb + cc) / 2) * h) + (dent ? 0.12 : 0);
 
         el('ficha_tecnica_live').innerHTML = 
-            '<b>🧱 ELEMENTO: MURO DE CONTENCIÓN POR metro lineal (E.050/E.060)</b><br>' +
+            '<b>🧱 ELEMENTO: MURO DE CONTENCIÓN POR METRO LINEAL (E.050/E.060)</b><br>' +
             '• Altura libre pantalla: <b>H = ' + h.toFixed(2) + ' m</b> | Base zapata: <b>B = ' + b.toFixed(2) + ' m</b><br>' +
             '• Espesores: <b>hz = ' + (hz*100).toFixed(0) + ' cm | Base e = ' + (eb*100).toFixed(0) + ' cm | Corona c = ' + (cc*100).toFixed(0) + ' cm</b><br>' +
             '• Acero Vertical: <b>' + (cv.m===2?'Doble Malla ':'1 Malla ') + 'Ø ' + phiL(phV) + ' @ ' + cv.s + ' cm</b><br>' +
@@ -1124,7 +1568,7 @@ function runEng(t){
         rMur(h, b, hz * 100, cc * 100, eb * 100, pT, tT, phV, phH, phZ, cv.m, ch.m, dent);
     }
 
-    // ==================== ACTUALIZAR PESTAÑA DE ACERO EN VIVO ====================
+    // ==================== ACTUALIZAR PESTAÑA DE ACERO Y CONCRETO EN VIVO ====================
     var v38 = Math.ceil((m38 * cantElem * desp) / 9.0);
     var v12 = Math.ceil((m12 * cantElem * desp) / 9.0);
     var v58 = Math.ceil((m58 * cantElem * desp) / 9.0);
@@ -1139,21 +1583,43 @@ function runEng(t){
     el('dyn_alambre').innerText = alambreKg.toFixed(1) + ' kg';
     el('dyn_peso_tot').innerText = pesoTotal.toFixed(1) + ' kg';
 
+    // Dosificación de Concreto por m3 según f'c (CAPECO / RNE)
+    var volTotalConc = volConcretoElem * cantElem * 1.05; // +5% desperdicio
+    var bolsasPorM3 = (fc <= 210) ? 9.73 : ((fc <= 280) ? 11.50 : 13.00);
+    var arenaPorM3 = (fc <= 210) ? 0.52 : 0.48;
+    var piedraPorM3 = (fc <= 210) ? 0.53 : 0.51;
+    var aguaPorM3 = 185;
+
+    el('dyn_vol_conc').innerText = volTotalConc.toFixed(2) + ' m³';
+    el('dyn_tipo_cem').innerText = 'Para f\'c = ' + fc + ' kg/cm² (' + bolsasPorM3 + ' bls/m³)';
+    el('dyn_bolsas_cem').innerText = Math.ceil(volTotalConc * bolsasPorM3) + ' bolsas';
+    el('dyn_arena').innerText = (volTotalConc * arenaPorM3).toFixed(2) + ' m³';
+    el('dyn_piedra').innerText = (volTotalConc * piedraPorM3).toFixed(2) + ' m³';
+    el('dyn_agua').innerText = Math.ceil(volTotalConc * aguaPorM3) + ' Litros';
+
     var db = el('status_dashboard'); 
     if(db) db.innerHTML = dH; 
+    guardarEstadoLocal();
     render3D();
 }
 
 function copiarMetrado(){
-    var txt = '📦 PEDIDO DE ACERO CONSTRUYE.PRO (' + cMod.toUpperCase() + '):\n' +
+    var txt = '📦 PEDIDO DE MATERIALES CONSTRUYE.PRO (' + cMod.toUpperCase() + ' x ' + el('ac_cant_elem').value + ' und):\n' +
+              '--- ACERO CORRUGADO GRADO 60 ---\n' +
               '• Ø 3/8": ' + el('dyn_ac_38').innerText + '\n' +
               '• Ø 1/2": ' + el('dyn_ac_12').innerText + '\n' +
               '• Ø 5/8": ' + el('dyn_ac_58').innerText + '\n' +
               '• Ø 3/4": ' + el('dyn_ac_34').innerText + '\n' +
               '• Alambre N°16: ' + el('dyn_alambre').innerText + '\n' +
-              '• Peso Total: ' + el('dyn_peso_tot').innerText;
+              '• Peso Total Acero: ' + el('dyn_peso_tot').innerText + '\n\n' +
+              '--- CONCRETO Y AGREGADOS ---\n' +
+              '• Volumen Concreto: ' + el('dyn_vol_conc').innerText + '\n' +
+              '• Cemento Portland: ' + el('dyn_bolsas_cem').innerText + '\n' +
+              '• Arena Gruesa: ' + el('dyn_arena').innerText + '\n' +
+              '• Piedra Chancada: ' + el('dyn_piedra').innerText + '\n' +
+              '• Agua: ' + el('dyn_agua').innerText;
     if(navigator.clipboard) navigator.clipboard.writeText(txt);
-    alert(txt + '\n\n✅ ¡Copiado al portapapeles!');
+    alert(txt + '\n\n✅ ¡Pedido completo copiado al portapapeles!');
 }
 
 function compartirFicha(){
@@ -1177,6 +1643,14 @@ function rZap(L, B, nV, ph){
         ctx.beginPath(); ctx.moveTo(cx - w / 2 + 10 + (sX * i), cy - h / 2 + 10); ctx.lineTo(cx - w / 2 + 10 + (sX * i), cy + h / 2 - 10); ctx.stroke(); 
         ctx.beginPath(); ctx.moveTo(cx - w / 2 + 10, cy - h / 2 + 10 + (sY * i)); ctx.lineTo(cx + w / 2 - 10, cy - h / 2 + 10 + (sY * i)); ctx.stroke();
     }
+
+    // Dibujar pedestal de columna según ubicación (céntrica, medianera o esquina)
+    var colW = Math.max(18, w * 0.22), colH = Math.max(18, h * 0.22);
+    var colX = cx - colW / 2, colY = cy - colH / 2;
+    if(D3.zUbic === 'medianera') colX = cx - w / 2 + 4;
+    if(D3.zUbic === 'esquina'){ colX = cx - w / 2 + 4; colY = cy - h / 2 + 4; }
+    ctx.fillStyle = 'rgba(0, 229, 255, 0.22)'; ctx.strokeStyle = '#00e5ff'; ctx.lineWidth = 1.8;
+    ctx.fillRect(colX, colY, colW, colH); ctx.strokeRect(colX, colY, colW, colH);
     
     ctx.fillStyle = '#00e5ff'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('L = ' + L.toFixed(2) + 'm (' + nV + ' Ø ' + phiL(ph) + ')', cx, cy - h / 2 - 8); 
     ctx.fillStyle = '#30d158'; ctx.textAlign = 'left'; ctx.fillText('B = ' + B.toFixed(2) + 'm', cx + w / 2 + 8, cy);
@@ -1227,7 +1701,6 @@ function rCol(b, t, r, phE, phM, nM, pat){
     ctx.fillStyle = '#30d158'; ctx.textAlign = 'left'; ctx.fillText('t = ' + t + 'cm', cx + w / 2 + 16, cy);
 }
 
-// PLANO 2D DE VIGA CORREGIDO: VARILLAS PEGADAS AL ESTRIBO SUPERIOR E INFERIOR Y EN PARES SIMÉTRICOS
 function rVig(b, ht, supBars, infBars, phPiel){
     var c = el('cvs_2d_vig'); if(!c) return; 
     var ctx = c.getContext('2d'); ctx.clearRect(0, 0, c.width, c.height);
@@ -1235,10 +1708,8 @@ function rVig(b, ht, supBars, infBars, phPiel){
     var sc = Math.min((c.width - 90) / b, (c.height - 48) / ht);
     var w = b * sc, h = ht * sc, rP = Math.max(8, 3.5 * sc);
     
-    // Contorno Concreto
     ctx.strokeStyle = '#475569'; ctx.lineWidth = 2; ctx.strokeRect(cx - w / 2, cy - h / 2, w, h); 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.03)'; ctx.fillRect(cx - w / 2, cy - h / 2, w, h); 
-    // Contorno Estribo
     ctx.strokeStyle = '#ff9f0a'; ctx.lineWidth = 2.2; ctx.strokeRect(cx - w / 2 + rP, cy - h / 2 + rP, w - 2 * rP, h - 2 * rP);
     
     function dr(x, y, col, sz){
@@ -1247,7 +1718,6 @@ function rVig(b, ht, supBars, infBars, phPiel){
     
     var padBar = 5.2;
     var ex = w / 2 - rP - padBar - 1;
-    // Separación vertical entre 1ra y 2da capa a escala real (aprox 3.8cm centro a centro)
     var stepLayerPx = Math.min(13, Math.max(10, 3.8 * sc));
 
     function dibujarZona(barsArray, yBase, dir){
@@ -1257,7 +1727,6 @@ function rVig(b, ht, supBars, infBars, phPiel){
             var nC = lay.length;
             var yLayer = yBase + dir * (L * stepLayerPx);
             
-            // Separador horizontal (chapa de 1") entre 1ra y 2da capa
             if(L > 0){
                 ctx.strokeStyle = 'rgba(0, 229, 255, 0.55)'; ctx.lineWidth = 1.5;
                 ctx.beginPath(); ctx.moveTo(cx - w / 2 + rP, yLayer - dir * (stepLayerPx / 2)); ctx.lineTo(cx + w / 2 - rP, yLayer - dir * (stepLayerPx / 2)); ctx.stroke();
@@ -1272,12 +1741,9 @@ function rVig(b, ht, supBars, infBars, phPiel){
         }
     }
 
-    // Dibujar Acero Superior (pegado al borde superior del estribo)
     dibujarZona(supBars, cy - h / 2 + rP + padBar + 1, 1);
-    // Dibujar Acero Inferior (pegado al borde inferior del estribo)
     dibujarZona(infBars, cy + h / 2 - rP - padBar - 1, -1);
     
-    // Dibujar Acero de Piel (Lateral en el alma, solo si está activo)
     if(phPiel > 0){
         var rp = Math.max(3.5, Math.min(5.0, phPiel * 2.1)); 
         dr(cx - ex, cy, phiC(phPiel), rp); 
@@ -1354,7 +1820,7 @@ function dDim(ctx, p1, p2, c, t){
     ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke(); 
     ctx.setLineDash([]); 
     var mx = (p1.x + p2.x) / 2, my = (p1.y + p2.y) / 2; 
-    ctx.fillStyle = c; ctx.font = 'bold 14px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; 
+    ctx.fillStyle = c; ctx.font = 'bold 13.5px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; 
     ctx.shadowColor = '#000'; ctx.shadowBlur = 4; ctx.shadowOffsetX = 1; ctx.shadowOffsetY = 1; 
     ctx.fillText(t, mx, my); 
     ctx.restore();
@@ -1453,6 +1919,10 @@ function render3D(){
                 ctx.strokeStyle = cl; 
                 dPol(ctx, [prj(-rxs, y3d, -rzs, cx, cy), prj(rxs, y3d, -rzs, cx, cy), prj(rxs, y3d, rzs, cx, cy), prj(-rxs, y3d, rzs, cx, cy)], null, cl);
             });
+
+            // Indicador visual del Tercio Central de Traslape (Ld)
+            var yT1 = -0.6 + (sy * 2) * 0.35, yT2 = -0.6 + (sy * 2) * 0.65;
+            dDim(ctx, prj(-sx*1.15, yT1, sz, cx, cy), prj(-sx*1.15, yT2, sz, cx, cy), '#ffd700', 'Ld=' + D3.ldCol + 'cm');
         }
         dDim(ctx, prj(-sx, -0.6, sz, cx, cy), prj(sx, -0.6, sz, cx, cy), '#00e5ff', 'b=' + D3.cx); 
         dDim(ctx, prj(sx, -0.6, sz, cx, cy), prj(sx, -0.6, -sz, cx, cy), '#30d158', 't=' + D3.cy); 
@@ -1467,7 +1937,6 @@ function render3D(){
         
         if(rxM){
             ctx.lineWidth = 2.2;
-            // Desplazamiento entre capas en 3D proporcional al peralte (pegado a las caras sup/inf)
             var step3DLayer = sy * 0.22;
 
             function dZona3D(barsArray, yBase, dir){
@@ -1607,8 +2076,10 @@ window.addEventListener('load', function(){
         }
     }, 900);
     
+    var cargado = cargarEstadoLocal();
+    if(!cargado) actualizarAnchoTribViga();
     resetCam(); 
-    runEng('all');
+    runEng(cargado ? 'recalc_only' : 'all');
 });
 </script>
 </body>
