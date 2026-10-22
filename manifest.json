@@ -1,0 +1,17 @@
+{
+  "name": "C.PRO Estructuras",
+  "short_name": "C.PRO Estruc",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b0e14",
+  "theme_color": "#0b0e14",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icono-estructuras.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
