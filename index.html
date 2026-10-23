@@ -119,6 +119,59 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
 </style>
 </head>
 <body>
+
+<!-- ==================== PANTALLA DE BLOQUEO DE LICENCIA ==================== -->
+<div id="licencia-screen" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background-color:#0b0e14;z-index:9999999;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;text-align:center;transition:opacity 0.3s ease;">
+    <div style="position:relative;width:70px;height:70px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
+        <div style="position:absolute;width:70px;height:70px;border:2.5px dashed var(--primary-orange);border-radius:50%;animation:spinSlow 8s linear infinite;"></div>
+        <div style="font-size:38px;font-weight:900;color:var(--primary-orange);">Y</div>
+    </div>
+    <h2 style="color:var(--primary-cyan);margin-bottom:8px;font-weight:900;letter-spacing:1px;">🔒 ACTIVAR C.PRO</h2>
+    <p style="color:var(--text-muted);font-size:12px;margin-bottom:16px;">Tu código único de equipo es:</p>
+    <div id="lic_device_id" style="font-size:26px;font-weight:900;color:var(--primary-orange);letter-spacing:4px;background:rgba(255,159,10,0.1);border:1px solid rgba(255,159,10,0.3);padding:12px 24px;border-radius:8px;margin-bottom:18px;">------</div>
+    <p style="color:var(--text-muted);font-size:11px;margin-bottom:14px;line-height:1.5;">Envía este código por WhatsApp al desarrollador<br>para obtener tu PIN de acceso de 4 dígitos.</p>
+    <input type="number" id="lic_pin_input" placeholder="0000" style="width:150px;text-align:center;font-size:22px;font-weight:900;letter-spacing:4px;padding:12px;margin-bottom:18px;background:#151a23;border:2px solid #232d3f;color:#fff;border-radius:8px;outline:none;">
+    <button onclick="validarLicencia()" style="background:var(--primary-green);color:#000;border:none;padding:14px 28px;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;box-shadow:0 4px 15px rgba(48,209,88,0.3);">ACTIVAR APLICACIÓN</button>
+</div>
+
+<script>
+// Lógica Criptográfica del Bloqueo por Dispositivo
+var DEVICE_ID = localStorage.getItem('cpro_device_id');
+if(!DEVICE_ID){
+    DEVICE_ID = Math.random().toString(36).substr(2, 6).toUpperCase();
+    localStorage.setItem('cpro_device_id', DEVICE_ID);
+}
+document.getElementById('lic_device_id').innerText = DEVICE_ID;
+
+function generarPinInterno(codigo) {
+    var num = 0;
+    for(var i = 0; i < codigo.length; i++) {
+        num += codigo.charCodeAt(i) * Math.pow(3, i);
+    }
+    return ((num * 8392) % 8999) + 1000; // Fórmula matemática secreta
+}
+
+if(localStorage.getItem('cpro_licencia_activa') === 'SI'){
+    document.getElementById('licencia-screen').style.display = 'none';
+}
+
+function validarLicencia(){
+    var pinIngresado = parseInt(document.getElementById('lic_pin_input').value);
+    var pinCorrecto = generarPinInterno(DEVICE_ID);
+    
+    if(pinIngresado === pinCorrecto){
+        localStorage.setItem('cpro_licencia_activa', 'SI');
+        document.getElementById('licencia-screen').style.opacity = '0';
+        setTimeout(function(){ document.getElementById('licencia-screen').style.display = 'none'; }, 300);
+        alert("¡Licencia vinculada a este equipo con éxito!");
+    } else {
+        alert("❌ PIN incorrecto. Verifica el pago con el desarrollador.");
+        document.getElementById('lic_pin_input').value = '';
+    }
+}
+</script>
+<!-- ==================== FIN PANTALLA DE BLOQUEO ==================== -->
+
 <div id="splash-screen" onclick="this.style.opacity='0'; setTimeout(function(){this.style.display='none';}.bind(this),500);">
     <div class="anim-scale" style="display:flex; flex-direction:column; align-items:center;">
         <div style="position:relative; width:90px; height:90px; display:flex; align-items:center; justify-content:center; margin-bottom:15px;">
@@ -701,7 +754,6 @@ var cMod = 'zapatas';
 var rxM = false;
 var cRotX = 0.5, cRotY = -0.6, camZ = 1.15, panX = 0, panY = 0, iDrg = false, iPan = false, lx = 0, ly = 0;
 
-// Propuesta seleccionada en Vigas ('best', 'opt34', 'comb', 'opt12', 'manual')
 var vModoSeleccion = 'best';
 
 var INPUT_IDS = [
@@ -759,14 +811,12 @@ function syncGlobal(campo, valor){
     }
 }
 
-// Cálculo 100% Automatizado del Ancho Tributario de Losa según Geometría del Paño y Rol de Viga (E.020)
 function calcularAnchoTribAuto(){
     var aC = Math.max(10, parseFloat(el('z_aconst').value) || 120);
     var nC = Math.max(1, parseFloat(el('z_ncol').value) || 12);
     var luz = Math.max(1.5, parseFloat(el('v_luz').value) || 4.5);
     var rol = el('v_rol') ? el('v_rol').value : 'principal';
     var aTribCol = aC / nC;
-    // Ancho aferente basado en área tributaria de columna y luz de viga
     var bCalc = aTribCol / Math.max(2.0, luz * 0.85);
     if(rol === 'secundaria') bCalc = bCalc * 0.65;
     if(rol === 'voladizo') bCalc = Math.min(2.2, luz * 0.80);
@@ -1187,10 +1237,10 @@ function runEng(t){
         rCol(cb, ct, 4, phE, phM, nM, pat);
     }
 
-    // ==================== 3. VIGAS (DISEÑO SÍSMICO COMPLETO E.060 CAP. 10, 11, 12, 21) ====================
+    // ==================== 3. VIGAS ====================
     else if(cMod === 'vigas'){
         var l = parseFloat(el('v_luz').value) || 4.5;
-        var bTrib = calcularAnchoTribAuto(); // 100% Automatizado
+        var bTrib = calcularAnchoTribAuto();
         var wLosa_kg = parseFloat(el('v_losa').value) || 300;
         var wTabique_kgm = parseFloat(el('v_tabique').value) || 355;
         var rol = el('v_rol').value;
@@ -1213,7 +1263,6 @@ function runEng(t){
             vModoSeleccion = 'manual';
         }
 
-        // 1. Metrado de Cargas y Diagrama de Momentos (E.020 / E.060)
         var wAcabados_m2 = 0.10;
         var wLosa_Tm2 = (wLosa_kg / 1000) + wAcabados_m2;
         var wPesoPropio_Tm = (vb / 100) * (vh / 100) * 2.40;
@@ -1232,13 +1281,10 @@ function runEng(t){
         else addAlert('green', 'E.060: Peralte h=' + vh + 'cm OK (' + p + ' pisos)');
         
         var dE = Math.max(12, vh - 6.0);
-        // Envolvente de Momentos en Secciones Críticas (Nudos y Centro de Luz)
         var MuNeg = (rol === 'voladizo') ? ((wU_grav * l * l) / 2) : (((wU_grav * l * l) / 9) * factorSismoPisos);
         var MuPos_grav = (rol === 'voladizo') ? (MuNeg * 0.35) : (((wU_grav * l * l) / 11) * (rol === 'principal' ? (1 + Math.max(0, p - 1) * 0.04) : 1.0));
-        // E.060 Art. 21.5.2.1: En nudos sísmicos, el momento positivo no será menor que 1/2 del momento negativo
         var MuPos = Math.max(MuPos_grav, 0.50 * MuNeg);
 
-        // 2. Cuantías Mínima y Máxima Aplicables (E.060 Art. 10.5 y 21.5.2)
         var rhoMin = Math.max((0.70 * Math.sqrt(fc)) / fy, 14.0 / fy);
         var asMin = rhoMin * vb * dE;
         var beta1 = (fc <= 280) ? 0.85 : Math.max(0.65, 0.85 - 0.05 * ((fc - 280) / 70));
@@ -1246,7 +1292,6 @@ function runEng(t){
         var rhoMax = Math.min(0.025, 0.75 * rhoBal);
         var asMax = rhoMax * vb * dE;
 
-        // 3. Acero Requerido en Cada Sección Crítica (Iteración exacta de Whitney)
         function calcAsExacto(Mu_tm){
             var asEst = (Mu_tm * 100000) / (0.90 * fy * 0.90 * dE);
             for(var it = 0; it < 5; it++){
@@ -1258,9 +1303,8 @@ function runEng(t){
         }
 
         var asReqSup = calcAsExacto(MuNeg);
-        var asReqInf = Math.max(calcAsExacto(MuPos), 0.50 * asReqSup); // Garantiza As(+) >= 0.5 As(-)
+        var asReqInf = Math.max(calcAsExacto(MuPos), 0.50 * asReqSup);
 
-        // 4. Evaluación de Propuestas (Continuidad de 2 barras mín + Capacidad + Congestión)
         var max58 = maxVarillasPorCapa(vb, 1.99);
         var max34 = maxVarillasPorCapa(vb, 2.84);
         var max12 = maxVarillasPorCapa(vb, 1.29);
@@ -1274,18 +1318,15 @@ function runEng(t){
         var nS_12 = Math.max(2, Math.ceil(asReqSup / 1.29));
         var nI_12 = Math.max(2, Math.ceil(Math.max(asReqInf, 0.5 * nS_12 * 1.29) / 1.29));
 
-        // Propuesta Combinada: 2Ø5/8" continuas + Bastones Ø1/2"
         var nS_comb12 = Math.max(1, Math.ceil(Math.max(0.1, asReqSup - 2 * 1.99) / 1.29));
         var asSupCombProv = 2 * 1.99 + nS_comb12 * 1.29;
         var nI_comb12 = Math.max(1, Math.ceil(Math.max(0.1, Math.max(asReqInf, 0.5 * asSupCombProv) - 2 * 1.99) / 1.29));
 
-        // Determinar cuál es la MEJOR PROPUESTA cumpliendo 1 sola capa y cuantía sísmica
         var bestKey = 'opt58';
         if((nS_58 > max58 || nI_58 > max58) && (nS_34 <= max34 && nI_34 <= max34)){
             bestKey = 'opt34';
         }
 
-        // Sincronizar automáticamente cuando está en modo 'best'
         var modoEfectivo = (vModoSeleccion === 'best') ? bestKey : vModoSeleccion;
         var supBars = [], infBars = [];
         var txtAcero = '';
@@ -1306,8 +1347,6 @@ function runEng(t){
             for(var s=0; s<nS; s++) supBars.push(phS_sel);
             for(var q=0; q<nI; q++) infBars.push(phI_sel);
 
-            var capS = organizarCapasViga(supBars, vb).length;
-            var capI = organizarCapasViga(infBars, vb).length;
             var nBastSup = Math.max(0, nS - 2);
             var nBastInf = Math.max(0, nI - 2);
 
@@ -1330,7 +1369,6 @@ function runEng(t){
             addAlert('green', 'E.060: Cuantías OK (As_mín=' + asMin.toFixed(1) + ' ≤ As ≤ As_máx=' + asMax.toFixed(1) + 'cm²)');
         }
 
-        // 5. Anclaje (Ldh), Longitud de Desarrollo (Ld) y Cortante por Capacidad Sísmica (Ve)
         var dbMayor = phiDb(supBars[0] || 1.99);
         var dbMenor = phiDb(infBars[infBars.length - 1] || 1.29);
         var Ldh_gancho = Math.max(Math.ceil((0.06 * dbMayor * fy) / Math.sqrt(fc)), Math.ceil(8 * dbMayor), 15);
@@ -1338,7 +1376,6 @@ function runEng(t){
         var Ld_rectoSup = Math.ceil(1.3 * (0.08 * dbMayor * fy) / Math.sqrt(fc));
         var Ld_rectoInf = Math.ceil((0.08 * dbMenor * fy) / Math.sqrt(fc));
 
-        // Cortante por Capacidad Sísmica E.060 Art. 21.5.4 (Momentos Probables Mpr con 1.25*fy)
         var a_pr1 = (asSupProv * 1.25 * fy) / (0.85 * fc * vb);
         var Mpr1 = (asSupProv * 1.25 * fy * (dE - a_pr1 / 2)) / 100000;
         var a_pr2 = (asInfProv * 1.25 * fy) / (0.85 * fc * vb);
@@ -1349,9 +1386,8 @@ function runEng(t){
 
         var phiVc_viga = (0.85 * 0.53 * Math.sqrt(fc) * vb * dE) / 1000;
         var Vs_req_ton = Math.max(0, (Vu_cortante - phiVc_viga) / 0.85);
-        var Av_est = 2 * 0.71; // 2 ramas Ø 3/8"
+        var Av_est = 2 * 0.71;
         var sReqCortante = (Vs_req_ton > 0.1) ? Math.floor((Av_est * fy * dE) / (Vs_req_ton * 1000)) : 25;
-        // Confinamiento sísmico E.060 Art. 21.5.3.2: s <= min(d/4, 8*db_menor, 24*db_est, 10cm)
         var sSismoMax = Math.min(Math.floor(dE / 4), Math.floor(8 * dbMenor), 22, 10);
         var sLim = Math.max(6, Math.min(sSismoMax, sReqCortante));
         var sResto = Math.min(20, Math.floor(dE / 2));
@@ -1411,7 +1447,6 @@ function runEng(t){
         var blockerInfo = (wTabique_kgm === 320) ? 'Ladrillo Blocker 10×20×30 cm (Peso=4.500 kg/und, 15 unid/m², f\'b=130-160 kg/cm²)' :
                           ((wTabique_kgm === 355) ? 'Ladrillo Blocker 12×20×30 cm (Peso=5.150 kg/und, 15 unid/m², f\'b=130-160 kg/cm²)' : 'Muro de albañilería (' + wTabique_kgm + ' kg/m)');
 
-        // MEMORIA UNIVERSITARIA PASO A PASO - VIGA CON LOS 5 CRITERIOS COMPLETOS
         el('mem_vig').innerHTML = 
             '<div class="mem-title-main">🎓 MEMORIA DE CÁLCULO DETALLADA: VIGA SISMORRESISTENTE (RNE E.060)</div>' +
             '<div class="memoria-section">PASO 1: METRADO AUTOMÁTICO DE CARGAS Y MURO BLOCKER (NORMA E.020)</div>' +
@@ -1747,12 +1782,10 @@ function rCol(b, t, r, phE, phM, nM, pat){
     ctx.fillStyle = '#30d158'; ctx.textAlign = 'left'; ctx.fillText('t = ' + t + 'cm', cx + w / 2 + 16, cy);
 }
 
-// PLANO 2D DE VIGA CON SECCIÓN CRÍTICA (IZQ) + DIAGRAMA DE MOMENTOS Y ANCLAJE (DER)
 function rVig(b, ht, supBars, infBars, phPiel, MuNeg, MuPos, L, LbastSup, Ldh){
     var c = el('cvs_2d_vig'); if(!c) return; 
     var ctx = c.getContext('2d'); ctx.clearRect(0, 0, c.width, c.height);
     
-    // PANEL IZQUIERDO: SECCIÓN TRANSVERSAL CRÍTICA
     var cx = 78, cy = c.height / 2 + 8;
     var sc = Math.min(100 / b, (c.height - 52) / ht);
     var w = b * sc, h = ht * sc, rP = Math.max(7, 3.2 * sc);
@@ -1802,27 +1835,21 @@ function rVig(b, ht, supBars, infBars, phPiel, MuNeg, MuPos, L, LbastSup, Ldh){
     ctx.fillStyle = '#e2e8f0'; ctx.font = 'bold 9.5px sans-serif';
     ctx.fillText(supBars.length + ' Sup / ' + infBars.length + ' Inf', cx, cy - h / 2 - 4);
 
-    // Línea divisoria vertical
     ctx.strokeStyle = 'rgba(148,163,184,0.2)'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(150, 12); ctx.lineTo(150, c.height - 12); ctx.stroke();
 
-    // PANEL DERECHO: DIAGRAMA DE MOMENTOS (ARRIBA) Y CONTINUIDAD/ANCLAJE (ABAJO)
     var xL = 166, xR = 304, xMid = (xL + xR) / 2;
     
-    // 1. Diagrama de Momentos (Mu- y Mu+)
     var yAxisM = 62;
     ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center';
     ctx.fillText('DIAGRAMA MOMENTOS (E.060)', xMid, 16);
     
-    // Eje base de la viga
     ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(xL, yAxisM); ctx.lineTo(xR, yAxisM); ctx.stroke();
-    // Apoyos
     ctx.fillStyle = '#475569';
     ctx.fillRect(xL - 4, yAxisM - 12, 6, 24);
     ctx.fillRect(xR - 2, yAxisM - 12, 6, 24);
 
-    // Curva parabólica envolvente (Negativo arriba en apoyos, Positivo abajo en centro)
     ctx.strokeStyle = '#ff9f0a'; ctx.lineWidth = 2;
     ctx.fillStyle = 'rgba(255, 159, 10, 0.14)';
     ctx.beginPath();
@@ -1840,19 +1867,16 @@ function rVig(b, ht, supBars, infBars, phPiel, MuNeg, MuPos, L, LbastSup, Ldh){
     ctx.fillStyle = '#30d158'; ctx.textAlign = 'center';
     ctx.fillText('+' + (MuPos || 5.0).toFixed(1) + ' T·m', xMid, yAxisM + 34);
 
-    // 2. Esquema Longitudinal de Continuidad, Bastones y Gancho 90° (Ldh)
     var yBeamTop = 135, yBeamBot = 178;
     ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center';
     ctx.fillText('CONTINUIDAD Y ANCLAJE (L=' + (L || 4.5).toFixed(1) + 'm)', xMid, 122);
 
-    // Contorno longitudinal de viga y columnas extremas
     ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.5;
     ctx.strokeRect(xL, yBeamTop, xR - xL, yBeamBot - yBeamTop);
     ctx.fillStyle = 'rgba(59, 130, 246, 0.12)';
     ctx.fillRect(xL - 10, yBeamTop - 8, 10, (yBeamBot - yBeamTop) + 16);
     ctx.fillRect(xR, yBeamTop - 8, 10, (yBeamBot - yBeamTop) + 16);
 
-    // Acero superior continuo + Gancho 90°
     ctx.strokeStyle = phiC(supBars[0] || 1.99); ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(xL - 6, yBeamTop + 20);
@@ -1861,14 +1885,12 @@ function rVig(b, ht, supBars, infBars, phPiel, MuNeg, MuPos, L, LbastSup, Ldh){
     ctx.lineTo(xR + 6, yBeamTop + 20);
     ctx.stroke();
 
-    // Bastones superiores L/3
     var wBast = (xR - xL) * 0.32;
     ctx.beginPath();
     ctx.moveTo(xL, yBeamTop + 12); ctx.lineTo(xL + wBast, yBeamTop + 12);
     ctx.moveTo(xR - wBast, yBeamTop + 12); ctx.lineTo(xR, yBeamTop + 12);
     ctx.stroke();
 
-    // Acero inferior continuo + Gancho 90°
     ctx.strokeStyle = phiC(infBars[0] || 1.99); ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(xL - 6, yBeamBot - 20);
@@ -1877,7 +1899,6 @@ function rVig(b, ht, supBars, infBars, phPiel, MuNeg, MuPos, L, LbastSup, Ldh){
     ctx.lineTo(xR + 6, yBeamBot - 20);
     ctx.stroke();
 
-    // Bastón inferior central
     ctx.beginPath();
     ctx.moveTo(xL + (xR - xL) * 0.18, yBeamBot - 12);
     ctx.lineTo(xR - (xR - xL) * 0.18, yBeamBot - 12);
@@ -2079,7 +2100,6 @@ function render3D(){
                         var phVal = lay[k];
                         ctx.strokeStyle = phiC(phVal);
                         var cZ = (nC === 1) ? (-sz * 0.78) : (-sz * 0.78 + k * ((sz * 1.56) / (nC - 1)));
-                        // Si es 2da capa (bastones), se dibuja en las zonas críticas con ganchos en extremos
                         var p1 = prj(-sx * 0.95, fY, cZ, cx, cy);
                         var p2 = prj(sx * 0.95, fY, cZ, cx, cy);
                         var pHook1 = prj(-sx * 0.95, fY - dir * (sy * 0.38), cZ, cx, cy);
