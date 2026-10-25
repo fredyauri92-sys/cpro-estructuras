@@ -1,16 +1,3 @@
-Para implementar estas mejoras con precisión ingenieril, he reestructurado completamente el módulo de **Muros de Contención** para que funcione con la misma lógica interactiva y automática que las Zapatas y Columnas.
-
-### Cambios Aplicados en el Código:
-
-1. **Actualización Dinámica 3D:** Ahora, al cambiar entre "Muro Libre" y "Muro Sótano", el motor 3D actualiza instantáneamente el modelo, dibujando la losa de techo de apoyo en la corona del muro para el caso de sótano.
-2. **Drenaje (3 Estados Geotécnicos):** Se incluyó la opción **Seco (Sin agua)**, **Drenado (Lloraderos)**, y **Saturado (Nivel Freático)**, ajustando dinámicamente el peso específico del suelo ($\gamma_{eff}$) y sumando el empuje hidrostático cuando corresponde.
-3. **Automatización con Intervención Manual:** Toda la geometría ($B, hz, e, c$) y los aceros ($\phi_{vert}, \phi_{horz}, \phi_{zap}$) se calculan automáticamente al cambiar las condiciones del terreno, pero se han trasladado a la tabla inferior `✅ DISEÑO MURO` para que puedas sobrescribir cualquier medida o diámetro a tu gusto.
-4. **Propuestas de Armado:** Se añadió el panel de "💡 PROPUESTAS DE ARMADO" que calcula las mejores combinaciones de acero y espaciamiento, permitiéndote cambiar de $1/2"$ a $5/8"$ con un solo toque.
-5. **Memoria y Cálculos Precisos:** Integrados los chequeos exhaustivos al reposo ($K_0$) y activo ($K_a$), con el acero iterativo exacto ($a_{whitney}$).
-
-Copia el siguiente código fuente y guárdalo en un archivo de texto plano con la extensión **`index.html`** (puedes usar el Bloc de notas y seleccionar "Guardar como -> `index.html`") para subirlo a tu repositorio o abrirlo en tu navegador.
-
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -21,93 +8,76 @@ Copia el siguiente código fuente y guárdalo en un archivo de texto plano con l
 <meta name="theme-color" content="#0b0e14">
 <meta name="apple-mobile-web-app-title" content="C.PRO Estruc">
 <meta name="application-name" content="C.PRO Estruc">
-
 <link rel="apple-touch-icon" href="icono-estructuras.png">
 <link rel="icon" type="image/png" href="icono-estructuras.png">
 <link rel="manifest" href="manifest.json">
-
 <title>CONSTRUYE.PRO - BIM Móvil Premium (RNE)</title>
 <style>
 :root { --bg-color:#0b0e14; --card-bg:#151a23; --card-border:#232d3f; --text-main:#f0f4f8; --text-muted:#94a3b8; --primary-orange:#ff9f0a; --primary-green:#30d158; --primary-cyan:#00e5ff; --primary-red:#ff453a; --input-bg:#1c2331; }
 * { box-sizing:border-box; margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; -webkit-tap-highlight-color:transparent; }
 html, body { width:100%; height:100%; background-color:var(--bg-color); color:var(--text-main); overflow:hidden; }
-
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { -webkit-appearance:none !important; margin:0 !important; display:none !important; }
+input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance:none !important; margin:0 !important; display:none !important; }
 input[type=number] { -moz-appearance:textfield !important; }
-
 #splash-screen { position:fixed; top:0; left:0; width:100vw; height:100vh; background-color:#030508; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:99999; transition:opacity 0.5s ease; cursor:pointer; }
 @keyframes scaleUp { 0%{opacity:0;transform:scale(0.6);} 100%{opacity:1;transform:scale(1);} }
 .anim-scale { animation:scaleUp 0.8s forwards cubic-bezier(0.2,0.8,0.2,1); }
 @keyframes spinSlow { 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
-
 @keyframes blinkRedAlert {
-    0%, 100% { background: rgba(255, 59, 48, 0.95); color: #ffffff; border-color: #ffffff; box-shadow: 0 0 18px rgba(255, 59, 48, 0.9); transform: scale(1); }
-    50% { background: rgba(140, 15, 10, 0.9); color: #ffd700; border-color: #ff453a; box-shadow: 0 0 4px rgba(255, 59, 48, 0.3); transform: scale(1.04); }
+    0%, 100% { background:rgba(255,59,48,0.95); color:#fff; border-color:#fff; box-shadow:0 0 18px rgba(255,59,48,0.9); transform:scale(1); }
+    50% { background:rgba(140,15,10,0.9); color:#ffd700; border-color:#ff453a; box-shadow:0 0 4px rgba(255,59,48,0.3); transform:scale(1.04); }
 }
-
 #app-container { position:absolute; top:0; left:0; right:0; bottom:0; width:100%; max-width:520px; height:100%; margin:0 auto; display:flex; flex-direction:column; background-color:var(--bg-color); box-shadow:0 0 60px rgba(0,229,255,0.15); overflow:hidden; }
 header { flex:0 0 auto; background-color:var(--card-bg); padding:10px 14px; border-bottom:1px solid var(--card-border); display:flex; justify-content:space-between; align-items:center; z-index:100; }
 .brand-title { font-size:16px; font-weight:900; letter-spacing:1px; }
 .rotating-y-wrapper { position:relative; width:30px; height:30px; display:flex; align-items:center; justify-content:center; }
 .rotating-circle { position:absolute; top:0; left:0; width:30px; height:30px; border:2px dashed var(--primary-orange); border-radius:50%; animation:spinSlow 6s linear infinite; }
 .brand-y-letter { font-size:15px; font-weight:900; color:var(--primary-orange); z-index:2; }
-
 .main-viewport { flex:1 1 auto; overflow-y:auto; padding:14px; padding-bottom:88px; display:none; }
 .main-viewport.active { display:block; }
-
 .segmented-control { display:flex; background-color:var(--input-bg); border:1px solid var(--card-border); border-radius:8px; padding:4px; margin-bottom:14px; overflow-x:auto; white-space:nowrap; scrollbar-width:none; }
 .segmented-control::-webkit-scrollbar { display:none; }
 .segment-btn { flex:1 0 auto; padding:11px 8px; background:none; border:none; color:var(--text-muted); font-size:11px; font-weight:800; border-radius:6px; cursor:pointer; text-transform:uppercase; transition:all 0.2s; }
 .segment-btn.active { background-color:var(--primary-cyan); color:#000; font-weight:900; }
-
 .form-group { margin-bottom:10px; }
 label { display:flex; align-items:center; gap:5px; font-size:9.6px; font-weight:800; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase; }
 select, input { width:100%; padding:9px 10px; background-color:var(--input-bg); border:1px solid var(--card-border); border-radius:8px; color:var(--text-main); font-size:12.5px; font-weight:700; outline:none; transition:border-color 0.2s; }
 select:focus, input:focus { border-color:var(--primary-cyan); }
-.input-inline { background:rgba(0,0,0,0.45); border:1px solid var(--card-border); color:var(--primary-orange); padding:4px 6px; border-radius:6px; font-size:12px; font-weight:900; width:72px; text-align:center; }
+.input-inline { background:rgba(0,0,0,0.45); border:1px solid var(--card-border); color:var(--primary-orange); padding:4px 6px; border-radius:6px; font-size:12px; font-weight:900; width:74px; text-align:center; }
 .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
 .grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
-
 .global-banner { background:rgba(0,229,255,0.05); border:1px dashed rgba(0,229,255,0.32); border-radius:9px; padding:10px; margin-bottom:12px; }
 .global-banner-title { font-size:9.5px; font-weight:900; color:var(--primary-cyan); text-transform:uppercase; margin-bottom:8px; letter-spacing:0.5px; display:flex; justify-content:space-between; }
-
 .schematic-container { position:relative; background-color:var(--card-bg); border:1px solid var(--card-border); border-radius:12px; margin-bottom:14px; overflow:hidden; box-shadow:0 8px 25px rgba(0,0,0,0.3); }
 .pill-badge { position:absolute; font-size:10px; font-weight:800; padding:6px 14px; border-radius:14px; background:rgba(15,23,42,0.92); border:1px solid rgba(0,229,255,0.4); z-index:25; cursor:pointer; color:var(--primary-cyan); text-transform:uppercase; transition:all 0.2s; }
 .pill-alert-ok { color:var(--primary-green); border-color:rgba(48,209,88,0.55); background:rgba(15,23,42,0.92); }
 .pill-alert-warn { color:var(--primary-orange); border-color:rgba(255,159,10,0.65); background:rgba(25,20,12,0.94); }
 .pill-alert-danger { animation:blinkRedAlert 1s infinite ease-in-out; font-weight:900; }
-
 #status_dashboard { position:absolute; bottom:44px; left:12px; right:12px; z-index:30; background:rgba(11,14,20,0.96); border:1px solid var(--card-border); border-radius:10px; padding:10px 12px; display:none; flex-direction:column; gap:5px; box-shadow:0 10px 30px rgba(0,0,0,0.75); backdrop-filter:blur(6px); }
 #status_dashboard.open { display:flex; }
-
 .auto-field-box { background:rgba(48,209,88,0.08); border:1px solid rgba(48,209,88,0.35); border-radius:8px; padding:6px 10px; display:flex; flex-direction:column; justify-content:center; }
 .auto-field-val { font-size:13px; font-weight:900; color:var(--primary-green); display:flex; justify-content:space-between; align-items:center; }
-
 .result-card { background-color:var(--card-bg); border:1px solid var(--card-border); border-radius:10px; padding:15px; margin-bottom:14px; }
 .result-header { font-size:12px; font-weight:900; color:var(--primary-cyan); border-bottom:1px solid var(--card-border); padding-bottom:8px; margin-bottom:12px; text-transform:uppercase; display:flex; justify-content:space-between; align-items:center; }
 .res-table { width:100%; border-collapse:collapse; font-size:12px; }
 .res-table td { padding:10px 4px; border-bottom:1px dashed var(--card-border); vertical-align:middle; color:#fff; font-weight:700; }
 .res-table td:last-child { text-align:right; }
 .val-sub { font-size:10.5px; color:var(--text-muted); font-weight:600; display:block; margin-top:3px; line-height:1.4; }
-
 .badge-green { background:rgba(48,209,88,0.15); color:var(--primary-green); border:1px solid rgba(48,209,88,0.35); font-size:10.5px; padding:5px 9px; border-radius:8px; font-weight:800; display:block; }
 .badge-red { background:rgba(255,69,58,0.18); color:var(--primary-red); border:1px solid rgba(255,69,58,0.45); font-size:10.5px; padding:5px 9px; border-radius:8px; font-weight:800; display:block; }
 .badge-orange { background:rgba(255,159,10,0.18); color:var(--primary-orange); border:1px solid rgba(255,159,10,0.45); font-size:10.5px; padding:5px 9px; border-radius:8px; font-weight:800; display:block; }
-
 .propuestas-box { margin-top:12px; background:rgba(0,0,0,0.28); border:1px solid var(--card-border); border-radius:8px; padding:10px; }
 .propuestas-title { font-size:10.5px; font-weight:900; color:var(--primary-orange); text-transform:uppercase; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; }
 .prop-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-.prop-card { background:var(--input-bg); border:1.5px solid var(--card-border); border-radius:7px; padding:8px 10px; cursor:pointer; transition:all 0.2s; text-align:left; position:relative; }
+.prop-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; }
+.prop-card { background:var(--input-bg); border:1.5px solid var(--card-border); border-radius:7px; padding:8px 8px; cursor:pointer; transition:all 0.2s; text-align:left; position:relative; }
 .prop-card.active { border-color:var(--primary-cyan); background:rgba(0,229,255,0.10); box-shadow:0 0 12px rgba(0,229,255,0.18); }
 .prop-card.best.active { border-color:var(--primary-green); background:rgba(48,209,88,0.14); box-shadow:0 0 14px rgba(48,209,88,0.25); }
-.prop-tag { font-size:9px; font-weight:900; text-transform:uppercase; padding:2px 6px; border-radius:4px; display:inline-block; margin-bottom:4px; }
+.prop-tag { font-size:8.5px; font-weight:900; text-transform:uppercase; padding:2px 5px; border-radius:4px; display:inline-block; margin-bottom:4px; }
 .tag-best { background:var(--primary-green); color:#000; }
 .tag-alt { background:#334155; color:#e2e8f0; }
 .tag-warn { background:var(--primary-orange); color:#000; }
-.prop-main { font-size:11.5px; font-weight:900; color:#fff; line-height:1.35; }
-.prop-meta { font-size:9.5px; color:var(--text-muted); margin-top:3px; line-height:1.3; }
-
+.prop-main { font-size:11px; font-weight:900; color:#fff; line-height:1.3; }
+.prop-meta { font-size:9px; color:var(--text-muted); margin-top:3px; line-height:1.25; }
 .btn-auditor { width:100%; background:linear-gradient(90deg, #1e293b, #0f172a); color:#00e5ff; border:1px solid rgba(0,229,255,0.5); padding:14px; border-radius:8px; font-size:12px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:12px; letter-spacing:0.5px; box-shadow:0 4px 12px rgba(0,0,0,0.25); }
 .memoria-box { background:#090d16; border:1px solid var(--card-border); border-radius:8px; padding:14px; margin-top:12px; display:none; border-left:4px solid var(--primary-orange); font-size:11.5px; line-height:1.65; color:#e2e8f0; }
 .mem-title-main { font-size:12.5px; font-weight:900; color:#fff; background:rgba(255,159,10,0.15); border:1px solid rgba(255,159,10,0.4); padding:8px 10px; border-radius:6px; margin-bottom:12px; text-align:center; text-transform:uppercase; letter-spacing:0.5px; }
@@ -116,8 +86,6 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
 .mem-step-title { font-weight:800; color:var(--primary-cyan); font-size:11px; margin-bottom:4px; }
 .mem-eq { font-family:"Courier New", Courier, monospace; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-left:3px solid var(--primary-cyan); padding:6px 9px; border-radius:5px; margin:5px 0; font-size:11px; color:#ffd700; overflow-x:auto; white-space:pre-wrap; }
 .mem-verdict-ok { color:var(--primary-green); font-weight:900; background:rgba(48,209,88,0.1); padding:3px 7px; border-radius:4px; display:inline-block; margin-top:3px; font-size:10.5px; }
-.mem-verdict-err { color:var(--primary-red); font-weight:900; background:rgba(255,69,58,0.15); padding:3px 7px; border-radius:4px; display:inline-block; margin-top:3px; font-size:10.5px; }
-
 .bottom-nav { position:absolute; bottom:0; left:0; right:0; background-color:var(--card-bg); border-top:1px solid var(--card-border); display:flex; height:70px; z-index:999; padding-bottom:env(safe-area-inset-bottom); }
 .nav-item { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; background:none; border:none; color:var(--text-muted); font-size:10px; font-weight:700; cursor:pointer; gap:4px; transition:color 0.2s; }
 .nav-item.active { color:var(--primary-orange); background-color:rgba(255,159,10,0.08); border-top:2px solid var(--primary-orange); }
@@ -149,24 +117,17 @@ if(!DEVICE_ID){
     localStorage.setItem('cpro_device_id', DEVICE_ID);
 }
 document.getElementById('lic_device_id').innerText = DEVICE_ID;
-
 function generarPinInterno(codigo) {
     var num = 0;
-    for(var i = 0; i < codigo.length; i++) {
-        num += codigo.charCodeAt(i) * Math.pow(3, i);
-    }
-    return ((num * 8392) % 8999) + 1000; 
+    for(var i = 0; i < codigo.length; i++) num += codigo.charCodeAt(i) * Math.pow(3, i);
+    return ((num * 8392) % 8999) + 1000;
 }
-
 if(localStorage.getItem('cpro_licencia_activa') === 'SI'){
     document.getElementById('licencia-screen').style.display = 'none';
 }
-
 function validarLicencia(){
     var pinIngresado = parseInt(document.getElementById('lic_pin_input').value);
-    var pinCorrecto = generarPinInterno(DEVICE_ID);
-    
-    if(pinIngresado === pinCorrecto){
+    if(pinIngresado === generarPinInterno(DEVICE_ID)){
         localStorage.setItem('cpro_licencia_activa', 'SI');
         document.getElementById('licencia-screen').style.opacity = '0';
         setTimeout(function(){ document.getElementById('licencia-screen').style.display = 'none'; }, 300);
@@ -205,10 +166,8 @@ function validarLicencia(){
         <div class="schematic-container">
             <button class="pill-badge" onclick="resetCam()" style="top:12px; left:12px;" id="btn_centrar">🎯 Centrar</button>
             <button class="pill-badge" onclick="togRX()" style="top:12px; right:12px;" id="btn_rayosx">👁️ Rayos X</button>
-            
             <button class="pill-badge pill-alert-ok" onclick="togAlerts()" style="bottom:10px; left:12px;" id="btn_alertas">✅ RNE OK</button>
             <div id="status_dashboard" onclick="togAlerts()"></div>
-            
             <canvas id="canvas_3d_viewport" width="360" height="280" style="width:100%; height:280px; display:block; cursor:grab;"></canvas>
         </div>
 
@@ -326,18 +285,9 @@ function validarLicencia(){
             <div class="global-banner">
                 <div class="global-banner-title"><span>📋 CARGA TRIBUTARIA MEDIBLE EN CAMPO</span><span>E.020 / E.060</span></div>
                 <div class="form-group grid-3">
-                    <div>
-                        <label>📊 N° Pisos:</label>
-                        <input type="number" id="c_pisos" value="4" min="1" oninput="syncGlobal('pisos', this.value)">
-                    </div>
-                    <div>
-                        <label>📐 Área (m²):</label>
-                        <input type="number" id="c_aconst" value="120" oninput="syncGlobal('area', this.value)">
-                    </div>
-                    <div>
-                        <label>📝 N° Cols:</label>
-                        <input type="number" id="c_ncol" value="12" min="1" oninput="syncGlobal('ncol', this.value)">
-                    </div>
+                    <div><label>📊 N° Pisos:</label><input type="number" id="c_pisos" value="4" min="1" oninput="syncGlobal('pisos', this.value)"></div>
+                    <div><label>📐 Área (m²):</label><input type="number" id="c_aconst" value="120" oninput="syncGlobal('area', this.value)"></div>
+                    <div><label>📝 N° Cols:</label><input type="number" id="c_ncol" value="12" min="1" oninput="syncGlobal('ncol', this.value)"></div>
                 </div>
                 <div class="form-group grid-2" style="margin-bottom:0;">
                     <div>
@@ -409,18 +359,9 @@ function validarLicencia(){
             <div class="global-banner">
                 <div class="global-banner-title"><span>📋 DATOS DE CAMPO Y EDIFICIO</span><span>E.020 / E.030</span></div>
                 <div class="form-group grid-3">
-                    <div>
-                        <label>📊 N° Pisos:</label>
-                        <input type="number" id="v_pisos" value="4" min="1" oninput="syncGlobal('pisos', this.value)">
-                    </div>
-                    <div>
-                        <label>📐 Área (m²):</label>
-                        <input type="number" id="v_aconst" value="120" oninput="syncGlobal('area', this.value)">
-                    </div>
-                    <div>
-                        <label>📝 N° Cols:</label>
-                        <input type="number" id="v_ncol" value="12" min="1" oninput="syncGlobal('ncol', this.value)">
-                    </div>
+                    <div><label>📊 N° Pisos:</label><input type="number" id="v_pisos" value="4" min="1" oninput="syncGlobal('pisos', this.value)"></div>
+                    <div><label>📐 Área (m²):</label><input type="number" id="v_aconst" value="120" oninput="syncGlobal('area', this.value)"></div>
+                    <div><label>📝 N° Cols:</label><input type="number" id="v_ncol" value="12" min="1" oninput="syncGlobal('ncol', this.value)"></div>
                 </div>
                 <div class="form-group grid-2" style="margin-bottom:0;">
                     <div>
@@ -514,13 +455,13 @@ function validarLicencia(){
             </div>
         </div>
 
-        <!-- ==================== MÓDULO MUROS DE CONTENCIÓN ==================== -->
+        <!-- ==================== MÓDULO MUROS DE CONTENCIÓN Y SÓTANO ==================== -->
         <div id="mod_muros" class="calc-subpane" style="display:none;">
             <div class="global-banner" style="border-color:var(--primary-orange);">
-                <div class="global-banner-title"><span style="color:var(--primary-orange);">🏗️ SISTEMA ESTRUCTURAL DEL MURO</span></div>
-                <div class="form-group">
+                <div class="global-banner-title"><span style="color:var(--primary-orange);">🏗️ SISTEMA ESTRUCTURAL DEL MURO</span><span>E.050 / E.060</span></div>
+                <div class="form-group" style="margin-bottom:0;">
                     <select id="m_tipo_muro" onchange="runEng('muro_geom')" style="border-color:var(--primary-orange); background:rgba(255,159,10,0.1);">
-                        <option value="voladizo">Muro Libre (Voladizo / Cerco) [Empuje Activo]</option>
+                        <option value="voladizo">Muro Libre (Voladizo / Cerco) [Empuje Activo Ka]</option>
                         <option value="sotano" selected>Muro Arriostrado (Sótano / Losa) [Empuje Reposo Ko]</option>
                     </select>
                 </div>
@@ -537,7 +478,7 @@ function validarLicencia(){
                         <option value="0">Nada (Terreno Libre)</option>
                         <option value="250" selected>Jardín / Peat. (250 kg/m²)</option>
                         <option value="500">Vehicular Liv. (500 kg/m²)</option>
-                        <option value="1000">Vía Pesada (1000 kg/m²)</option>
+                        <option value="1000">Carretera / Vía (1000 kg/m²)</option>
                     </select>
                 </div>
             </div>
@@ -554,50 +495,51 @@ function validarLicencia(){
                 <div>
                     <label>💧 Drenaje (Condición Agua):</label>
                     <select id="m_agua" onchange="runEng('muro_geom')">
-                        <option value="seco">Seco (Sin agua)</option>
-                        <option value="drenado" selected>Drenado (Con Lloraderos)</option>
-                        <option value="saturado">Saturado (Suma Hidrostático)</option>
+                        <option value="seco" selected>Seco (Sin agua)</option>
+                        <option value="drenado">Drenado (Con Lloraderos)</option>
+                        <option value="saturado">Saturado (Nivel Freático)</option>
                     </select>
                 </div>
             </div>
 
             <div class="result-card">
-                <div class="result-header" id="m_res_title">✅ DISEÑO MURO DE CONTENCIÓN</div>
+                <div class="result-header" id="m_res_title">✅ DISEÑO MURO SÓTANO ARRIOSTRADO (KO)</div>
                 <table class="res-table">
                     <tr>
                         <td style="width:45%;">Base (B) y Espesor (hz):<br><span class="val-sub" id="m_txt_fs">FSV, FSD y Presión</span></td>
                         <td>
-                            <div style="display:flex; justify-content:flex-end; gap:4px; margin-bottom:4px; align-items:center;">B: <input type="number" id="m_mod_b" value="1.20" step="0.05" class="input-inline" oninput="runEng('geom')"> m</div>
+                            <div style="display:flex; justify-content:flex-end; gap:4px; margin-bottom:4px; align-items:center;">B: <input type="number" id="m_mod_b" value="1.00" step="0.05" class="input-inline" oninput="runEng('geom')"> m</div>
                             <div style="display:flex; justify-content:flex-end; gap:4px; align-items:center;">hz: <input type="number" id="m_mod_hz" value="0.40" step="0.05" class="input-inline" oninput="runEng('geom')"> m</div>
                         </td>
                     </tr>
                     <tr>
                         <td>Pantalla (Base e, Top c):<br><span class="val-sub" id="m_txt_puntera">Dimensiones Pantalla</span></td>
                         <td>
-                            <div style="display:flex; justify-content:flex-end; gap:4px; margin-bottom:4px; align-items:center;">e: <input type="number" id="m_mod_e" value="0.25" step="0.05" class="input-inline" oninput="runEng('geom')"> m</div>
-                            <div style="display:flex; justify-content:flex-end; gap:4px; align-items:center;">c: <input type="number" id="m_mod_c" value="0.25" step="0.05" class="input-inline" oninput="runEng('geom')"> m</div>
+                            <div style="display:flex; justify-content:flex-end; gap:4px; margin-bottom:4px; align-items:center;">e: <input type="number" id="m_mod_e" value="0.20" step="0.05" class="input-inline" oninput="runEng('geom')"> m</div>
+                            <div style="display:flex; justify-content:flex-end; gap:4px; align-items:center;">c: <input type="number" id="m_mod_c" value="0.20" step="0.05" class="input-inline" oninput="runEng('geom')"> m</div>
                         </td>
                     </tr>
                     <tr>
-                        <td>Acero de Refuerzo:<br><span class="val-sub" id="m_txt_armado">Pantalla y Zapata</span></td>
+                        <td>Acero y Enmallado:<br><span class="val-sub" id="m_txt_armado">Pantalla y Zapata Corrida</span></td>
                         <td>
-                            <div style="display:flex; justify-content:flex-end; gap:4px; margin-bottom:4px; align-items:center;">Vert: <select id="m_mod_phi_v" class="input-inline" onchange="runEng('acero')"><option value="0.71">3/8"</option><option value="1.29">1/2"</option><option value="1.99" selected>5/8"</option><option value="2.84">3/4"</option></select></div>
-                            <div style="display:flex; justify-content:flex-end; gap:4px; margin-bottom:4px; align-items:center;">Horz: <select id="m_mod_phi_h" class="input-inline" onchange="runEng('acero')"><option value="0.71">3/8"</option><option value="1.29" selected>1/2"</option><option value="1.99">5/8"</option></select></div>
-                            <div style="display:flex; justify-content:flex-end; gap:4px; align-items:center;">Zap: <select id="m_mod_phi_z" class="input-inline" onchange="runEng('acero')"><option value="0.71">3/8"</option><option value="1.29" selected>1/2"</option><option value="1.99">5/8"</option><option value="2.84">3/4"</option></select></div>
+                            <div style="display:flex; justify-content:flex-end; gap:4px; margin-bottom:4px; align-items:center;">Malla: <select id="m_mod_malla" class="input-inline" onchange="runEng('acero_muro_manual')"><option value="0" selected>Auto</option><option value="1">1 Malla</option><option value="2">2 Mallas</option></select></div>
+                            <div style="display:flex; justify-content:flex-end; gap:4px; margin-bottom:4px; align-items:center;">Vert: <select id="m_mod_phi_v" class="input-inline" onchange="runEng('acero_muro_manual')"><option value="0.71">3/8"</option><option value="1.29">1/2"</option><option value="1.99" selected>5/8"</option><option value="2.84">3/4"</option></select></div>
+                            <div style="display:flex; justify-content:flex-end; gap:4px; margin-bottom:4px; align-items:center;">Horz: <select id="m_mod_phi_h" class="input-inline" onchange="runEng('acero_muro_manual')"><option value="0.71">3/8"</option><option value="1.29" selected>1/2"</option><option value="1.99">5/8"</option></select></div>
+                            <div style="display:flex; justify-content:flex-end; gap:4px; align-items:center;">Zap: <select id="m_mod_phi_z" class="input-inline" onchange="runEng('acero_muro_manual')"><option value="0.71">3/8"</option><option value="1.29">1/2"</option><option value="1.99" selected>5/8"</option><option value="2.84">3/4"</option></select></div>
                         </td>
                     </tr>
                 </table>
                 <div id="m_propuestas_container" class="propuestas-box"></div>
                 
                 <div style="margin-top:10px; border-top:1px dashed var(--card-border); padding-top:10px;">
-                    <div style="font-size:11px; font-weight:800; color:var(--primary-orange); margin-bottom:6px;">DISTRIBUCIÓN AUTOMÁTICA (E.060):</div>
+                    <div style="font-size:11px; font-weight:800; color:var(--primary-orange); margin-bottom:6px;">DISTRIBUCIÓN AUTOMÁTICA (E.060 CAP. 14):</div>
                     <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px; font-weight:700;"><span>Acero Vertical:</span><span id="m_as_vert"></span></div>
                     <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px; font-weight:700;"><span>Acero Horizontal:</span><span id="m_as_horiz"></span></div>
-                    <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px; font-weight:700;"><span>Parrilla Zapata:</span><span id="m_as_zap"></span></div>
+                    <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px; font-weight:700;"><span>Parrilla Zapata (X/Z):</span><span id="m_as_zap"></span></div>
                     <div id="m_txt_anclaje" style="display:none; justify-content:space-between; font-size:12px; margin-top:8px; font-weight:900; color:var(--primary-cyan);"></div>
                 </div>
 
-                <canvas id="cvs_2d_mur" width="320" height="215" class="canvas-2d-section"></canvas>
+                <canvas id="cvs_2d_mur" width="320" height="225" class="canvas-2d-section"></canvas>
                 <button class="btn-auditor" onclick="tgMem('mem_mur')">📄 Auditar Memoria Universitaria Paso a Paso</button>
                 <div id="mem_mur" class="memoria-box"></div>
             </div>
@@ -698,7 +640,6 @@ if ('caches' in window) {
         for (var i = 0; i < names.length; i++) caches.delete(names[i]);
     });
 }
-
 function el(id){ return document.getElementById(id); }
 function tgMem(id){ var b = el(id); b.style.display = (b.style.display === 'block') ? 'none' : 'block'; }
 function togAlerts(){ var d = el('status_dashboard'); if(d) d.classList.toggle('open'); }
@@ -713,7 +654,7 @@ var INPUT_IDS = [
     'z_uso','z_pisos','z_aconst','z_ncol','z_ubic','z_salitre','z_suelo','z_df_input','z_mod_l','z_mod_b','z_mod_hz','z_mod_phi',
     'c_pisos','c_aconst','c_ncol','c_ubic','c_uso','c_sis','c_h','c_phi_esq','c_phi_mid','c_mod_b','c_mod_t',
     'v_pisos','v_aconst','v_ncol','v_luz','v_losa','v_tabique','v_rol','v_uso','v_phi_sup','v_phi_inf','v_phi_piel','v_mod_b','v_mod_h',
-    'm_tipo_muro','m_h','m_q','m_suelo','m_agua','m_mod_c','m_mod_phi_v','m_mod_phi_h','m_mod_phi_z','m_mod_b','m_mod_e','m_mod_hz'
+    'm_tipo_muro','m_h','m_q','m_suelo','m_agua','m_mod_c','m_mod_malla','m_mod_phi_v','m_mod_phi_h','m_mod_phi_z','m_mod_b','m_mod_e','m_mod_hz'
 ];
 
 function guardarEstadoLocal(){
@@ -723,13 +664,12 @@ function guardarEstadoLocal(){
             var id = INPUT_IDS[i];
             if(el(id)) data[id] = el(id).value;
         }
-        localStorage.setItem('cpro_estruc_state_v8', JSON.stringify(data));
+        localStorage.setItem('cpro_estruc_state_v9', JSON.stringify(data));
     } catch(e){}
 }
-
 function cargarEstadoLocal(){
     try {
-        var raw = localStorage.getItem('cpro_estruc_state_v8');
+        var raw = localStorage.getItem('cpro_estruc_state_v9');
         if(!raw) return false;
         var data = JSON.parse(raw);
         for(var k in data){
@@ -776,7 +716,7 @@ var D3 = {
     cx:30, cy:35, ch:2.8, nE:4, nM:2, cPhiE:1.99, cPhiM:1.29, cPata:30, sLimC:8, ldCol:65,
     vl:4.5, vb:25, vh:40, vPiel:0, phS:1.99, phI:1.99, sLimV:8,
     vSupBars:[], vInfBars:[], MuNeg:8.5, MuPos:5.2, Ldh:25,
-    mTipo:'sotano', mH:2.8, mB:1.20, mHz:40, mC:25, mE:25, spV:15, spH:20, spZ:20, mVmalla:1, mHmalla:1, mPhiV:1.99, mPhiH:1.29, mPhiZ:1.99, mDent:false
+    mTipo:'sotano', mH:2.8, mB:1.00, mHz:40, mC:20, mE:20, mPunt:0.80, mTal:0.0, spV:20, spH:20, spZ:20, mVmalla:1, mHmalla:1, mPhiV:1.99, mPhiH:1.29, mPhiZ:1.99, mDent:false
 };
 
 function setMod(id, btn){
@@ -785,7 +725,6 @@ function setMod(id, btn){
     for(var i = 0; i < pn.length; i++) pn[i].style.display = 'none';
     var bt = document.querySelectorAll('.segment-btn'); 
     for(var j = 0; j < bt.length; j++) bt[j].classList.remove('active');
-    
     el('mod_' + id).style.display = 'block'; 
     if(btn) btn.classList.add('active');
     if(el('status_dashboard')) el('status_dashboard').classList.remove('open');
@@ -798,11 +737,10 @@ function setView(id, btn){
     for(var i = 0; i < vw.length; i++) vw[i].classList.remove('active');
     var nv = document.querySelectorAll('.bottom-nav .nav-item'); 
     for(var j = 0; j < nv.length; j++) nv[j].classList.remove('active');
-    
     el('view_' + id).classList.add('active'); 
     if(btn) btn.classList.add('active');
     runEng('recalc_only');
-    if(id === 'main'){ render3D(); }
+    if(id === 'main') render3D();
 }
 
 function togRX(){
@@ -817,18 +755,15 @@ function resetCam(){
     if(cMod === 'zapatas'){ cRotX=0.52; cRotY=-0.62; camZ=1.25; panX=0; panY=10; }
     else if(cMod === 'columnas'){ cRotX=0.28; cRotY=-0.62; camZ=0.68; panX=0; panY=52; }
     else if(cMod === 'vigas'){ cRotX=0.42; cRotY=-0.58; camZ=0.95; panX=0; panY=18; }
-    else if(cMod === 'muros'){ cRotX=0.15; cRotY=-0.65; camZ=1.00; panX=0; panY=35; }
+    else if(cMod === 'muros'){ cRotX=0.22; cRotY=-0.62; camZ=0.95; panX=0; panY=36; }
     render3D();
 }
 
 function maxVarillasPorCapa(b_cm, phiArea){
     var db = phiDb(phiArea);
-    var recub = 4.0;
-    var estribo = 0.95;
-    var b_libre = b_cm - 2 * (recub + estribo);
+    var b_libre = b_cm - 2 * (4.0 + 0.95);
     var sep_min = Math.max(2.5, db);
-    var nMax = Math.floor((b_libre + sep_min) / (db + sep_min));
-    return Math.max(2, nMax);
+    return Math.max(2, Math.floor((b_libre + sep_min) / (db + sep_min)));
 }
 
 function organizarCapasViga(barsArray, b_cm){
@@ -838,8 +773,7 @@ function organizarCapasViga(barsArray, b_cm){
     for(var i = 0; i < total; i++){ if(barsArray[i] > maxPhi) maxPhi = barsArray[i]; }
     var mx = maxVarillasPorCapa(b_cm, maxPhi);
     if(total <= mx) return [barsArray];
-    var layers = [];
-    var idx = 0, rem = total;
+    var layers = [], idx = 0, rem = total;
     while(rem > 0){
         var take = Math.min(rem, mx);
         if(rem - take === 1 && take > 2) take = take - 1;
@@ -855,10 +789,15 @@ function seleccionarPropuestaViga(modo, phS, phI){
     if(phI > 0) el('v_phi_inf').value = phI.toFixed(2);
     runEng('propuesta_click');
 }
-
 function aplicarPropuestaZapata(ph){ el('z_mod_phi').value = ph.toFixed(2); runEng('acero'); }
 function aplicarPropuestaColumna(phE, phM){ el('c_phi_esq').value = phE.toFixed(2); el('c_phi_mid').value = phM.toFixed(2); runEng('acero'); }
-function aplicarPropuestaMuro(phV, phH, phZ){ el('m_mod_phi_v').value = phV.toFixed(2); el('m_mod_phi_h').value = phH.toFixed(2); el('m_mod_phi_z').value = phZ.toFixed(2); runEng('acero'); }
+function aplicarPropuestaMuro(mallaNum, phV, phH, phZ){
+    el('m_mod_malla').value = String(mallaNum);
+    el('m_mod_phi_v').value = phV.toFixed(2);
+    el('m_mod_phi_h').value = phH.toFixed(2);
+    el('m_mod_phi_z').value = phZ.toFixed(2);
+    runEng('acero_muro_manual');
+}
 
 // ==================== MOTOR ESTRUCTURAL INTEGRAL RNE ====================
 function runEng(t){
@@ -868,9 +807,7 @@ function runEng(t){
     var desp = parseFloat(el('p_desp').value) || 1.05;
     var cantElem = Math.max(1, parseInt(el('ac_cant_elem').value) || 1);
     
-    var listAlerts = [];
-    var nErrors = 0;
-    var nWarns = 0;
+    var listAlerts = [], nErrors = 0, nWarns = 0;
     function addAlert(tipo, texto){
         if(tipo === 'red'){ nErrors++; listAlerts.push('<span class="badge-red">🔴 ' + texto + '</span>'); }
         else if(tipo === 'orange'){ nWarns++; listAlerts.push('<span class="badge-orange">⚠️ ' + texto + '</span>'); }
@@ -883,8 +820,7 @@ function runEng(t){
     var nC = Math.max(1, parseFloat(el('z_ncol').value) || 12);
     var aTrib = aC / nC;
 
-    var m38 = 0, m12 = 0, m58 = 0, m34 = 0;
-    var volConcretoElem = 0;
+    var m38 = 0, m12 = 0, m58 = 0, m34 = 0, volConcretoElem = 0;
     function sumarMetros(phi, metros){
         if(phi < 0.8) m38 += metros;
         else if(phi < 1.5) m12 += metros;
@@ -912,7 +848,6 @@ function runEng(t){
         var P_serv = (aTrib * qU * p) / 1000;
         var Pu_zap = P_serv * 1.25;
         var qAdm = qa * 10;
-        
         var fExc = (zUbic === 'centrica') ? 1.15 : ((zUbic === 'medianera') ? 1.35 : 1.50);
         var aR = (P_serv * fExc) / qAdm;
         
@@ -940,7 +875,8 @@ function runEng(t){
         var pA = (P_serv * fExc) / (zl * zb);
         var qu_neta = Pu_zap / (zl * zb);
 
-        var c_col1 = 30, c_col2 = 30;
+        var c_col1 = parseFloat(el('c_mod_b').value) || 30;
+        var c_col2 = parseFloat(el('c_mod_t').value) || 35;
         var b0 = 2 * ((c_col1 + d_zap) + (c_col2 + d_zap));
         var areaCritica_m2 = ((c_col1 + d_zap) * (c_col2 + d_zap)) / 10000;
         var Vu_punz = Math.max(0.1, Pu_zap - qu_neta * areaCritica_m2);
@@ -996,24 +932,15 @@ function runEng(t){
             '<div class="mem-title-main">🎓 MEMORIA DE CÁLCULO DETALLADA: ZAPATA AISLADA</div>' +
             '<div class="memoria-section">PASO 1: METRADO DE CARGAS GRAVITACIONALES (NORMA RNE E.020)</div>' +
             '<div class="mem-step">' +
-                '<div class="mem-step-title">1.1 Determinación del Área Tributaria (Atrib):</div>' +
-                '<div class="mem-eq">Atrib = Área_Construida / N°_Columnas = ' + aC.toFixed(2) + ' m² / ' + nC + ' col = ' + aTrib.toFixed(2) + ' m²</div>' +
-                '<div class="mem-step-title">1.2 Carga Axial en Servicio Acumulada (Ps) y Última Mayorada (Pu):</div>' +
-                '<div class="mem-eq">Ps = Atrib × q_unitaria × N°_Pisos = ' + aTrib.toFixed(2) + ' × ' + (qU/1000).toFixed(2) + ' × ' + p + ' = ' + P_serv.toFixed(2) + ' Ton\nPu = 1.25 × Ps = 1.25 × ' + P_serv.toFixed(2) + ' = ' + Pu_zap.toFixed(2) + ' Ton</div>' +
+                '<div class="mem-eq">Atrib = ' + aC.toFixed(2) + ' m² / ' + nC + ' col = ' + aTrib.toFixed(2) + ' m²\nPs = ' + P_serv.toFixed(2) + ' Ton | Pu = 1.25 × Ps = ' + Pu_zap.toFixed(2) + ' Ton</div>' +
             '</div>' +
-            '<div class="memoria-section">PASO 2: DIMENSIONAMIENTO GEOTÉCNICO EN PLANTA (NORMA RNE E.050)</div>' +
+            '<div class="memoria-section">PASO 2: DIMENSIONAMIENTO GEOTÉCNICO Y PUNZONAMIENTO (E.050 / E.060)</div>' +
             '<div class="mem-step">' +
-                '<div class="mem-step-title">2.1 Capacidad Portante Admisible (q_adm) y Área Requerida (A_req):</div>' +
-                '<div class="mem-eq">q_adm = σt × 10 = ' + qa.toFixed(2) + ' × 10 = ' + qAdm.toFixed(2) + ' Ton/m²\nA_req = (' + fExc.toFixed(2) + ' × Ps) / q_adm = ' + aR.toFixed(2) + ' m² | Provisto = ' + zl.toFixed(2) + '×' + zb.toFixed(2) + ' = ' + (zl*zb).toFixed(2) + ' m²\nσ_actuante = ' + pA.toFixed(2) + ' Ton/m² ≤ q_adm (' + qAdm.toFixed(2) + ' Ton/m²)</div>' +
+                '<div class="mem-eq">q_adm = ' + qAdm.toFixed(2) + ' T/m² | σ_act = ' + pA.toFixed(2) + ' T/m² ≤ q_adm\nb0 = ' + b0.toFixed(1) + ' cm → Vu = ' + Vu_punz.toFixed(2) + ' Ton ≤ ØVc = ' + phiVc_punz.toFixed(2) + ' Ton</div>' +
             '</div>' +
-            '<div class="memoria-section">PASO 3: VERIFICACIÓN POR PUNZONAMIENTO BIDIRECCIONAL (E.060 ART. 11.12)</div>' +
+            '<div class="memoria-section">PASO 3: DISEÑO DE ACERO POR FLEXIÓN Y CUANTÍA MÍNIMA (E.060 CAP. 15)</div>' +
             '<div class="mem-step">' +
-                '<div class="mem-step-title">3.1 Perímetro Crítico (b0) a d/2 de la cara de columna (d = ' + d_zap.toFixed(1) + ' cm):</div>' +
-                '<div class="mem-eq">b0 = 2·(' + c_col1 + '+' + d_zap.toFixed(1) + ') + 2·(' + c_col2 + '+' + d_zap.toFixed(1) + ') = ' + b0.toFixed(1) + ' cm\nVu = ' + Vu_punz.toFixed(2) + ' Ton ≤ ØVc = 0.85 × 1.06 × √' + fc + ' × ' + b0.toFixed(1) + ' × ' + d_zap.toFixed(1) + ' / 1000 = ' + phiVc_punz.toFixed(2) + ' Ton</div>' +
-            '</div>' +
-            '<div class="memoria-section">PASO 4: DISEÑO DE ACERO POR FLEXIÓN Y CUANTÍA MÍNIMA (E.060 CAP. 15)</div>' +
-            '<div class="mem-step">' +
-                '<div class="mem-eq">Mu = (qu_neta × B × Lv²) / 2 = ' + Mu_zap.toFixed(2) + ' Ton·m\nAs_flex = ' + asFlex.toFixed(2) + ' cm² | As_mín (0.0018·B·hz) = ' + asMin.toFixed(2) + ' cm² → As_Req = ' + asReqZap.toFixed(2) + ' cm²\nBloque Whitney a = ' + a_whitney_z.toFixed(2) + ' cm → ØMn = ' + phiMn_z.toFixed(2) + ' Ton·m ≥ Mu</div>' +
+                '<div class="mem-eq">Mu = ' + Mu_zap.toFixed(2) + ' Ton·m | As_Req = ' + asReqZap.toFixed(2) + ' cm² → ØMn = ' + phiMn_z.toFixed(2) + ' Ton·m ≥ Mu</div>' +
                 '<span class="mem-verdict-ok">✅ ARMADO FINAL: Parrilla Inferior ' + nV + ' Ø ' + phiL(ph) + ' @ ' + sepZap.toFixed(0) + ' cm en X e Y</span>' +
             '</div>';
 
@@ -1043,7 +970,6 @@ function runEng(t){
         var factorMayoracion = (ubic === 'esquina') ? 1.35 : 1.25;
         var factorBlanco = (ubic === 'central') ? 0.45 : ((ubic === 'perimetral') ? 0.35 : 0.30);
         var Pu_ton = Ps_ton * factorMayoracion;
-
         var agReqGravedad = (Ps_ton * 1000) / (factorBlanco * fc);
 
         if(t === 'sistema' || t === 'pisos' || t === 'area' || t === 'ncol' || t === 'uso' || t === 'ubic' || t === 'all'){
@@ -1052,8 +978,7 @@ function runEng(t){
             var ladoBase = Math.max(minB, Math.ceil(Math.sqrt(minArea) / 5) * 5);
             cb = (sis === 'confinada') ? Math.max(15, Math.min(25, ladoBase - 5)) : ladoBase;
             ct = Math.max(ladoBase, Math.ceil((minArea / cb) / 5) * 5);
-            el('c_mod_b').value = cb;
-            el('c_mod_t').value = ct;
+            el('c_mod_b').value = cb; el('c_mod_t').value = ct;
         }
         
         var a = cb * ct;
@@ -1091,11 +1016,8 @@ function runEng(t){
         var pat = Math.max(30, Math.ceil((dbEsq * 16) / 5) * 5);
         var ldTraslape = Math.max(45, Math.ceil((0.075 * fy / Math.sqrt(fc)) * dbEsq * 1.3 / 5) * 5);
 
-        if(Pu_ton > phiPn_ton){
-            addAlert('red', 'E.060: Falla Compresión (' + Pu_ton.toFixed(0) + 'T > ØPn ' + phiPn_ton.toFixed(0) + 'T). Aumente b×t');
-        } else {
-            addAlert('green', 'E.060: Soporta ' + p + ' pisos (Pu=' + Pu_ton.toFixed(0) + 'T ≤ ØPn=' + phiPn_ton.toFixed(0) + 'T)');
-        }
+        if(Pu_ton > phiPn_ton) addAlert('red', 'E.060: Falla Compresión (' + Pu_ton.toFixed(0) + 'T > ØPn ' + phiPn_ton.toFixed(0) + 'T). Aumente b×t');
+        else addAlert('green', 'E.060: Soporta ' + p + ' pisos (Pu=' + Pu_ton.toFixed(0) + 'T ≤ ØPn=' + phiPn_ton.toFixed(0) + 'T)');
 
         if(kl_r > 34) addAlert('orange', 'E.060: Columna Esbelta (kl/r=' + kl_r.toFixed(0) + ' > 34, Amplif. ×' + fEsbeltez.toFixed(2) + ')');
         if(rR >= 1.0 && rR <= 6.0) addAlert('green', 'E.060: Cuantía ' + rR.toFixed(2) + '% OK (Rango 1% a 6%)');
@@ -1108,7 +1030,7 @@ function runEng(t){
         el('c_txt_ag').innerText = 'Pu=' + Pu_ton.toFixed(1) + 'T (' + p + 'p) | ØPn=' + phiPn_ton.toFixed(1) + 'T | As=' + asTotal.toFixed(1) + 'cm²';
         el('c_txt_traslape').innerText = 'Traslape Ld = ' + ldTraslape + ' cm (en Tercio Central)';
         el('c_txt_esbeltez').innerText = 'kl/r = ' + kl_r.toFixed(1) + (kl_r <= 34 ? ' (Corta)' : ' (Esbelta)') + ' | Lo = ' + loConf + 'cm';
-        el('c_txt_armado').innerHTML = '<span style="color:' + phiC(phE) + '">4 Ø ' + phiL(phE) + ' (Pata: ' + pat + 'cm)</span>' + (nM > 0 ? '<br><span style="color:' + phiC(phM) + '">+ ' + nM + ' Ø ' + phiL(phM) + '</span>' : '');
+        el('c_txt_armado').innerHTML = '<span style="color:' + phiC(phE) + '">4 Ø ' + phiL(phE) + ' (Pata: ' + pat + 'cm)</span>' + (nM > 0 ? ' <span style="color:' + phiC(phM) + '">+ ' + nM + ' Ø ' + phiL(phM) + '</span>' : '');
         
         var nM_opt1 = Math.max(0, Math.ceil((asR - 4 * 1.99) / 1.29)); if(nM_opt1 % 2 !== 0) nM_opt1++;
         var nM_opt2 = Math.max(0, Math.ceil((asR - 4 * 2.84) / 1.99)); if(nM_opt2 % 2 !== 0) nM_opt2++;
@@ -1130,18 +1052,11 @@ function runEng(t){
         el('mem_col').innerHTML = 
             '<div class="mem-title-main">🎓 MEMORIA DE CÁLCULO DETALLADA: COLUMNA SISMORRESISTENTE</div>' +
             '<div class="memoria-section">PASO 1: BAJADA DE CARGAS Y PREDIMENSIONAMIENTO (RNE E.020 / BLANCO BLASCO)</div>' +
-            '<div class="mem-step">' +
-                '<div class="mem-eq">Ps = Atrib × q_uso × N°_Pisos = ' + aTrib.toFixed(2) + ' × ' + (qU/1000).toFixed(2) + ' × ' + p + ' = ' + Ps_ton.toFixed(2) + ' Ton\nPu = ' + factorMayoracion.toFixed(2) + ' × Ps = ' + Pu_ton.toFixed(2) + ' Ton | Ag_req = ' + agReqGravedad.toFixed(1) + ' cm² ≤ Ag_prov (' + a + ' cm²)</div>' +
-            '</div>' +
+            '<div class="mem-step"><div class="mem-eq">Ps = ' + Ps_ton.toFixed(2) + ' Ton | Pu = ' + Pu_ton.toFixed(2) + ' Ton | Ag_req = ' + agReqGravedad.toFixed(1) + ' cm² ≤ Ag_prov (' + a + ' cm²)</div></div>' +
             '<div class="memoria-section">PASO 2: ESBELTEZ Y RESISTENCIA AXIAL NOMINAL (E.060 ART. 10.3.5 y 10.10)</div>' +
-            '<div class="mem-step">' +
-                '<div class="mem-eq">r = 0.30 × ' + Math.min(cb, ct) + ' = ' + r_giro.toFixed(2) + ' cm → k·lu/r = ' + kl_r.toFixed(2) + '\nØPn_máx = 0.80 × 0.70 × [ 0.85 × ' + fc + ' × (' + a + ' - ' + asTotal.toFixed(2) + ') + ' + fy + ' × ' + asTotal.toFixed(2) + ' ] / 1000 = ' + phiPn_ton.toFixed(2) + ' Ton ≥ Pu</div>' +
-            '</div>' +
+            '<div class="mem-step"><div class="mem-eq">r = ' + r_giro.toFixed(2) + ' cm → k·lu/r = ' + kl_r.toFixed(2) + ' | ØPn_máx = ' + phiPn_ton.toFixed(2) + ' Ton ≥ Pu</div></div>' +
             '<div class="memoria-section">PASO 3: CONFINAMIENTO SÍSMICO Y LONGITUD DE TRASLAPE (E.060 CAP. 21)</div>' +
-            '<div class="mem-step">' +
-                '<div class="mem-eq">Lo = máx(t, H/6, 45cm) = ' + loConf + ' cm | So = mín(8·db, 0.5·b, 10cm) = ' + sConf + ' cm\nLd_traslape (Clase B en tercio central) = ' + ldTraslape + ' cm | Pata 16·db = ' + pat + ' cm</div>' +
-                '<span class="mem-verdict-ok">✅ ESTRIBOS Ø 3/8": 1 @ 5 cm, 6 @ ' + sConf + ' cm, Resto @ 20 cm</span>' +
-            '</div>';
+            '<div class="mem-step"><div class="mem-eq">Lo = ' + loConf + ' cm | So = ' + sConf + ' cm | Ld_traslape = ' + ldTraslape + ' cm | Pata = ' + pat + ' cm</div><span class="mem-verdict-ok">✅ ESTRIBOS Ø 3/8": 1 @ 5 cm, 6 @ ' + sConf + ' cm, Resto @ 20 cm</span></div>';
 
         sumarMetros(phE, 4 * (ch + 0.6 + pat / 100));
         sumarMetros(phM, nM * (ch + 0.6 + pat / 100));
@@ -1176,19 +1091,16 @@ function runEng(t){
             var hBase = (l * 100 / divL) * (1 + Math.max(0, p - 2) * 0.02);
             vh = Math.max(30, Math.ceil(hBase / 5) * 5); 
             vb = Math.max(25, Math.ceil((vh / 2) / 5) * 5); 
-            el('v_mod_b').value = vb; 
-            el('v_mod_h').value = vh;
+            el('v_mod_b').value = vb; el('v_mod_h').value = vh;
             vModoSeleccion = 'best';
         }
         if(t === 'losa' || t === 'tabique' || t === 'geom') vModoSeleccion = 'best';
         if(t === 'acero_manual') vModoSeleccion = 'manual';
 
-        var wAcabados_m2 = 0.10;
-        var wLosa_Tm2 = (wLosa_kg / 1000) + wAcabados_m2;
+        var wLosa_Tm2 = (wLosa_kg / 1000) + 0.10;
         var wPesoPropio_Tm = (vb / 100) * (vh / 100) * 2.40;
         var wMuro_Tm = wTabique_kgm / 1000;
         var wCM_Tm = (wLosa_Tm2 * bTrib) + wPesoPropio_Tm + wMuro_Tm;
-
         var wCV_m2 = (qU <= 1000) ? 0.20 : ((qU <= 1300) ? 0.40 : 0.50);
         var wCV_Tm = wCV_m2 * bTrib;
 
@@ -1216,8 +1128,7 @@ function runEng(t){
             var asEst = (Mu_tm * 100000) / (0.90 * fy * 0.90 * dE);
             for(var it = 0; it < 5; it++){
                 var a_it = (asEst * fy) / (0.85 * fc * vb);
-                var brazo = Math.max(0.5 * dE, dE - a_it / 2);
-                asEst = (Mu_tm * 100000) / (0.90 * fy * brazo);
+                asEst = (Mu_tm * 100000) / (0.90 * fy * Math.max(0.5 * dE, dE - a_it / 2));
             }
             return Math.max(asEst, asMin);
         }
@@ -1231,10 +1142,8 @@ function runEng(t){
 
         var nS_58 = Math.max(2, Math.ceil(asReqSup / 1.99));
         var nI_58 = Math.max(2, Math.ceil(Math.max(asReqInf, 0.5 * nS_58 * 1.99) / 1.99));
-
         var nS_34 = Math.max(2, Math.ceil(asReqSup / 2.84));
         var nI_34 = Math.max(2, Math.ceil(Math.max(asReqInf, 0.5 * nS_34 * 2.84) / 2.84));
-
         var nS_12 = Math.max(2, Math.ceil(asReqSup / 1.29));
         var nI_12 = Math.max(2, Math.ceil(Math.max(asReqInf, 0.5 * nS_12 * 1.29) / 1.29));
 
@@ -1242,41 +1151,30 @@ function runEng(t){
         var asSupCombProv = 2 * 1.99 + nS_comb12 * 1.29;
         var nI_comb12 = Math.max(1, Math.ceil(Math.max(0.1, Math.max(asReqInf, 0.5 * asSupCombProv) - 2 * 1.99) / 1.29));
 
-        var bestKey = 'opt58';
-        if((nS_58 > max58 || nI_58 > max58) && (nS_34 <= max34 && nI_34 <= max34)){
-            bestKey = 'opt34';
-        }
-
+        var bestKey = ((nS_58 > max58 || nI_58 > max58) && (nS_34 <= max34 && nI_34 <= max34)) ? 'opt34' : 'opt58';
         var modoEfectivo = (vModoSeleccion === 'best') ? bestKey : vModoSeleccion;
-        var supBars = [], infBars = [];
-        var txtAcero = '';
+        var supBars = [], infBars = [], txtAcero = '';
 
         if(modoEfectivo === 'comb'){
             supBars = [1.99, 1.99]; for(var j=0; j<nS_comb12; j++) supBars.push(1.29);
             infBars = [1.99, 1.99]; for(var m=0; m<nI_comb12; m++) infBars.push(1.29);
-            txtAcero = '<span style="color:#ff2222">Sup(-): 2Ø5/8" corr. + ' + nS_comb12 + 'Ø1/2" bast.</span><br>' +
-                       '<span style="color:#3388ff">Inf(+): 2Ø5/8" corr. + ' + nI_comb12 + 'Ø1/2" bast.</span>';
+            txtAcero = '<span style="color:#ff2222">Sup(-): 2Ø5/8" corr. + ' + nS_comb12 + 'Ø1/2" bast.</span> | <span style="color:#3388ff">Inf(+): 2Ø5/8" corr. + ' + nI_comb12 + 'Ø1/2" bast.</span>';
         } else {
             var phS_sel = (modoEfectivo === 'opt34') ? 2.84 : ((modoEfectivo === 'opt12') ? 1.29 : ((modoEfectivo === 'opt58') ? 1.99 : (parseFloat(el('v_phi_sup').value) || 1.99)));
             var phI_sel = (modoEfectivo === 'opt34') ? 2.84 : ((modoEfectivo === 'opt12') ? 1.29 : ((modoEfectivo === 'opt58') ? 1.99 : (parseFloat(el('v_phi_inf').value) || 1.99)));
-            el('v_phi_sup').value = phS_sel.toFixed(2);
-            el('v_phi_inf').value = phI_sel.toFixed(2);
+            el('v_phi_sup').value = phS_sel.toFixed(2); el('v_phi_inf').value = phI_sel.toFixed(2);
 
             var nS = Math.max(2, Math.ceil(asReqSup / phS_sel));
             var nI = Math.max(2, Math.ceil(Math.max(asReqInf, 0.5 * nS * phS_sel) / phI_sel));
             for(var s=0; s<nS; s++) supBars.push(phS_sel);
             for(var q=0; q<nI; q++) infBars.push(phI_sel);
 
-            var nBastSup = Math.max(0, nS - 2);
-            var nBastInf = Math.max(0, nI - 2);
-
-            txtAcero = '<span style="color:' + phiC(phS_sel) + '">Sup(-): ' + nS + 'Ø' + phiL(phS_sel) + ' (2 corr' + (nBastSup>0?' + '+nBastSup+' bast':'') + ')</span><br>' +
-                       '<span style="color:' + phiC(phI_sel) + '">Inf(+): ' + nI + 'Ø' + phiL(phI_sel) + ' (2 corr' + (nBastInf>0?' + '+nBastInf+' bast':'') + ')</span>';
+            txtAcero = '<span style="color:' + phiC(phS_sel) + '">Sup(-): ' + nS + 'Ø' + phiL(phS_sel) + '</span> | <span style="color:' + phiC(phI_sel) + '">Inf(+): ' + nI + 'Ø' + phiL(phI_sel) + '</span>';
         }
 
         var p_piel = parseFloat(el('v_phi_piel').value) || 0;
         var phP = p_piel > 0 ? p_piel : (vh >= 60 ? 1.29 : 0);
-        if(phP > 0) txtAcero += '<br><span style="color:' + phiC(phP) + '">Piel Lateral: 2 Ø ' + phiL(phP) + '</span>';
+        if(phP > 0) txtAcero += ' | <span style="color:' + phiC(phP) + '">Piel: 2Ø' + phiL(phP) + '</span>';
 
         var asSupProv = 0; for(var is=0; is<supBars.length; is++) asSupProv += supBars[is];
         var asInfProv = 0; for(var ii=0; ii<infBars.length; ii++) asInfProv += infBars[ii];
@@ -1289,7 +1187,6 @@ function runEng(t){
         var Ldh_gancho = Math.max(Math.ceil((0.06 * dbMayor * fy) / Math.sqrt(fc)), Math.ceil(8 * dbMayor), 15);
         var extGancho90 = Math.ceil(12 * dbMayor);
         var Ld_rectoSup = Math.ceil(1.3 * (0.08 * dbMayor * fy) / Math.sqrt(fc));
-        var Ld_rectoInf = Math.ceil((0.08 * dbMenor * fy) / Math.sqrt(fc));
 
         var a_pr1 = (asSupProv * 1.25 * fy) / (0.85 * fc * vb);
         var Mpr1 = (asSupProv * 1.25 * fy * (dE - a_pr1 / 2)) / 100000;
@@ -1311,84 +1208,44 @@ function runEng(t){
         if(Vu_cortante > phiVn_total) addAlert('red', 'E.060: Falla Cortante Sísmico (Ve=' + Vu_cortante.toFixed(1) + 'T > ØVn=' + phiVn_total.toFixed(1) + 'T)');
         else addAlert('green', 'E.060: Cortante Sísmico OK (Ve=' + Vu_cortante.toFixed(1) + 'T ≤ ØVn=' + phiVn_total.toFixed(1) + 'T)');
 
-        var layersSupCheck = organizarCapasViga(supBars, vb);
-        var layersInfCheck = organizarCapasViga(infBars, vb);
-        if(layersSupCheck.length > 1 || layersInfCheck.length > 1) addAlert('orange', 'E.060: Armado en 2 Capas (b=' + vb + 'cm máx ' + max58 + ' var/capa)');
-        else addAlert('green', 'E.060: Espaciamiento en 1 Sola Capa OK');
-
         el('v_propuestas_container').innerHTML = 
-            '<div class="propuestas-title">' +
-                '<span>💡 PROPUESTAS DE ARMADO SÍSMICO (TOCA UNA OPCIÓN)</span>' +
-                '<span style="color:var(--primary-cyan); font-size:9.5px;">Máx ' + max58 + ' var/capa</span>' +
-            '</div>' +
+            '<div class="propuestas-title"><span>💡 PROPUESTAS DE ARMADO SÍSMICO</span><span style="color:var(--primary-cyan); font-size:9.5px;">Máx ' + max58 + ' var/capa</span></div>' +
             '<div class="prop-grid">' +
                 '<div class="prop-card ' + (bestKey==='opt58' ? 'best' : '') + ' ' + (modoEfectivo==='opt58' ? 'active' : '') + '" onclick="seleccionarPropuestaViga(\'opt58\', 1.99, 1.99)">' +
-                    '<span class="prop-tag ' + (bestKey==='opt58' ? 'tag-best' : 'tag-alt') + '">' + (bestKey==='opt58' ? '🌟 Mejor Propuesta' : 'Opción Ø 5/8"') + '</span>' +
+                    '<span class="prop-tag ' + (bestKey==='opt58' ? 'tag-best' : 'tag-alt') + '">🌟 Opción Ø 5/8"</span>' +
                     '<div class="prop-main">Sup: ' + nS_58 + 'Ø5/8" | Inf: ' + nI_58 + 'Ø5/8"</div>' +
-                    '<div class="prop-meta">As: ' + (nS_58*1.99).toFixed(2) + ' / ' + (nI_58*1.99).toFixed(2) + ' cm² • ' + (nS_58<=max58 && nI_58<=max58 ? '✅ 1 Capa' : '2 Capas') + '</div>' +
+                    '<div class="prop-meta">As: ' + (nS_58*1.99).toFixed(2) + ' / ' + (nI_58*1.99).toFixed(2) + ' cm²</div>' +
                 '</div>' +
                 '<div class="prop-card ' + (bestKey==='opt34' ? 'best' : '') + ' ' + (modoEfectivo==='opt34' ? 'active' : '') + '" onclick="seleccionarPropuestaViga(\'opt34\', 2.84, 2.84)">' +
-                    '<span class="prop-tag ' + (bestKey==='opt34' ? 'tag-best' : 'tag-alt') + '">' + (bestKey==='opt34' ? '🌟 Mejor Propuesta (1 Capa)' : 'Opción Ø 3/4" (1 Capa)') + '</span>' +
+                    '<span class="prop-tag ' + (bestKey==='opt34' ? 'tag-best' : 'tag-alt') + '">Opción Ø 3/4"</span>' +
                     '<div class="prop-main">Sup: ' + nS_34 + 'Ø3/4" | Inf: ' + nI_34 + 'Ø3/4"</div>' +
-                    '<div class="prop-meta">As: ' + (nS_34*2.84).toFixed(2) + ' / ' + (nI_34*2.84).toFixed(2) + ' cm² • ✅ 1 Capa</div>' +
+                    '<div class="prop-meta">As: ' + (nS_34*2.84).toFixed(2) + ' / ' + (nI_34*2.84).toFixed(2) + ' cm²</div>' +
                 '</div>' +
                 '<div class="prop-card ' + (modoEfectivo==='comb' ? 'active' : '') + '" onclick="seleccionarPropuestaViga(\'comb\', 1.99, 1.99)">' +
-                    '<span class="prop-tag tag-warn">🔄 Propuesta Combinada</span>' +
+                    '<span class="prop-tag tag-warn">🔄 Combinada</span>' +
                     '<div class="prop-main">2Ø5/8" + ' + nS_comb12 + 'Ø1/2" / +' + nI_comb12 + 'Ø1/2"</div>' +
-                    '<div class="prop-meta">2Ø5/8" continuas + bastones Ø1/2"</div>' +
+                    '<div class="prop-meta">2Ø5/8" corr. + bastones Ø1/2"</div>' +
                 '</div>' +
                 '<div class="prop-card ' + (modoEfectivo==='opt12' ? 'active' : '') + '" onclick="seleccionarPropuestaViga(\'opt12\', 1.29, 1.29)">' +
                     '<span class="prop-tag tag-alt">Opción Ø 1/2"</span>' +
                     '<div class="prop-main">Sup: ' + nS_12 + 'Ø1/2" | Inf: ' + nI_12 + 'Ø1/2"</div>' +
-                    '<div class="prop-meta">As: ' + (nS_12*1.29).toFixed(2) + ' / ' + (nI_12*1.29).toFixed(2) + ' cm² • ' + (nS_12>max12 ? '2 Capas' : '1 Capa') + '</div>' +
+                    '<div class="prop-meta">As: ' + (nS_12*1.29).toFixed(2) + ' / ' + (nI_12*1.29).toFixed(2) + ' cm²</div>' +
                 '</div>' +
             '</div>';
 
-        var zConfViga = 2 * vh;
         var L_bastonSup = Math.max(l / 3, Ld_rectoSup / 100 + dE / 100).toFixed(2);
-        var L_bastonInf = (l - 2 * (l / 5)).toFixed(2);
-        
         el('v_txt_wu').innerText = 'wu = ' + wU_grav.toFixed(2) + ' T/m | Mu(-)= ' + MuNeg.toFixed(1) + ' / Mu(+)= ' + MuPos.toFixed(1) + ' T·m';
         el('v_txt_estr').innerText = '1@5, 8@' + sLim + ', R@' + sResto; 
         el('v_txt_as').innerText = 'As Req: ' + asReqSup.toFixed(2) + ' / ' + asReqInf.toFixed(2) + 'cm² | Gancho Ldh=' + Ldh_gancho + 'cm';
         el('v_txt_cortante').innerText = 'Ve = ' + Vu_cortante.toFixed(1) + 'T ≤ ØVn = ' + phiVn_total.toFixed(1) + 'T (ØVc=' + phiVc_viga.toFixed(1) + 'T)';
         el('v_txt_acero').innerHTML = txtAcero;
 
-        var a_sup_w = (asReqSup * fy) / (0.85 * fc * vb);
-        var a_inf_w = (asReqInf * fy) / (0.85 * fc * vb);
-        var blockerInfo = (wTabique_kgm === 320) ? 'Ladrillo Blocker 10×20×30 cm (Peso=4.500 kg/und, 15 unid/m², f\'b=130-160 kg/cm²)' :
-                          ((wTabique_kgm === 355) ? 'Ladrillo Blocker 12×20×30 cm (Peso=5.150 kg/und, 15 unid/m², f\'b=130-160 kg/cm²)' : 'Muro de albañilería (' + wTabique_kgm + ' kg/m)');
-
         el('mem_vig').innerHTML = 
             '<div class="mem-title-main">🎓 MEMORIA DE CÁLCULO DETALLADA: VIGA SISMORRESISTENTE (RNE E.060)</div>' +
-            '<div class="memoria-section">PASO 1: METRADO AUTOMÁTICO DE CARGAS Y MURO BLOCKER (NORMA E.020)</div>' +
-            '<div class="mem-step">' +
-                '<div class="mem-step-title">1.1 Ancho Tributario Automatizado (Btrib) y Carga Muerta (w_CM):</div>' +
-                '<div class="mem-eq">Btrib_auto = (Área_Piso / N°_Cols) / (0.85 × L) = (' + aC + ' / ' + nC + ') / (0.85 × ' + l.toFixed(2) + ') = ' + bTrib.toFixed(2) + ' m\n• Losa + Acabados = (' + (wLosa_kg/1000).toFixed(2) + ' + 0.10 T/m²) × ' + bTrib.toFixed(2) + ' m = ' + (wLosa_Tm2 * bTrib).toFixed(2) + ' Ton/m\n• Peso Propio Viga (' + vb + '×' + vh + ' cm) = ' + wPesoPropio_Tm.toFixed(2) + ' Ton/m\n• Tabiquería sobre Viga: ' + blockerInfo + ' = ' + wMuro_Tm.toFixed(3) + ' Ton/m\nw_CM Total = ' + wCM_Tm.toFixed(2) + ' Ton/m</div>' +
-                '<div class="mem-step-title">1.2 Carga Viva (w_CV) y Carga Última Mayorada (wu = 1.4 CM + 1.7 CV):</div>' +
-                '<div class="mem-eq">w_CV = ' + wCV_m2.toFixed(2) + ' T/m² × ' + bTrib.toFixed(2) + ' m = ' + wCV_Tm.toFixed(2) + ' Ton/m\nwu = 1.4 × (' + wCM_Tm.toFixed(2) + ') + 1.7 × (' + wCV_Tm.toFixed(2) + ') = ' + wU_grav.toFixed(2) + ' Ton/m</div>' +
-            '</div>' +
-            '<div class="memoria-section">PASO 2: DIAGRAMA DE MOMENTOS Y ACERO EN SECCIONES CRÍTICAS</div>' +
-            '<div class="mem-step">' +
-                '<div class="mem-step-title">2.1 Momentos Últimos en Secciones Críticas (Nudos y Centro de Luz):</div>' +
-                '<div class="mem-eq">• Sección Crítica Apoyos (-): Mu(-) = (wu × L² / 9) × F_sismo = ' + MuNeg.toFixed(2) + ' Ton·m\n• Sección Crítica Centro (+): Mu(+) = máx(wu × L² / 11, 0.50 × Mu(-)) = ' + MuPos.toFixed(2) + ' Ton·m\nPeralte efectivo d = h - 6.0 cm = ' + dE.toFixed(1) + ' cm</div>' +
-                '<div class="mem-step-title">2.2 Cuantías Mínima (ρ_mín) y Máxima Sísmica (ρ_máx) según E.060 Art. 10.5 y 21.5:</div>' +
-                '<div class="mem-eq">ρ_mín = máx(0.70·√f\'c / fy, 14 / fy) = ' + (rhoMin*100).toFixed(3) + '% → As_mín = ' + asMin.toFixed(2) + ' cm²\nρ_b (Balanceada) = ' + (rhoBal*100).toFixed(2) + '% → ρ_máx = mín(0.025, 0.75·ρ_b) = ' + (rhoMax*100).toFixed(2) + '% → As_máx = ' + asMax.toFixed(2) + ' cm²</div>' +
-                '<div class="mem-step-title">2.3 Acero Requerido vs Provisto en cada Sección Crítica:</div>' +
-                '<div class="mem-eq">• Superior (-): a = ' + a_sup_w.toFixed(2) + ' cm → As_req(-) = ' + asReqSup.toFixed(2) + ' cm² ≤ As_prov(-) = ' + asSupProv.toFixed(2) + ' cm²\n• Inferior (+): a = ' + a_inf_w.toFixed(2) + ' cm → As_req(+) = ' + asReqInf.toFixed(2) + ' cm² ≤ As_prov(+) = ' + asInfProv.toFixed(2) + ' cm²\n• Chequeo Ductilidad Sísmica Nudo: As_prov(+) ≥ 0.50 × As_prov(-) → CUMPLE</div>' +
-            '</div>' +
-            '<div class="memoria-section">PASO 3: ANCLAJE, LONGITUD DE DESARROLLO Y CONTINUIDAD (E.060 CAP. 12)</div>' +
-            '<div class="mem-step">' +
-                '<div class="mem-eq">• Continuidad Sísmica (Art. 21.5.2): Mínimo 2 barras continuas arriba y 2 abajo a todo lo largo.\n• Anclaje con Gancho 90° en Nudo Exterior (Ldh): Ldh = (0.06·db·fy)/√f\'c = ' + Ldh_gancho + ' cm + Extensión 12·db = ' + extGancho90 + ' cm.\n• Longitud de Desarrollo Recta en Tracción: Ld_sup (×1.3) = ' + Ld_rectoSup + ' cm | Ld_inf = ' + Ld_rectoInf + ' cm.\n• Corte de Bastones: Superiores a L/3 = ' + L_bastonSup + ' m de la cara | Inferiores centrados Lc = ' + L_bastonInf + ' m.</div>' +
-            '</div>' +
-            '<div class="memoria-section">PASO 4: CORTANTE POR CAPACIDAD SÍSMICA (Ve) Y CONFINAMIENTO (CAP. 21)</div>' +
-            '<div class="mem-step">' +
-                '<div class="mem-step-title">4.1 Momentos Probables (Mpr con 1.25·fy) y Cortante por Capacidad (Ve):</div>' +
-                '<div class="mem-eq">Mpr(-) = ' + Mpr1.toFixed(2) + ' Ton·m | Mpr(+) = ' + Mpr2.toFixed(2) + ' Ton·m\nVe = (Mpr1 + Mpr2)/L + V_isostático = ' + Ve_capacidad.toFixed(2) + ' Ton → Vu_diseño = ' + Vu_cortante.toFixed(2) + ' Ton\nØVc = ' + phiVc_viga.toFixed(2) + ' Ton | ØVn (con estribos Ø3/8"@' + sLim + 'cm) = ' + phiVn_total.toFixed(2) + ' Ton ≥ Vu_diseño</div>' +
-                '<div class="mem-step-title">4.2 Requisitos de Confinamiento en Extremos (Zona 2·h = ' + zConfViga + ' cm):</div>' +
-                '<div class="mem-eq">So = mín(d/4, 8·db_menor, 24·db_est, 10 cm) = ' + sLim + ' cm | Fuera de zona confinada s ≤ d/2 = ' + sResto + ' cm</div>' +
-                '<span class="mem-verdict-ok">✅ ESTRIBOS Ø 3/8": 1 @ 5 cm, 8 @ ' + sLim + ' cm, Resto @ ' + sResto + ' cm</span>' +
-            '</div>';
+            '<div class="memoria-section">PASO 1: METRADO DE CARGAS Y MOMENTOS CRÍTICOS</div>' +
+            '<div class="mem-step"><div class="mem-eq">Btrib = ' + bTrib.toFixed(2) + ' m | wu = ' + wU_grav.toFixed(2) + ' Ton/m | Mu(-) = ' + MuNeg.toFixed(2) + ' T·m | Mu(+) = ' + MuPos.toFixed(2) + ' T·m</div></div>' +
+            '<div class="memoria-section">PASO 2: ACERO LONGITUDINAL Y CORTANTE POR CAPACIDAD (CAP. 21)</div>' +
+            '<div class="mem-step"><div class="mem-eq">As_req(-) = ' + asReqSup.toFixed(2) + ' cm² ≤ As_prov(-) = ' + asSupProv.toFixed(2) + ' cm² | As_req(+) = ' + asReqInf.toFixed(2) + ' cm² ≤ As_prov(+) = ' + asInfProv.toFixed(2) + ' cm²\nVe = ' + Vu_cortante.toFixed(2) + ' Ton ≤ ØVn = ' + phiVn_total.toFixed(2) + ' Ton</div><span class="mem-verdict-ok">✅ ESTRIBOS Ø 3/8": 1 @ 5 cm, 8 @ ' + sLim + ' cm, Resto @ ' + sResto + ' cm</span></div>';
 
         for(var bi=0; bi<supBars.length; bi++) sumarMetros(supBars[bi], l + 2 * ((Ldh_gancho + extGancho90) / 100));
         for(var bj=0; bj<infBars.length; bj++) sumarMetros(infBars[bj], l + 2 * ((Ldh_gancho + extGancho90) / 100));
@@ -1403,14 +1260,14 @@ function runEng(t){
             '• Momentos Críticos: <b>Mu(-) = ' + MuNeg.toFixed(2) + ' T·m | Mu(+) = ' + MuPos.toFixed(2) + ' T·m</b><br>' +
             '• Acero Superior (-): <b>' + supBars.length + ' varillas (As = ' + asSupProv.toFixed(2) + ' cm²)</b> | Bastones L = ' + L_bastonSup + ' m<br>' +
             '• Acero Inferior (+): <b>' + infBars.length + ' varillas (As = ' + asInfProv.toFixed(2) + ' cm²)</b> | Gancho 90° Ldh = ' + Ldh_gancho + ' cm<br>' +
-            '• Estribos Ø 3/8": <b>1@5, 8@' + sLim + ', R@' + sResto + ' cm</b> (Zona 2h = ' + zConfViga + ' cm)';
+            '• Estribos Ø 3/8": <b>1@5, 8@' + sLim + ', R@' + sResto + ' cm</b>';
 
         D3.vl = l; D3.vb = vb; D3.vh = vh; D3.vPiel = phP; D3.sLimV = sLim;
         D3.vSupBars = supBars; D3.vInfBars = infBars; D3.MuNeg = MuNeg; D3.MuPos = MuPos; D3.Ldh = Ldh_gancho;
         rVig(vb, vh, supBars, infBars, phP, MuNeg, MuPos, l, L_bastonSup, Ldh_gancho);
     }
 
-    // ==================== 4. MUROS DE CONTENCIÓN Y SÓTANO ARRIOSTRADOS ====================
+    // ==================== 4. MUROS DE CONTENCIÓN Y SÓTANO ARRIOSTRADOS (2D Y 3D 100% SINCRONIZADOS + DOBLE ENMALLADO) ====================
     else if(cMod === 'muros'){
         var m_tipo = el('m_tipo_muro').value;
         var h = parseFloat(el('m_h').value) || 2.80;
@@ -1418,56 +1275,46 @@ function runEng(t){
         var aFric = parseInt(el('m_suelo').value) || 30;
         var cond_agua = el('m_agua').value;
         
-        var b = parseFloat(el('m_mod_b').value) || 1.2;
-        var hz = parseFloat(el('m_mod_hz').value) || 0.4;
-        var cc = parseFloat(el('m_mod_c').value) || 0.25;
-        var eb = parseFloat(el('m_mod_e').value) || 0.25;
+        var b = parseFloat(el('m_mod_b').value) || 1.00;
+        var hz = parseFloat(el('m_mod_hz').value) || 0.40;
+        var cc = parseFloat(el('m_mod_c').value) || 0.20;
+        var eb = parseFloat(el('m_mod_e').value) || 0.20;
         var dent = false;
 
-        var gamma_suelo = 1.8;
-        var gamma_sat = 2.0;
         var gamma_w = 1.0;
-        var gamma_eff = (cond_agua === 'seco') ? 1.7 : ((cond_agua === 'drenado') ? 1.8 : (gamma_sat - gamma_w));
+        var gamma_eff = (cond_agua === 'seco') ? 1.75 : ((cond_agua === 'drenado') ? 1.85 : 1.05);
 
         var Ka = Math.pow(Math.tan((45 - aFric / 2) * Math.PI / 180), 2);
         var K0 = 1 - Math.sin(aFric * Math.PI / 180);
         var K_usar = (m_tipo === 'sotano') ? K0 : Ka;
-        
         var kh = 0.5 * zSismo; 
         
         if(t === 'muro_geom' || t === 'all'){
-            hz = rnd5(Math.max(0.40, h / 10)); 
-            eb = (m_tipo === 'sotano') ? rnd5(Math.max(0.20, h / 15)) : rnd5(Math.max(0.30, h / 9)); 
+            hz = rnd5(Math.max(0.40, h / 9.5)); 
+            eb = (m_tipo === 'sotano') ? rnd5(Math.max(0.20, h / 12)) : rnd5(Math.max(0.30, h / 9)); 
+            if(cond_agua === 'saturado') eb = rnd5(Math.max(eb, 0.25));
             cc = rnd5(Math.max(0.20, Math.min(0.25, eb)));
             
-            var rB = (m_tipo === 'sotano') ? 1.00 : (h * 0.48);
-            
+            var rB = (m_tipo === 'sotano') ? Math.max(1.00, rnd5(h * 0.36)) : (h * 0.50);
             if(m_tipo === 'voladizo'){
                 for(var i = 0; i < 40; i++){
-                    var pT_i = Math.max(0.3, rB / 3);
-                    var tT_i = Math.max(0.2, rB - pT_i - eb);
+                    var pT_i = Math.max(0.30, rB / 3);
+                    var tT_i = Math.max(0.20, rB - pT_i - eb);
                     var Htot_i = h + hz;
                     var Ea_i = 0.5 * gamma_eff * Htot_i * Htot_i * K_usar;
                     var Eq_i = (scg / 1000) * Htot_i * K_usar;
                     var Ew_i = (cond_agua === 'saturado') ? (0.5 * gamma_w * Htot_i * Htot_i) : 0;
                     var dPae_i = 0.375 * kh * gamma_eff * Htot_i * Htot_i;
-                    
                     var M_v = Ea_i * (Htot_i / 3) + Eq_i * (Htot_i / 2) + Ew_i * (Htot_i / 3) + dPae_i * (0.6 * Htot_i);
                     var Wt = (rB * hz * 2.4) + (((eb + cc) / 2) * h * 2.4) + (tT_i * h * gamma_eff);
                     var M_r = (rB * hz * 2.4) * (rB / 2) + (((eb + cc) / 2) * h * 2.4) * (pT_i + eb / 2) + (tT_i * h * gamma_eff) * (pT_i + eb + tT_i / 2);
-                    
                     var fsv = M_r / Math.max(0.1, M_v);
                     var fsd = (Wt * Math.tan((aFric * 0.67) * Math.PI / 180)) / Math.max(0.1, Ea_i + Eq_i + Ew_i + dPae_i);
-                    
                     if(rB > h * 0.65){ dent = true; fsd += 0.8; }
                     if(fsv >= 1.5 && fsd >= 1.5) break;
                     rB += 0.05;
                 }
-            } else {
-                var P_axial_estimada = (((eb + cc) / 2) * h * 2.4) * 1000;
-                rB = Math.max(1.0, Math.ceil((Math.max(P_axial_estimada / 15000, h * 0.25)) / 0.05) * 0.05);
             }
-
             b = rnd5(rB); 
             el('m_mod_b').value = b.toFixed(2); 
             el('m_mod_hz').value = hz.toFixed(2); 
@@ -1483,8 +1330,8 @@ function runEng(t){
         var Fh_total = Ea + Eq + Ew + dPae;
         
         var Mv = Ea * (Htot / 3) + Eq * (Htot / 2) + Ew * (Htot / 3) + dPae * (0.6 * Htot);
-        var pT = (m_tipo === 'sotano') ? b - eb : rnd5(Math.max(0.3, b / 3));
-        var tT = Math.max(0.0, b - pT - eb);
+        var pT = (m_tipo === 'sotano') ? Math.max(0.35, b - eb) : rnd5(Math.max(0.30, b / 3));
+        var tT = (m_tipo === 'sotano') ? 0.0 : Math.max(0.20, b - pT - eb);
         var Wtot = (b * hz * 2.4) + (((eb + cc) / 2) * h * 2.4) + (tT * h * gamma_eff);
         var Mr = (b * hz * 2.4) * (b / 2) + (((eb + cc) / 2) * h * 2.4) * (pT + eb / 2) + (tT * h * gamma_eff) * (pT + eb + tT / 2);
         
@@ -1502,142 +1349,139 @@ function runEng(t){
             
             if(FSV < 1.5) addAlert('red', 'E.050: Falla Volteo (FSV=' + FSV.toFixed(2) + ' < 1.50)');
             else addAlert('green', 'E.050: Volteo OK (FSV=' + FSV.toFixed(2) + ')');
-            
             if(FSD < 1.5) addAlert('red', 'E.050: Falla Deslizamiento (FSD=' + FSD.toFixed(2) + ' < 1.50)');
             else addAlert('green', 'E.050: Desliz. OK (FSD=' + FSD.toFixed(2) + (dent ? ' c/Dentellón' : '') + ')');
-            
             if(qMax_puntera > qAdm_muro) addAlert('red', 'E.050: Presión Puntera (' + qMax_puntera.toFixed(1) + ' > ' + qAdm_muro + ' T/m²)');
             else addAlert('green', 'E.050: Presión Puntera OK (' + qMax_puntera.toFixed(1) + ' T/m²)');
         } else {
             addAlert('green', 'E.050: Volteo Bloqueado por Losa Techo (Empuje Reposo Ko=' + K0.toFixed(2) + ')');
             Rx_techo = (Ea * (Htot/3) + Eq * (Htot/2) + Ew * (Htot/3) + dPae * (0.6*Htot)) / Htot;
             Rx_base = Fh_total - Rx_techo;
-            addAlert('orange', '⚠️ Reacción Techo: ' + Rx_techo.toFixed(1) + ' T/m | Base: ' + Rx_base.toFixed(1) + ' T/m');
-            if(FSD < 1.0) addAlert('orange', 'Base requiere falso piso como puntal o viga de cimentación');
+            addAlert('orange', '⚠️ Reacción Techo: ' + Rx_techo.toFixed(2) + ' T/m | Base: ' + Rx_base.toFixed(2) + ' T/m');
         }
-        
-        if(cond_agua === 'saturado') addAlert('red', '⚠️ Muro c/ Nivel Freático (Empuje de agua incrementa severamente Mv)');
+        if(cond_agua === 'saturado') addAlert('red', '⚠️ Muro c/ Nivel Freático (Empuje hidrostático activo)');
 
         var phV = parseFloat(el('m_mod_phi_v').value) || 1.99;
         var phH = parseFloat(el('m_mod_phi_h').value) || 1.29;
         var phZ = parseFloat(el('m_mod_phi_z').value) || 1.99;
-        var dP = Math.max(10, eb * 100 - 7.5);
+        var mallaForzada = parseInt(el('m_mod_malla').value) || 0;
+        var dP = Math.max(10, eb * 100 - 5.0);
         
-        var Mu_p;
-        if(m_tipo === 'voladizo'){
-            Mu_p = 1.7 * (0.5 * gamma_eff * h * h * Ka * (h / 3) + (scg / 1000) * h * Ka * (h / 2) + Ew * (h/3)) + 1.25 * (dPae * (0.6 * h));
-        } else {
-            Mu_p = 1.7 * ((Ea + Eq + Ew) * h / 8) + 1.25 * (dPae * h / 8); 
-        }
+        var Mu_p = (m_tipo === 'voladizo')
+            ? (1.7 * (0.5 * gamma_eff * h * h * Ka * (h / 3) + (scg / 1000) * h * Ka * (h / 2) + Ew * (h/3)) + 1.25 * (dPae * (0.6 * h)))
+            : (1.7 * ((Ea + Eq + Ew) * h / 8) + 1.25 * (dPae * h / 8));
 
-        var asV = (Mu_p * 100000) / (0.9 * fy * 0.9 * dP);
+        var asV_flex = (Mu_p * 100000) / (0.9 * fy * 0.9 * dP);
         for(var it=0; it<4; it++){
-            var a_it = (asV * fy) / (0.85 * fc * 100);
-            asV = (Mu_p * 100000) / (0.9 * fy * Math.max(0.5*dP, dP - a_it/2));
+            var a_it = (asV_flex * fy) / (0.85 * fc * 100);
+            asV_flex = (Mu_p * 100000) / (0.9 * fy * Math.max(0.5*dP, dP - a_it/2));
         }
-        asV = Math.max(asV, 0.0015 * 100 * eb * 100);
+        var asV_min = 0.0015 * 100 * (eb * 100);
+        var asV = Math.max(asV_flex, asV_min);
+        var asH = 0.0020 * 100 * (eb * 100);
         
-        var asH = 0.002 * 100 * eb * 100;
-        
-        var asZ = 0.0018 * 100 * hz * 100;
+        var asZ = 0.0018 * 100 * (hz * 100);
         if(m_tipo === 'voladizo'){
             asZ = Math.max((1.7 * (tT * h * gamma_eff * 1.2 * (tT / 2)) * 100000) / (0.9 * fy * 0.89 * Math.max(10, hz * 100 - 7.5)), asZ);
         } else {
-            var excentricidadSotano = Math.max(0.10, b / 2 - 0.20);
-            var Mu_zapSotano = 1.4 * (Wtot * excentricidadSotano);
+            var Mu_zapSotano = 1.4 * (Wtot * Math.max(0.12, b / 2 - 0.15));
             asZ = Math.max((Mu_zapSotano * 100000) / (0.9 * fy * 0.89 * Math.max(10, hz * 100 - 7.5)), asZ);
         }
         
-        function calcM(aB, asR){
-            var s = Math.floor(100 * aB / asR); 
-            if(s >= 10) return {s: Math.min(30, Math.floor(s / 5) * 5), m: 1, err: false}; 
-            var s2 = Math.floor(200 * aB / asR); 
-            if(s2 >= 10) return {s: Math.min(30, Math.floor(s2 / 5) * 5), m: 2, err: false}; 
-            return {s: 10, m: 2, err: true};
+        function calcMallaMuro(areaBar, asReqTotal, forceMode, e_cm){
+            var usarDoble = (forceMode === 2) || (forceMode === 0 && (e_cm >= 25 || (100 * areaBar / asReqTotal) < 10));
+            if(!usarDoble){
+                var s1 = Math.min(30, Math.max(10, Math.floor((100 * areaBar / asReqTotal) / 2.5) * 2.5));
+                return {s: Math.round(s1), m: 1, err: (100 * areaBar / asReqTotal < 9)};
+            } else {
+                var asPorCara = Math.max(asReqTotal * 0.55, 0.0010 * 100 * e_cm);
+                var s2 = Math.min(30, Math.max(10, Math.floor((100 * areaBar / asPorCara) / 2.5) * 2.5));
+                return {s: Math.round(s2), m: 2, err: (100 * areaBar / asPorCara < 9)};
+            }
         }
         
-        var cv = calcM(phiDb(phV)*phiDb(phV)*Math.PI/4, asV);
-        var ch = calcM(phiDb(phH)*phiDb(phH)*Math.PI/4, asH);
-        var cz = calcM(phiDb(phZ)*phiDb(phZ)*Math.PI/4, asZ);
+        var cv = calcMallaMuro(phV, asV, mallaForzada, eb * 100);
+        var ch = calcMallaMuro(phH, asH, cv.m, eb * 100);
+        var cz = calcMallaMuro(phZ, asZ, 1, hz * 100);
         
-        if(cv.err || ch.err) addAlert('red', 'E.060: Acero Insuficiente en Pantalla. Suba Ø');
+        if(cv.err || ch.err) addAlert('red', 'E.060: Acero Insuficiente en Pantalla. Suba Ø o active 2 Mallas');
+        else addAlert('green', 'E.060 Cap.14: Armado en ' + (cv.m === 2 ? 'Doble Malla (2 Caras)' : '1 Malla Central') + ' OK');
 
-        var asCorteFriccion = (m_tipo === 'sotano') ? ((Rx_techo * 1000) / (1.0 * fy)) : 0;
+        var asCorteFriccion = (m_tipo === 'sotano') ? Math.max(2.50, (1.4 * Rx_techo * 1000) / (0.85 * 1.0 * fy)) : 0;
 
-        el('m_res_title').innerText = '✅ DISEÑO ' + (m_tipo === 'voladizo' ? 'MURO VOLADIZO (RANKINE)' : 'MURO SÓTANO ARRIOSTRADO (K0)');
+        el('m_res_title').innerText = '✅ DISEÑO ' + (m_tipo === 'voladizo' ? 'MURO VOLADIZO (RANKINE)' : 'MURO SÓTANO ARRIOSTRADO (KO)');
+        el('m_txt_fs').innerText = (m_tipo === 'voladizo') ? ('FSV=' + FSV.toFixed(2) + ' | FSD=' + FSD.toFixed(2) + ' | σ=' + qMax_puntera.toFixed(1) + ' T/m²') : ('R.Techo=' + Rx_techo.toFixed(2) + 'T/m | R.Base=' + Rx_base.toFixed(2) + 'T/m');
+        el('m_txt_puntera').innerText = (m_tipo === 'voladizo') ? ('Punt: ' + pT.toFixed(2) + 'm | Tal: ' + tT.toFixed(2) + 'm' + (dent ? ' (+Dentellón)' : '')) : ('Zapata Corrida Excéntrica B=' + b.toFixed(2) + 'm');
+        el('m_txt_armado').innerText = 'Mu=' + Mu_p.toFixed(2) + ' T·m/m | As.V=' + asV.toFixed(2) + ' cm²/m';
         
-        el('m_txt_fs').innerText = (m_tipo === 'voladizo') ? ('FSV=' + FSV.toFixed(2) + ' | FSD=' + FSD.toFixed(2) + ' | σ=' + qMax_puntera.toFixed(1) + ' T/m²') : ('R_techo=' + Rx_techo.toFixed(1) + 'T | R_base=' + Rx_base.toFixed(1) + 'T');
-        el('m_txt_puntera').innerText = (m_tipo === 'voladizo') ? ('Punt: ' + pT.toFixed(2) + 'm | Tal: ' + tT.toFixed(2) + 'm' + (dent ? ' (+Dentellón)' : '')) : ('Zapata Excéntrica h=' + hz.toFixed(2) + 'm');
-        
-        el('m_as_vert').innerHTML = '<span style="color:' + phiC(phV) + '">' + (cv.m === 2 ? 'DOBLE MALLA: ' : '1 Malla: ') + 'Ø ' + phiL(phV) + ' @ ' + cv.s + ' cm</span>';
-        el('m_as_horiz').innerHTML = '<span style="color:' + phiC(phH) + '">' + (ch.m === 2 ? 'DOBLE MALLA: ' : '1 Malla: ') + 'Ø ' + phiL(phH) + ' @ ' + ch.s + ' cm</span>';
-        el('m_as_zap').innerHTML = '<span style="color:' + phiC(phZ) + '">Sup/Inf: Ø ' + phiL(phZ) + ' @ ' + cz.s + ' cm</span>';
+        el('m_as_vert').innerHTML = '<span style="color:' + phiC(phV) + '">' + (cv.m === 2 ? 'DOBLE MALLA (2 Caras): ' : '1 Malla: ') + 'Ø ' + phiL(phV) + ' @ ' + cv.s + ' cm</span>';
+        el('m_as_horiz').innerHTML = '<span style="color:' + phiC(phH) + '">' + (ch.m === 2 ? 'DOBLE MALLA (2 Caras): ' : '1 Malla: ') + 'Ø ' + phiL(phH) + ' @ ' + ch.s + ' cm</span>';
+        el('m_as_zap').innerHTML = '<span style="color:' + phiC(phZ) + '">Transv/Long: Ø ' + phiL(phZ) + ' @ ' + cz.s + ' cm</span>';
         
         var anclajeBox = el('m_txt_anclaje');
         if(m_tipo === 'sotano'){
             anclajeBox.style.display = 'flex';
-            anclajeBox.innerHTML = '<span>Anclaje a Techo (Corte Fricción):</span><span>As = ' + asCorteFriccion.toFixed(2) + ' cm²/m</span>';
+            anclajeBox.innerHTML = '<span>Anclaje Muro-Losa (Corte Fricción):</span><span>As = ' + asCorteFriccion.toFixed(2) + ' cm²/m (Gancho 90°)</span>';
         } else {
             anclajeBox.style.display = 'none';
         }
         
-        var cv12 = calcM(1.29, asV); var cv58 = calcM(1.99, asV);
+        var cv1M_58 = calcMallaMuro(1.99, asV, 1, eb * 100);
+        var cv2M_12 = calcMallaMuro(1.29, asV, 2, eb * 100);
+        var cv1M_12 = calcMallaMuro(1.29, asV, 1, eb * 100);
+
         el('m_propuestas_container').innerHTML = 
-            '<div class="propuestas-title"><span>💡 PROPUESTAS DE ARMADO EN PANTALLA</span></div>' +
-            '<div class="prop-grid">' +
-                '<div class="prop-card best ' + (Math.abs(phV-1.99)<0.1?'active':'') + '" onclick="aplicarPropuestaMuro(1.99, 1.29, 1.99)">' +
-                    '<span class="prop-tag tag-best">🌟 Refuerzo Óptimo</span>' +
-                    '<div class="prop-main">Vert: Ø5/8" @ ' + cv58.s + 'cm</div>' +
-                    '<div class="prop-meta">Horz: Ø1/2" | Zap: Ø5/8"</div>' +
+            '<div class="propuestas-title"><span>💡 PROPUESTAS DE ARMADO EN PANTALLA (1 MALLA Y DOBLE MALLA)</span></div>' +
+            '<div class="prop-grid-3">' +
+                '<div class="prop-card best ' + (cv.m===1 && Math.abs(phV-1.99)<0.1 ? 'active' : '') + '" onclick="aplicarPropuestaMuro(1, 1.99, 1.29, 1.99)">' +
+                    '<span class="prop-tag tag-best">🌟 1 Malla 5/8"</span>' +
+                    '<div class="prop-main">1M Ø5/8"@' + cv1M_58.s + 'cm</div>' +
+                    '<div class="prop-meta">Horz: 1M Ø1/2" | Zap: Ø5/8"</div>' +
                 '</div>' +
-                '<div class="prop-card ' + (Math.abs(phV-1.29)<0.1?'active':'') + '" onclick="aplicarPropuestaMuro(1.29, 1.29, 1.29)">' +
-                    '<span class="prop-tag tag-alt">Todo en Ø 1/2"</span>' +
-                    '<div class="prop-main">Vert: Ø1/2" @ ' + cv12.s + 'cm ' + (cv12.m==2?'(Doble)':'') + '</div>' +
+                '<div class="prop-card ' + (cv.m===2 ? 'active' : '') + '" onclick="aplicarPropuestaMuro(2, 1.29, 0.71, 1.99)">' +
+                    '<span class="prop-tag tag-warn">🛡️ Doble Malla</span>' +
+                    '<div class="prop-main">2M Ø1/2"@' + cv2M_12.s + 'cm</div>' +
+                    '<div class="prop-meta">2 Caras (Int+Ext) E.060 Cap.14</div>' +
+                '</div>' +
+                '<div class="prop-card ' + (cv.m===1 && Math.abs(phV-1.29)<0.1 ? 'active' : '') + '" onclick="aplicarPropuestaMuro(1, 1.29, 1.29, 1.29)">' +
+                    '<span class="prop-tag tag-alt">Todo Ø 1/2"</span>' +
+                    '<div class="prop-main">1M Ø1/2"@' + cv1M_12.s + 'cm</div>' +
                     '<div class="prop-meta">Horz: Ø1/2" | Zap: Ø1/2"</div>' +
                 '</div>' +
             '</div>';
 
         var memHtml = '<div class="mem-title-main">🎓 MEMORIA DE CÁLCULO DETALLADA: ' + (m_tipo === 'voladizo' ? 'MURO EN VOLADIZO' : 'MURO SÓTANO ARRIOSTRADO') + '</div>' +
-            '<div class="memoria-section">PASO 1: EMPUJES DE TIERRA Y AGUA (SISMO MONONOBE-OKABE)</div>' +
-            '<div class="mem-step">' +
-                '<div class="mem-eq">' + (m_tipo === 'voladizo' ? 'Coef. Activo Ka = ' + Ka.toFixed(3) : 'Coef. Reposo K0 = ' + K0.toFixed(3)) + ' | Sismo kh = ' + kh.toFixed(3) + ' | γ_eff = ' + gamma_eff.toFixed(2) + ' T/m³\nEa (Tierra) = ' + Ea.toFixed(2) + ' T/m | Eq (Sobrecarga) = ' + Eq.toFixed(2) + ' T/m | Ew (Agua) = ' + Ew.toFixed(2) + ' T/m | ΔPae (Sismo) = ' + dPae.toFixed(2) + ' T/m\nFh_total = ' + Fh_total.toFixed(2) + ' Ton/m</div>' +
-            '</div>';
+            '<div class="memoria-section">PASO 1: EMPUJES DE TIERRA, SOBRECARGA Y SISMO (E.050 / E.030)</div>' +
+            '<div class="mem-step"><div class="mem-eq">' + (m_tipo === 'voladizo' ? 'Coef. Activo Ka = ' + Ka.toFixed(3) : 'Coef. Reposo K0 = ' + K0.toFixed(3)) + ' | kh = ' + kh.toFixed(3) + ' | γ_eff = ' + gamma_eff.toFixed(2) + ' T/m³\nEa = ' + Ea.toFixed(2) + ' T/m | Eq = ' + Eq.toFixed(2) + ' T/m | Ew = ' + Ew.toFixed(2) + ' T/m | ΔPae = ' + dPae.toFixed(2) + ' T/m → Fh_total = ' + Fh_total.toFixed(2) + ' Ton/m</div></div>';
             
         if(m_tipo === 'voladizo'){
             memHtml += '<div class="memoria-section">PASO 2: FACTORES DE SEGURIDAD (VOLTEO Y DESLIZAMIENTO)</div>' +
-            '<div class="mem-step">' +
-                '<div class="mem-eq">Mv = ' + Mv.toFixed(2) + ' Ton·m/m | Mr = ' + Mr.toFixed(2) + ' Ton·m/m\nFSV = ' + FSV.toFixed(2) + ' ≥ 1.50 | FSD = ' + FSD.toFixed(2) + ' ≥ 1.50\nσ_máx Puntera = ' + qMax_puntera.toFixed(2) + ' T/m² ≤ ' + qAdm_muro + ' T/m²</div>' +
-            '</div>';
+            '<div class="mem-step"><div class="mem-eq">Mv = ' + Mv.toFixed(2) + ' T·m/m | Mr = ' + Mr.toFixed(2) + ' T·m/m → FSV = ' + FSV.toFixed(2) + ' ≥ 1.50 | FSD = ' + FSD.toFixed(2) + ' ≥ 1.50 | σ_máx = ' + qMax_puntera.toFixed(2) + ' T/m²</div></div>';
         } else {
-            memHtml += '<div class="memoria-section">PASO 2: TRANSMISIÓN DE CARGAS A LOSA DE TECHO Y BASE</div>' +
-            '<div class="mem-step">' +
-                '<div class="mem-eq">Muro empotrado en base y apoyado en Losa superior (Evita Volteo).\nReacción Techo (R_top) = ' + Rx_techo.toFixed(2) + ' Ton/m\nReacción Base (R_bot) = ' + Rx_base.toFixed(2) + ' Ton/m\nAcero Corte-Fricción nudo Muro-Techo: As_vf = R_top / (μ·fy) = ' + asCorteFriccion.toFixed(2) + ' cm²/m</div>' +
-            '</div>';
+            memHtml += '<div class="memoria-section">PASO 2: TRANSMISIÓN DE REACCIONES A LOSA SUPERIOR Y ZAPATA CORRIDA</div>' +
+            '<div class="mem-step"><div class="mem-eq">Reacción Diafragma Losa (R_top) = ' + Rx_techo.toFixed(2) + ' Ton/m | Reacción Base (R_bot) = ' + Rx_base.toFixed(2) + ' Ton/m\nAcero Corte-Fricción nudo Muro-Losa (E.060 Art. 11.7): As_vf = ' + asCorteFriccion.toFixed(2) + ' cm²/m</div></div>';
         }
             
-        memHtml += '<div class="memoria-section">PASO 3: DISEÑO DE ACERO EN PANTALLA Y ZAPATA (E.060)</div>' +
-            '<div class="mem-step">' +
-                '<div class="mem-eq">Mu_diseño = ' + Mu_p.toFixed(2) + ' T·m/m → As_vert = ' + asV.toFixed(2) + ' cm²/m | As_horiz = ' + asH.toFixed(2) + ' cm²/m\nAs_zapata = ' + asZ.toFixed(2) + ' cm²/m</div>' +
-                '<span class="mem-verdict-ok">✅ ARMADO DE PANTALLA Y ZAPATA VERIFICADO SEGÚN RNE E.060</span>' +
-            '</div>';
+        memHtml += '<div class="memoria-section">PASO 3: DISEÑO DE ACERO EN PANTALLA Y ZAPATA CORRIDA (E.060 CAP. 14)</div>' +
+            '<div class="mem-step"><div class="mem-eq">Mu_diseño = ' + Mu_p.toFixed(2) + ' T·m/m → As_vert = ' + asV.toFixed(2) + ' cm²/m (' + (cv.m===2?'Doble Malla':'1 Malla') + ') | As_horiz = ' + asH.toFixed(2) + ' cm²/m | As_zap = ' + asZ.toFixed(2) + ' cm²/m</div><span class="mem-verdict-ok">✅ ARMADO Y LONGITUD DE GANCHO EN ZAPATA/LOSA VERIFICADOS SEGÚN RNE E.060</span></div>';
             
         el('mem_mur').innerHTML = memHtml;
 
-        sumarMetros(phV, cv.m * (100 / cv.s) * (h + hz + 0.35));
+        sumarMetros(phV, cv.m * (100 / cv.s) * (h + hz + 0.45));
         sumarMetros(phH, ch.m * (h * 100 / ch.s) * 1.0);
-        sumarMetros(phZ, 2 * (100 / cz.s) * b);
+        sumarMetros(phZ, (100 / cz.s) * (b + 0.25) + 6 * 1.0);
         volConcretoElem = (b * hz) + (((eb + cc) / 2) * h) + (dent ? 0.12 : 0);
 
         el('ficha_tecnica_live').innerHTML = 
             '<b>🧱 ELEMENTO: ' + (m_tipo==='voladizo' ? 'MURO DE CONTENCIÓN (LIBRE)' : 'MURO ARRIOSTRADO (SÓTANO)') + ' POR METRO LINEAL</b><br>' +
-            '• Altura libre pantalla: <b>H = ' + h.toFixed(2) + ' m</b> | Base zapata: <b>B = ' + b.toFixed(2) + ' m</b><br>' +
+            '• Altura libre pantalla: <b>H = ' + h.toFixed(2) + ' m</b> | Base zapata corrida: <b>B = ' + b.toFixed(2) + ' m</b><br>' +
             '• Espesores: <b>hz = ' + (hz*100).toFixed(0) + ' cm | Base e = ' + (eb*100).toFixed(0) + ' cm | Corona c = ' + (cc*100).toFixed(0) + ' cm</b><br>' +
-            (m_tipo==='sotano' ? '• Reacción a Techo: <b>' + Rx_techo.toFixed(2) + ' Ton/m</b> | Anclaje Sup: <b>As=' + asCorteFriccion.toFixed(1) + ' cm²/m</b><br>' : '') +
-            '• Acero Vertical: <b>' + (cv.m===2?'Doble Malla ':'1 Malla ') + 'Ø ' + phiL(phV) + ' @ ' + cv.s + ' cm</b><br>' +
-            '• Acero Horizontal: <b>' + (ch.m===2?'Doble Malla ':'1 Malla ') + 'Ø ' + phiL(phH) + ' @ ' + ch.s + ' cm</b><br>' +
-            '• Parrilla de Zapata: <b>Ø ' + phiL(phZ) + ' @ ' + cz.s + ' cm</b>';
+            (m_tipo==='sotano' ? '• Reacción a Techo: <b>' + Rx_techo.toFixed(2) + ' Ton/m</b> | Anclaje Sup: <b>As=' + asCorteFriccion.toFixed(2) + ' cm²/m</b><br>' : '') +
+            '• Acero Vertical: <b>' + (cv.m===2?'Doble Malla (2 Caras) ':'1 Malla ') + 'Ø ' + phiL(phV) + ' @ ' + cv.s + ' cm</b><br>' +
+            '• Acero Horizontal: <b>' + (ch.m===2?'Doble Malla (2 Caras) ':'1 Malla ') + 'Ø ' + phiL(phH) + ' @ ' + ch.s + ' cm</b><br>' +
+            '• Parrilla de Zapata: <b>Ø ' + phiL(phZ) + ' @ ' + cz.s + ' cm (Transversal y Longitudinal)</b>';
 
-        D3.mTipo = m_tipo; D3.mH = h; D3.mB = b; D3.mHz = hz * 100; D3.mC = cc * 100; D3.mE = eb * 100; D3.spV = cv.s; D3.spH = ch.s; D3.spZ = cz.s; D3.mVmalla = cv.m; D3.mHmalla = ch.m; D3.mPhiV = phV; D3.mPhiH = phH; D3.mPhiZ = phZ; D3.mDent = dent; 
+        D3.mTipo = m_tipo; D3.mH = h; D3.mB = b; D3.mHz = hz * 100; D3.mC = cc * 100; D3.mE = eb * 100; D3.mPunt = pT; D3.mTal = tT; D3.spV = cv.s; D3.spH = ch.s; D3.spZ = cz.s; D3.mVmalla = cv.m; D3.mHmalla = ch.m; D3.mPhiV = phV; D3.mPhiH = phH; D3.mPhiZ = phZ; D3.mDent = dent; 
         rMur(h, b, hz * 100, cc * 100, eb * 100, pT, tT, phV, phH, phZ, cv.m, ch.m, dent, m_tipo);
     }
 
@@ -1716,28 +1560,25 @@ function compartirFicha(){
     alert(raw + '\n\n✅ ¡Ficha técnica copiada para pegar en WhatsApp!');
 }
 
+// ==================== PLANOS 2D SINCRONIZADOS CON EL VISOR 3D ====================
 function rZap(L, B, nV, ph){
     var c = el('cvs_2d_zap'); if(!c) return; 
     var ctx = c.getContext('2d'); ctx.clearRect(0, 0, c.width, c.height);
     var cx = c.width / 2, cy = c.height / 2 + 5, sc = Math.min((c.width - 80) / L, (c.height - 50) / B), w = L * sc, h = B * sc;
-    
     ctx.strokeStyle = '#475569'; ctx.lineWidth = 2; ctx.strokeRect(cx - w / 2, cy - h / 2, w, h); 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.03)'; ctx.fillRect(cx - w / 2, cy - h / 2, w, h);
     ctx.strokeStyle = phiC(ph); ctx.lineWidth = 1.6; 
-    
     var sX = (w - 20) / (nV - 1 || 1), sY = (h - 20) / (nV - 1 || 1);
     for(var i = 0; i < nV; i++){
         ctx.beginPath(); ctx.moveTo(cx - w / 2 + 10 + (sX * i), cy - h / 2 + 10); ctx.lineTo(cx - w / 2 + 10 + (sX * i), cy + h / 2 - 10); ctx.stroke(); 
         ctx.beginPath(); ctx.moveTo(cx - w / 2 + 10, cy - h / 2 + 10 + (sY * i)); ctx.lineTo(cx + w / 2 - 10, cy - h / 2 + 10 + (sY * i)); ctx.stroke();
     }
-
     var colW = Math.max(18, w * 0.22), colH = Math.max(18, h * 0.22);
     var colX = cx - colW / 2, colY = cy - colH / 2;
     if(D3.zUbic === 'medianera') colX = cx - w / 2 + 4;
     if(D3.zUbic === 'esquina'){ colX = cx - w / 2 + 4; colY = cy - h / 2 + 4; }
     ctx.fillStyle = 'rgba(0, 229, 255, 0.22)'; ctx.strokeStyle = '#00e5ff'; ctx.lineWidth = 1.8;
     ctx.fillRect(colX, colY, colW, colH); ctx.strokeRect(colX, colY, colW, colH);
-    
     ctx.fillStyle = '#00e5ff'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('L = ' + L.toFixed(2) + 'm (' + nV + ' Ø ' + phiL(ph) + ')', cx, cy - h / 2 - 8); 
     ctx.fillStyle = '#30d158'; ctx.textAlign = 'left'; ctx.fillText('B = ' + B.toFixed(2) + 'm', cx + w / 2 + 8, cy);
 }
@@ -1746,25 +1587,17 @@ function rCol(b, t, r, phE, phM, nM, pat){
     var c = el('cvs_2d_col'); if(!c) return; 
     var ctx = c.getContext('2d'); ctx.clearRect(0, 0, c.width, c.height);
     var cx = c.width / 2, cy = c.height / 2 + 6, sc = Math.min((c.width - 110) / b, (c.height - 65) / t), w = b * sc, h = t * sc, rP = 4 * sc;
-    
     ctx.strokeStyle = '#475569'; ctx.lineWidth = 2; ctx.strokeRect(cx - w / 2, cy - h / 2, w, h); 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.03)'; ctx.fillRect(cx - w / 2, cy - h / 2, w, h); 
     ctx.strokeStyle = '#ff9f0a'; ctx.lineWidth = 2; ctx.strokeRect(cx - w / 2 + rP, cy - h / 2 + rP, w - 2 * rP, h - 2 * rP);
-    
     var rE = Math.max(4, phE * 2.5), rM = Math.max(3.5, phM * 2.3), ex = w / 2 - rP - rE, ey = h / 2 - rP - rE;
-    
     function dPt(x, y, col, sz){
         var dx = Math.sign(x - cx) * 18, dy = Math.sign(y - cy) * 18; 
         ctx.strokeStyle = col; ctx.lineWidth = 2.5; 
         ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + dx, y + dy); ctx.stroke(); 
         ctx.beginPath(); ctx.arc(x, y, sz, 0, Math.PI * 2); ctx.fillStyle = col; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.stroke();
     }
-    
-    dPt(cx - ex, cy - ey, phiC(phE), rE); 
-    dPt(cx + ex, cy - ey, phiC(phE), rE); 
-    dPt(cx + ex, cy + ey, phiC(phE), rE); 
-    dPt(cx - ex, cy + ey, phiC(phE), rE);
-    
+    dPt(cx - ex, cy - ey, phiC(phE), rE); dPt(cx + ex, cy - ey, phiC(phE), rE); dPt(cx + ex, cy + ey, phiC(phE), rE); dPt(cx - ex, cy + ey, phiC(phE), rE);
     if(nM > 0){
         var nTB = Math.ceil(nM / 4) * 2, nS = nM - nTB; 
         if(nTB > 0){
@@ -1782,7 +1615,6 @@ function rCol(b, t, r, phE, phM, nM, pat){
             }
         }
     }
-    
     ctx.fillStyle = '#00e5ff'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('b = ' + b + 'cm (Pata: ' + pat + 'cm)', cx, cy - h / 2 - 18); 
     ctx.fillStyle = '#30d158'; ctx.textAlign = 'left'; ctx.fillText('t = ' + t + 'cm', cx + w / 2 + 16, cy);
 }
@@ -1790,163 +1622,147 @@ function rCol(b, t, r, phE, phM, nM, pat){
 function rVig(b, ht, supBars, infBars, phPiel, MuNeg, MuPos, L, LbastSup, Ldh){
     var c = el('cvs_2d_vig'); if(!c) return; 
     var ctx = c.getContext('2d'); ctx.clearRect(0, 0, c.width, c.height);
-    
-    var cx = 78, cy = c.height / 2 + 8;
-    var sc = Math.min(100 / b, (c.height - 52) / ht);
+    var cx = 78, cy = c.height / 2 + 8, sc = Math.min(100 / b, (c.height - 52) / ht);
     var w = b * sc, h = ht * sc, rP = Math.max(7, 3.2 * sc);
-    
     ctx.strokeStyle = '#475569'; ctx.lineWidth = 2; ctx.strokeRect(cx - w / 2, cy - h / 2, w, h); 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.03)'; ctx.fillRect(cx - w / 2, cy - h / 2, w, h); 
     ctx.strokeStyle = '#ff9f0a'; ctx.lineWidth = 2; ctx.strokeRect(cx - w / 2 + rP, cy - h / 2 + rP, w - 2 * rP, h - 2 * rP);
-    
     function dr(x, y, col, sz){
         ctx.beginPath(); ctx.arc(x, y, sz, 0, Math.PI * 2); ctx.fillStyle = col; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.stroke();
     }
-    
-    var padBar = 4.8;
-    var ex = w / 2 - rP - padBar - 1;
-    var stepLayerPx = Math.min(12, Math.max(9.5, 3.6 * sc));
-
+    var padBar = 4.8, ex = w / 2 - rP - padBar - 1, stepLayerPx = Math.min(12, Math.max(9.5, 3.6 * sc));
     function dibujarZona(barsArray, yBase, dir){
         var layers = organizarCapasViga(barsArray, b);
         for(var L_idx = 0; L_idx < layers.length; L_idx++){
-            var lay = layers[L_idx];
-            var nC = lay.length;
-            var yLayer = yBase + dir * (L_idx * stepLayerPx);
+            var lay = layers[L_idx], nC = lay.length, yLayer = yBase + dir * (L_idx * stepLayerPx);
             if(L_idx > 0){
                 ctx.strokeStyle = 'rgba(0, 229, 255, 0.55)'; ctx.lineWidth = 1.3;
                 ctx.beginPath(); ctx.moveTo(cx - w / 2 + rP, yLayer - dir * (stepLayerPx / 2)); ctx.lineTo(cx + w / 2 - rP, yLayer - dir * (stepLayerPx / 2)); ctx.stroke();
             }
             for(var i = 0; i < nC; i++){
-                var phVal = lay[i];
-                var rad = Math.max(3.5, Math.min(5.5, phVal * 2.1));
+                var phVal = lay[i], rad = Math.max(3.5, Math.min(5.5, phVal * 2.1));
                 var xPos = (nC === 1) ? (cx - ex) : (cx - ex + i * ((ex * 2) / (nC - 1)));
                 dr(xPos, yLayer, phiC(phVal), rad);
             }
         }
     }
-
     dibujarZona(supBars, cy - h / 2 + rP + padBar + 1, 1);
     dibujarZona(infBars, cy + h / 2 - rP - padBar - 1, -1);
-    
-    if(phPiel > 0){
-        var rp = Math.max(3.2, Math.min(4.5, phPiel * 1.9)); 
-        dr(cx - ex, cy, phiC(phPiel), rp); 
-        dr(cx + ex, cy, phiC(phPiel), rp);
-    }
-    
-    ctx.fillStyle = '#00e5ff'; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center'; 
-    ctx.fillText('b=' + b + '×h=' + ht + 'cm', cx, cy - h / 2 - 15);
-    ctx.fillStyle = '#e2e8f0'; ctx.font = 'bold 9.5px sans-serif';
-    ctx.fillText(supBars.length + ' Sup / ' + infBars.length + ' Inf', cx, cy - h / 2 - 4);
-
-    ctx.strokeStyle = 'rgba(148,163,184,0.2)'; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(150, 12); ctx.lineTo(150, c.height - 12); ctx.stroke();
-
-    var xL = 166, xR = 304, xMid = (xL + xR) / 2;
-    
-    var yAxisM = 62;
-    ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText('DIAGRAMA MOMENTOS (E.060)', xMid, 16);
-    
-    ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(xL, yAxisM); ctx.lineTo(xR, yAxisM); ctx.stroke();
-    ctx.fillStyle = '#475569';
-    ctx.fillRect(xL - 4, yAxisM - 12, 6, 24);
-    ctx.fillRect(xR - 2, yAxisM - 12, 6, 24);
-
-    ctx.strokeStyle = '#ff9f0a'; ctx.lineWidth = 2;
-    ctx.fillStyle = 'rgba(255, 159, 10, 0.14)';
-    ctx.beginPath();
-    ctx.moveTo(xL, yAxisM);
-    ctx.lineTo(xL, yAxisM - 24);
-    ctx.quadraticCurveTo(xMid, yAxisM + 52, xR, yAxisM - 24);
-    ctx.lineTo(xR, yAxisM);
-    ctx.closePath();
-    ctx.fill(); ctx.stroke();
-
-    ctx.fillStyle = '#ff453a'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'left';
-    ctx.fillText('-' + (MuNeg || 8.0).toFixed(1) + ' T·m', xL + 4, yAxisM - 26);
-    ctx.textAlign = 'right';
-    ctx.fillText('-' + (MuNeg || 8.0).toFixed(1) + ' T·m', xR - 4, yAxisM - 26);
-    ctx.fillStyle = '#30d158'; ctx.textAlign = 'center';
-    ctx.fillText('+' + (MuPos || 5.0).toFixed(1) + ' T·m', xMid, yAxisM + 34);
-
+    if(phPiel > 0){ var rp = Math.max(3.2, Math.min(4.5, phPiel * 1.9)); dr(cx - ex, cy, phiC(phPiel), rp); dr(cx + ex, cy, phiC(phPiel), rp); }
+    ctx.fillStyle = '#00e5ff'; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('b=' + b + '×h=' + ht + 'cm', cx, cy - h / 2 - 15);
+    ctx.fillStyle = '#e2e8f0'; ctx.font = 'bold 9.5px sans-serif'; ctx.fillText(supBars.length + ' Sup / ' + infBars.length + ' Inf', cx, cy - h / 2 - 4);
+    ctx.strokeStyle = 'rgba(148,163,184,0.2)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(150, 12); ctx.lineTo(150, c.height - 12); ctx.stroke();
+    var xL = 166, xR = 304, xMid = (xL + xR) / 2, yAxisM = 62;
+    ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('DIAGRAMA MOMENTOS (E.060)', xMid, 16);
+    ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(xL, yAxisM); ctx.lineTo(xR, yAxisM); ctx.stroke();
+    ctx.fillStyle = '#475569'; ctx.fillRect(xL - 4, yAxisM - 12, 6, 24); ctx.fillRect(xR - 2, yAxisM - 12, 6, 24);
+    ctx.strokeStyle = '#ff9f0a'; ctx.lineWidth = 2; ctx.fillStyle = 'rgba(255, 159, 10, 0.14)';
+    ctx.beginPath(); ctx.moveTo(xL, yAxisM); ctx.lineTo(xL, yAxisM - 24); ctx.quadraticCurveTo(xMid, yAxisM + 52, xR, yAxisM - 24); ctx.lineTo(xR, yAxisM); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#ff453a'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'left'; ctx.fillText('-' + (MuNeg || 8.0).toFixed(1) + ' T·m', xL + 4, yAxisM - 26);
+    ctx.textAlign = 'right'; ctx.fillText('-' + (MuNeg || 8.0).toFixed(1) + ' T·m', xR - 4, yAxisM - 26);
+    ctx.fillStyle = '#30d158'; ctx.textAlign = 'center'; ctx.fillText('+' + (MuPos || 5.0).toFixed(1) + ' T·m', xMid, yAxisM + 34);
     var yBeamTop = 135, yBeamBot = 178;
-    ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText('CONTINUIDAD Y ANCLAJE (L=' + (L || 4.5).toFixed(1) + 'm)', xMid, 122);
-
-    ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.5;
-    ctx.strokeRect(xL, yBeamTop, xR - xL, yBeamBot - yBeamTop);
-    ctx.fillStyle = 'rgba(59, 130, 246, 0.12)';
-    ctx.fillRect(xL - 10, yBeamTop - 8, 10, (yBeamBot - yBeamTop) + 16);
-    ctx.fillRect(xR, yBeamTop - 8, 10, (yBeamBot - yBeamTop) + 16);
-
+    ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('CONTINUIDAD Y ANCLAJE (L=' + (L || 4.5).toFixed(1) + 'm)', xMid, 122);
+    ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.5; ctx.strokeRect(xL, yBeamTop, xR - xL, yBeamBot - yBeamTop);
     ctx.strokeStyle = phiC(supBars[0] || 1.99); ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(xL - 6, yBeamTop + 20);
-    ctx.lineTo(xL - 6, yBeamTop + 6);
-    ctx.lineTo(xR + 6, yBeamTop + 6);
-    ctx.lineTo(xR + 6, yBeamTop + 20);
-    ctx.stroke();
-
-    var wBast = (xR - xL) * 0.32;
-    ctx.beginPath();
-    ctx.moveTo(xL, yBeamTop + 12); ctx.lineTo(xL + wBast, yBeamTop + 12);
-    ctx.moveTo(xR - wBast, yBeamTop + 12); ctx.lineTo(xR, yBeamTop + 12);
-    ctx.stroke();
-
+    ctx.beginPath(); ctx.moveTo(xL - 6, yBeamTop + 20); ctx.lineTo(xL - 6, yBeamTop + 6); ctx.lineTo(xR + 6, yBeamTop + 6); ctx.lineTo(xR + 6, yBeamTop + 20); ctx.stroke();
     ctx.strokeStyle = phiC(infBars[0] || 1.99); ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(xL - 6, yBeamBot - 20);
-    ctx.lineTo(xL - 6, yBeamBot - 6);
-    ctx.lineTo(xR + 6, yBeamBot - 6);
-    ctx.lineTo(xR + 6, yBeamBot - 20);
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.moveTo(xL + (xR - xL) * 0.18, yBeamBot - 12);
-    ctx.lineTo(xR - (xR - xL) * 0.18, yBeamBot - 12);
-    ctx.stroke();
-
-    ctx.fillStyle = '#00e5ff'; ctx.font = 'bold 8.5px sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText('L/3=' + (LbastSup || '1.50') + 'm | Gancho Ldh=' + (Ldh || 25) + 'cm', xMid, yBeamBot + 15);
+    ctx.beginPath(); ctx.moveTo(xL - 6, yBeamBot - 20); ctx.lineTo(xL - 6, yBeamBot - 6); ctx.lineTo(xR + 6, yBeamBot - 6); ctx.lineTo(xR + 6, yBeamBot - 20); ctx.stroke();
+    ctx.fillStyle = '#00e5ff'; ctx.font = 'bold 8.5px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('L/3=' + (LbastSup || '1.50') + 'm | Gancho Ldh=' + (Ldh || 25) + 'cm', xMid, yBeamBot + 15);
 }
 
+// PLANO 2D DE MURO CORREGIDO: PATA DE ANCLAJE SIEMPRE DENTRO DE LA ZAPATA Y GANCHO SUPERIOR EN LOSA
 function rMur(H, B, hz, cc, eb, puntera, talon, phV, phH, phZ, mV, mH, dent, mTipo){
     var c = el('cvs_2d_mur'); if(!c) return; 
     var ctx = c.getContext('2d'); ctx.clearRect(0, 0, c.width, c.height);
-    var sc = Math.min((c.width - 90) / B, (c.height - 45) / (H + (hz / 100)));
-    var w = B * sc, h = (H + (hz / 100)) * sc, tHz = (hz / 100) * sc, tEb = (eb / 100) * sc, tC = (cc / 100) * sc, pW = puntera * sc;
-    var x0 = (c.width - w) / 2, bY = c.height - 20, pX = x0 + pW; 
-    
-    ctx.fillStyle = 'rgba(255, 159, 10, 0.06)'; ctx.beginPath(); ctx.moveTo(pX + tEb, bY - tHz); ctx.lineTo(x0 + w, bY - tHz); ctx.lineTo(x0 + w, bY - h); ctx.lineTo(pX + tC, bY - h); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = 'rgba(148, 163, 184, 0.15)'; ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x0, bY); ctx.lineTo(x0 + w, bY); ctx.lineTo(x0 + w, bY - tHz); ctx.lineTo(pX + tEb, bY - tHz); ctx.lineTo(pX + tC, bY - h); ctx.lineTo(pX, bY - h); ctx.lineTo(pX, bY - tHz); ctx.lineTo(x0, bY - tHz); ctx.closePath(); ctx.fill(); ctx.stroke();
-    
+    var sc = Math.min((c.width - 100) / Math.max(1.2, B), (c.height - 52) / (H + (hz / 100)));
+    var w = B * sc, h = (H + (hz / 100)) * sc, tHz = Math.max(16, (hz / 100) * sc), tEb = Math.max(14, (eb / 100) * sc), tC = Math.max(12, (cc / 100) * sc), pW = puntera * sc;
+    var x0 = (c.width - w) / 2 + (mTipo === 'sotano' ? 18 : 0), bY = c.height - 22, pX = x0 + pW;
+    if(mTipo === 'sotano') pX = x0 + w - tEb;
+
+    // Relleno de Tierra (lado derecho)
+    var xTierraMax = Math.min(c.width - 18, pX + tEb + Math.max(28, talon * sc));
+    ctx.fillStyle = 'rgba(255, 159, 10, 0.08)';
+    ctx.beginPath(); ctx.moveTo(pX + tEb, bY - tHz); ctx.lineTo(xTierraMax, bY - tHz); ctx.lineTo(xTierraMax, bY - h); ctx.lineTo(pX + tC, bY - h); ctx.closePath(); ctx.fill();
+
+    // Silueta Concreto Muro + Zapata
+    ctx.fillStyle = 'rgba(148, 163, 184, 0.16)'; ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x0, bY); ctx.lineTo(x0 + w, bY); ctx.lineTo(x0 + w, bY - tHz);
+    ctx.lineTo(pX + tEb, bY - tHz); ctx.lineTo(pX + tC, bY - h); ctx.lineTo(pX, bY - h);
+    ctx.lineTo(pX, bY - tHz); ctx.lineTo(x0, bY - tHz); ctx.closePath(); ctx.fill(); ctx.stroke();
+
+    // Losa Superior si es Sótano
+    var hLosaPx = 14, wLosaPx = Math.max(46, pW * 0.85);
     if(mTipo === 'sotano'){
-        ctx.fillStyle = 'rgba(0, 229, 255, 0.15)'; ctx.strokeStyle = '#00e5ff'; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(pX - 30, bY - h); ctx.lineTo(pX + tC, bY - h); ctx.lineTo(pX + tC, bY - h + 15); ctx.lineTo(pX - 30, bY - h + 15); ctx.closePath(); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#00e5ff'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'right'; ctx.fillText('LOSA', pX - 35, bY - h + 10);
+        ctx.fillStyle = 'rgba(0, 229, 255, 0.16)'; ctx.strokeStyle = '#00e5ff'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.rect(pX - wLosaPx, bY - h, wLosaPx + tC, hLosaPx); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#00e5ff'; ctx.font = 'bold 9.5px sans-serif'; ctx.textAlign = 'right';
+        ctx.fillText('LOSA TECHO', pX - wLosaPx - 5, bY - h + 11);
+    } else if(dent){
+        ctx.beginPath(); ctx.moveTo(pX + 4, bY); ctx.lineTo(pX + 4, bY + 14); ctx.lineTo(pX + tEb - 4, bY + 14); ctx.lineTo(pX + tEb - 4, bY); ctx.stroke();
+    }
+
+    // Parrilla de Zapata (Barras transversales X + puntos longitudinales Z)
+    ctx.strokeStyle = phiC(phZ); ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(x0 + 5, bY - 4); ctx.lineTo(x0 + w - 5, bY - 4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x0 + 5, bY - tHz + 4); ctx.lineTo(x0 + w - 5, bY - tHz + 4); ctx.stroke();
+    for(var iz = 0; iz < 5; iz++){
+        var xzDot = x0 + 8 + iz * ((w - 16) / 4);
+        ctx.beginPath(); ctx.arc(xzDot, bY - 6, 2.0, 0, Math.PI * 2); ctx.fillStyle = phiC(phZ); ctx.fill();
+        ctx.beginPath(); ctx.arc(xzDot, bY - tHz + 6, 2.0, 0, Math.PI * 2); ctx.fillStyle = phiC(phZ); ctx.fill();
+    }
+
+    // Acero Vertical Principal (Cara Tierra: xBack) con Pata de Anclaje DENTRO de la Zapata
+    var xBackBot = pX + tEb - 4, xBackTop = pX + tC - 4;
+    var xFrontBot = pX + 4, xFrontTop = pX + 4;
+    ctx.strokeStyle = phiC(phV); ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    if(mTipo === 'sotano'){
+        // Pata inferior dobla a la IZQUIERDA (dentro de la puntera excéntrica) y gancho superior entra a la LOSA
+        var xHookBot = Math.max(x0 + 7, xBackBot - Math.min(28, w * 0.55));
+        var xHookTop = Math.max(pX - wLosaPx + 6, xBackTop - 24);
+        ctx.moveTo(xHookBot, bY - 5);
+        ctx.lineTo(xBackBot, bY - 5);
+        ctx.lineTo(xBackTop, bY - h + 5);
+        ctx.lineTo(xHookTop, bY - h + 5);
     } else {
-        if(dent){ ctx.beginPath(); ctx.moveTo(pX + 10, bY); ctx.lineTo(pX + 10, bY + 15); ctx.lineTo(pX + tEb - 10, bY + 15); ctx.lineTo(pX + tEb - 10, bY); ctx.stroke(); }
+        // En voladizo, la pata dobla dentro del talón (sin salirse de x0 + w - 6)
+        var xHookVol = Math.min(x0 + w - 6, xBackBot + 18);
+        ctx.moveTo(xHookVol, bY - 5);
+        ctx.lineTo(xBackBot, bY - 5);
+        ctx.lineTo(xBackTop, bY - h + 5);
     }
-    
-    ctx.strokeStyle = phiC(phV); ctx.lineWidth = 2.2; ctx.beginPath(); ctx.moveTo(pX + tEb - 5, bY - 5); ctx.lineTo(pX + tC - 5, bY - h + 6); ctx.moveTo(pX + tEb - 5, bY - 5); ctx.lineTo(pX + tEb + 18, bY - 5); ctx.stroke();
-    if(mV === 2){ ctx.beginPath(); ctx.moveTo(pX + 5, bY - 5); ctx.lineTo(pX + 5, bY - h + 6); ctx.moveTo(pX + 5, bY - 5); ctx.lineTo(pX - 14, bY - 5); ctx.stroke(); }
-    
-    ctx.strokeStyle = phiC(phZ); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x0 + 6, bY - 5); ctx.lineTo(x0 + w - 6, bY - 5); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x0 + 6, bY - tHz + 5); ctx.lineTo(x0 + w - 6, bY - tHz + 5); ctx.stroke();
-    
+    ctx.stroke();
+
+    // Segunda Malla Vertical (Cara Interior: xFront) cuando mV === 2
+    if(mV === 2){
+        ctx.beginPath();
+        var xHookFrontBot = Math.max(x0 + 6, xFrontBot - 18);
+        ctx.moveTo(xHookFrontBot, bY - 6);
+        ctx.lineTo(xFrontBot, bY - 6);
+        ctx.lineTo(xFrontTop, bY - h + 6);
+        if(mTipo === 'sotano') ctx.lineTo(Math.max(pX - wLosaPx + 8, xFrontTop - 18), bY - h + 6);
+        ctx.stroke();
+    }
+
+    // Puntos de Acero Horizontal (1 o 2 Mallas)
     for(var i = 1; i <= 6; i++){
-        var py = bY - tHz - i * ((h - tHz) / 6.5), rt = i / 6.5, xIn = pX + tEb - 5 - rt * (tEb - tC); 
-        ctx.beginPath(); ctx.arc(xIn - 3, py, 2.5, 0, Math.PI * 2); ctx.fillStyle = phiC(phH); ctx.fill(); 
-        if(mH === 2 || mV === 2){ ctx.beginPath(); ctx.arc(pX + 7, py, 2.5, 0, Math.PI * 2); ctx.fillStyle = phiC(phH); ctx.fill(); }
+        var py = bY - tHz - i * ((h - tHz - 8) / 6.5), rt = i / 6.5;
+        var xInBack = xBackBot - rt * (tEb - tC) - 2;
+        ctx.beginPath(); ctx.arc(xInBack, py, 2.3, 0, Math.PI * 2); ctx.fillStyle = phiC(phH); ctx.fill();
+        if(mH === 2 || mV === 2){
+            ctx.beginPath(); ctx.arc(xFrontBot + 2, py, 2.3, 0, Math.PI * 2); ctx.fillStyle = phiC(phH); ctx.fill();
+        }
     }
-    
-    ctx.font = 'bold 10.5px sans-serif'; ctx.fillStyle = '#00e5ff'; ctx.textAlign = 'right'; ctx.fillText('H=' + H.toFixed(2) + 'm', pX - 8, bY - tHz - (h - tHz) / 2); 
-    ctx.fillStyle = '#ffcc00'; ctx.textAlign = 'center'; ctx.fillText('c=' + (cc).toFixed(0) + 'cm', pX + tC / 2, bY - h - 6); 
+
+    ctx.font = 'bold 10.5px sans-serif';
+    ctx.fillStyle = '#00e5ff'; ctx.textAlign = 'right'; ctx.fillText('H=' + H.toFixed(2) + 'm', pX - 6, bY - tHz - (h - tHz) / 2);
+    ctx.fillStyle = '#ffcc00'; ctx.textAlign = 'center'; ctx.fillText('c=' + cc.toFixed(0) + 'cm (' + (mV === 2 ? '2M' : '1M') + ')', pX + tC / 2, bY - h - 6);
     ctx.fillStyle = '#30d158'; ctx.fillText('B=' + B.toFixed(2) + 'm', x0 + w / 2, bY + 14);
 }
 
+// ==================== MOTOR 3D INTERACTIVO ====================
 var c3 = el('canvas_3d_viewport');
 if(c3){
     c3.addEventListener('mousedown', function(e){ if(e.button === 2 || e.button === 1){ iPan = true; lx = e.clientX; ly = e.clientY; } else { iDrg = true; lx = e.clientX; ly = e.clientY; } });
@@ -1954,7 +1770,6 @@ if(c3){
     window.addEventListener('mouseup', function(){ iDrg = false; iPan = false; }); 
     c3.addEventListener('contextmenu', function(e){ e.preventDefault(); });
     c3.addEventListener('wheel', function(e){ e.preventDefault(); camZ = Math.max(0.35, Math.min(3.0, camZ + (e.deltaY > 0 ? -0.08 : 0.08))); render3D(); }, {passive: false});
-    
     var iDist = 0, iZ = 1, iPx = 0, iPy = 0, stPx = 0, stPy = 0;
     c3.addEventListener('touchstart', function(e){ if(e.touches.length === 1){ iDrg = true; lx = e.touches[0].clientX; ly = e.touches[0].clientY; } else if(e.touches.length === 2){ iDrg = false; var t1 = e.touches[0], t2 = e.touches[1]; iDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY); iZ = camZ; stPx = (t1.clientX + t2.clientX) / 2; stPy = (t1.clientY + t2.clientY) / 2; iPx = panX; iPy = panY; } }, {passive: true});
     c3.addEventListener('touchmove', function(e){ if(iDrg && e.touches.length === 1){ cRotY += (e.touches[0].clientX - lx) * 0.015; cRotX = Math.max(-1.2, Math.min(1.2, cRotX + (e.touches[0].clientY - ly) * 0.015)); lx = e.touches[0].clientX; ly = e.touches[0].clientY; render3D(); } else if(e.touches.length === 2){ var t1 = e.touches[0], t2 = e.touches[1]; camZ = Math.max(0.35, Math.min(3.0, iZ * (Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY) / iDist))); var mx = (t1.clientX + t2.clientX) / 2, my = (t1.clientY + t2.clientY) / 2; panX = iPx + (mx - stPx); panY = iPy + (my - stPy); render3D(); } }, {passive: true});
@@ -2021,7 +1836,6 @@ function render3D(){
         aB(fc, 0, -0.6, 0, sx, sy, sz, col, cx, cy); 
         fc.sort(function(a, b){ return a.az - b.az; }); 
         fc.forEach(function(f){ dPol(ctx, f.i.map(function(i){ return f.p[i]; }), f.f, f.s); });
-        
         if(rxM){
             ctx.strokeStyle = phiC(D3.zpPhi); ctx.lineWidth = 2; 
             var nV = D3.nE || 6, stX = (sx * 1.8) / (nV - 1 || 1), stZ = (sz * 1.8) / (nV - 1 || 1);
@@ -2046,7 +1860,6 @@ function render3D(){
         aB(fc, 0, -0.6, 0, sx, sy, sz, col, cx, cy); 
         fc.sort(function(a, b){ return a.az - b.az; }); 
         fc.forEach(function(f){ dPol(ctx, f.i.map(function(i){ return f.p[i]; }), f.f, f.s); });
-        
         if(rxM){
             ctx.lineWidth = 2; 
             var rxs = sx * 0.78, rzs = sz * 0.78;
@@ -2065,7 +1878,6 @@ function render3D(){
                 var p1 = prj(r[0], -0.6, r[1], cx, cy), p2 = prj(r[0], -0.6 + sy * 2, r[1], cx, cy); 
                 ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
             });
-            
             var estY = [], cY = 0.05; estY.push(cY); 
             for(var i = 0; i < 6; i++){ cY += D3.sLimC / 100; estY.push(cY); } 
             var bC = cY, tY = D3.ch - 0.05, topE = [tY]; 
@@ -2073,7 +1885,6 @@ function render3D(){
             var tC = tY; cY += 0.20; 
             while(cY < tC - 0.05){ estY.push(cY); cY += 0.20; } 
             estY = estY.concat(topE);
-            
             estY.forEach(function(yV){
                 var y3d = -0.6 + (yV / D3.ch) * (sy * 2);
                 var isConf = (yV <= bC + 0.01 || yV >= tC - 0.01);
@@ -2081,7 +1892,6 @@ function render3D(){
                 ctx.strokeStyle = cl; 
                 dPol(ctx, [prj(-rxs, y3d, -rzs, cx, cy), prj(rxs, y3d, -rzs, cx, cy), prj(rxs, y3d, rzs, cx, cy), prj(-rxs, y3d, rzs, cx, cy)], null, cl);
             });
-
             var yT1 = -0.6 + (sy * 2) * 0.35, yT2 = -0.6 + (sy * 2) * 0.65;
             dDim(ctx, prj(-sx*1.15, yT1, sz, cx, cy), prj(-sx*1.15, yT2, sz, cx, cy), '#ffd700', 'Ld=' + D3.ldCol + 'cm');
         }
@@ -2095,38 +1905,25 @@ function render3D(){
         aB(fc, 0, -0.2, 0, sx, sy, sz, col, cx, cy); 
         fc.sort(function(a, b){ return a.az - b.az; }); 
         fc.forEach(function(f){ dPol(ctx, f.i.map(function(i){ return f.p[i]; }), f.f, f.s); });
-        
         if(rxM){
             ctx.lineWidth = 2.2;
             var step3DLayer = sy * 0.22;
-
             function dZona3D(barsArray, yBase, dir){
                 var layers = organizarCapasViga(barsArray, D3.vb);
                 for(var L_i = 0; L_i < layers.length; L_i++){
-                    var lay = layers[L_i];
-                    var nC = lay.length;
-                    var fY = yBase - dir * (L_i * step3DLayer);
+                    var lay = layers[L_i], nC = lay.length, fY = yBase - dir * (L_i * step3DLayer);
                     for(var k = 0; k < nC; k++){
                         var phVal = lay[k];
                         ctx.strokeStyle = phiC(phVal);
                         var cZ = (nC === 1) ? (-sz * 0.78) : (-sz * 0.78 + k * ((sz * 1.56) / (nC - 1)));
-                        var p1 = prj(-sx * 0.95, fY, cZ, cx, cy);
-                        var p2 = prj(sx * 0.95, fY, cZ, cx, cy);
-                        var pHook1 = prj(-sx * 0.95, fY - dir * (sy * 0.38), cZ, cx, cy);
-                        var pHook2 = prj(sx * 0.95, fY - dir * (sy * 0.38), cZ, cx, cy);
-                        ctx.beginPath();
-                        ctx.moveTo(pHook1.x, pHook1.y);
-                        ctx.lineTo(p1.x, p1.y);
-                        ctx.lineTo(p2.x, p2.y);
-                        ctx.lineTo(pHook2.x, pHook2.y);
-                        ctx.stroke();
+                        var p1 = prj(-sx * 0.95, fY, cZ, cx, cy), p2 = prj(sx * 0.95, fY, cZ, cx, cy);
+                        var pHook1 = prj(-sx * 0.95, fY - dir * (sy * 0.38), cZ, cx, cy), pHook2 = prj(sx * 0.95, fY - dir * (sy * 0.38), cZ, cx, cy);
+                        ctx.beginPath(); ctx.moveTo(pHook1.x, pHook1.y); ctx.lineTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(pHook2.x, pHook2.y); ctx.stroke();
                     }
                 }
             }
-            
             dZona3D(D3.vSupBars, -0.2 + sy * 1.84, 1); 
             dZona3D(D3.vInfBars, -0.2 + sy * 0.16, -1);
-            
             if(D3.vPiel > 0){
                 ctx.strokeStyle = phiC(D3.vPiel); 
                 var yM = -0.2 + sy;
@@ -2135,7 +1932,6 @@ function render3D(){
                 var pR1 = prj(-sx * 0.95, yM, sz * 0.78, cx, cy), pR2 = prj(sx * 0.95, yM, sz * 0.78, cx, cy); 
                 ctx.beginPath(); ctx.moveTo(pR1.x, pR1.y); ctx.lineTo(pR2.x, pR2.y); ctx.stroke();
             }
-            
             var eX = [], cX = 0.05; eX.push(cX); 
             for(var i = 0; i < 8; i++){ cX += D3.sLimV / 100; eX.push(cX); } 
             var lC = cX, rX = D3.vl - 0.05, rE = [rX]; 
@@ -2143,7 +1939,6 @@ function render3D(){
             var rC = rX; cX += 0.20; 
             while(cX < rC - 0.05){ eX.push(cX); cX += 0.20; } 
             eX = eX.concat(rE);
-            
             eX.forEach(function(xV){
                 var x3 = -sx * 0.95 + (xV / D3.vl) * (sx * 1.9);
                 var isC = (xV <= lC + 0.01 || xV >= rC - 0.01);
@@ -2156,35 +1951,33 @@ function render3D(){
         dDim(ctx, prj(sx, -0.2, sz, cx, cy), prj(sx, -0.2, -sz, cx, cy), '#30d158', 'b=' + D3.vb); 
         dDim(ctx, prj(sx, -0.2, -sz, cx, cy), prj(sx, -0.2 + sy * 2, -sz, cx, cy), '#ff9f0a', 'h=' + D3.vh);
     }
+    // 3D MURO DE CONTENCIÓN Y SÓTANO 100% SINCRONIZADO CON EL 2D
     else if(cMod === 'muros'){
         var Htot = D3.mH + (D3.mHz / 100);
-        var sc3 = 1.85 / Math.max(D3.mB, Htot);
+        var sc3 = 1.80 / Math.max(D3.mB, Htot);
         var wB = D3.mB * sc3, hZ = (D3.mHz / 100) * sc3, hP = D3.mH * sc3, wE = (D3.mE / 100) * sc3, wC = (D3.mC / 100) * sc3;
-        
         var wPunt = (D3.mTipo === 'sotano') ? (wB - wE) : Math.max(0.30, D3.mB / 3) * sc3;
-        var zLen = 0.75; 
+        var zLen = 0.78;
         
         var x0 = -wB / 2, x1 = wB / 2, xP0 = x0 + wPunt, xP1_base = xP0 + wE, xP1_top = xP0 + wC, y0 = -0.6, y1 = y0 + hZ, y2 = y1 + hP;
-        
+        var wLosa = Math.max(wPunt * 0.95, wB * 0.85), hLosa = 0.18 * sc3;
+
         var cZap = rxM ? {f: 'rgba(0, 229, 255, 0.06)', s: 'rgba(0, 229, 255, 0.35)'} : {f: '#475569', s: '#94a3b8'};
         var cPan = rxM ? {f: 'rgba(0, 229, 255, 0.10)', s: 'rgba(0, 229, 255, 0.45)'} : {f: '#64748b', s: '#cbd5e1'};
         
         var ptZ = [[x0, y0, -zLen], [x1, y0, -zLen], [x1, y0, zLen], [x0, y0, zLen], [x0, y1, -zLen], [x1, y1, -zLen], [x1, y1, zLen], [x0, y1, zLen]];
         var ptP = [[xP0, y1, -zLen], [xP1_base, y1, -zLen], [xP1_base, y1, zLen], [xP0, y1, zLen], [xP0, y2, -zLen], [xP1_top, y2, -zLen], [xP1_top, y2, zLen], [xP0, y2, zLen]];
-        
         aH(fc, ptZ, cZap, cx, cy); 
         aH(fc, ptP, cPan, cx, cy);
         
-        if(D3.mDent){
-            var hd = 0.40 * sc3, wd = 0.30 * sc3;
+        if(D3.mDent && D3.mTipo === 'voladizo'){
+            var hd = 0.35 * sc3, wd = 0.25 * sc3;
             var ptD = [[xP0, y0 - hd, -zLen], [xP0 + wd, y0 - hd, -zLen], [xP0 + wd, y0 - hd, zLen], [xP0, y0 - hd, zLen], [xP0, y0, -zLen], [xP0 + wd, y0, -zLen], [xP0 + wd, y0, zLen], [xP0, y0, zLen]]; 
             aH(fc, ptD, cZap, cx, cy);
         }
         
         if(D3.mTipo === 'sotano'){
-            var cLosa = rxM ? {f: 'rgba(0, 229, 255, 0.10)', s: 'rgba(0, 229, 255, 0.3)'} : {f: 'rgba(48, 209, 88, 0.20)', s: 'rgba(48, 209, 88, 0.8)'};
-            var wLosa = wB * 1.5;
-            var hLosa = 0.20 * sc3;
+            var cLosa = rxM ? {f: 'rgba(0, 229, 255, 0.12)', s: 'rgba(0, 229, 255, 0.45)'} : {f: 'rgba(0, 229, 255, 0.25)', s: '#00e5ff'};
             var ptL = [[xP0 - wLosa, y2, -zLen], [xP1_top, y2, -zLen], [xP1_top, y2, zLen], [xP0 - wLosa, y2, zLen], [xP0 - wLosa, y2 + hLosa, -zLen], [xP1_top, y2 + hLosa, -zLen], [xP1_top, y2 + hLosa, zLen], [xP0 - wLosa, y2 + hLosa, zLen]];
             aH(fc, ptL, cLosa, cx, cy);
         }
@@ -2193,47 +1986,74 @@ function render3D(){
         fc.forEach(function(f){ dPol(ctx, f.i.map(function(i){ return f.p[i]; }), f.f, f.s); });
 
         if(rxM){
-            ctx.lineWidth = 1.8; 
-            ctx.strokeStyle = phiC(D3.mPhiZ); 
-            var nZb = 6, stZ = (zLen * 1.8) / (nZb - 1);
+            ctx.lineWidth = 1.8;
+            // 1. Parrilla de Zapata Completa (Transversal en X + Longitudinal en Z, idéntico al 2D)
+            ctx.strokeStyle = phiC(D3.mPhiZ);
+            var nZb = 7, stZ = (zLen * 1.8) / (nZb - 1);
             for(var iz = 0; iz < nZb; iz++){
                 var zz = -zLen * 0.9 + stZ * iz;
-                var z1 = prj(x0 + 0.04, y0 + 0.04, zz, cx, cy);
-                var z2 = prj(x1 - 0.04, y0 + 0.04, zz, cx, cy); 
+                var z1 = prj(x0 + 0.03, y0 + 0.03, zz, cx, cy), z2 = prj(x1 - 0.03, y0 + 0.03, zz, cx, cy);
                 ctx.beginPath(); ctx.moveTo(z1.x, z1.y); ctx.lineTo(z2.x, z2.y); ctx.stroke();
             }
-            
-            ctx.strokeStyle = phiC(D3.mPhiV); 
-            var numV = Math.max(5, Math.min(14, Math.floor(180 / D3.spV)));
+            var nLongZ = 5, stX_zap = ((x1 - x0) - 0.06) / (nLongZ - 1);
+            for(var ix = 0; ix < nLongZ; ix++){
+                var xx = x0 + 0.03 + stX_zap * ix;
+                var lz1 = prj(xx, y0 + 0.04, -zLen * 0.9, cx, cy), lz2 = prj(xx, y0 + 0.04, zLen * 0.9, cx, cy);
+                ctx.beginPath(); ctx.moveTo(lz1.x, lz1.y); ctx.lineTo(lz2.x, lz2.y); ctx.stroke();
+            }
+
+            // 2. Acero Vertical de Pantalla con Pata de Anclaje Inferior DENTRO de la Zapata y Gancho Superior en Losa
+            ctx.strokeStyle = phiC(D3.mPhiV);
+            var numV = Math.max(5, Math.min(12, Math.floor(180 / D3.spV)));
             var stVp = (zLen * 1.8) / (numV - 1);
+            var xHookBot3D = (D3.mTipo === 'sotano') ? Math.max(x0 + 0.05, xP1_base - wB * 0.55) : Math.min(x1 - 0.04, xP1_base + 0.22);
+            var xHookTop3D = (D3.mTipo === 'sotano') ? Math.max(xP0 - wLosa + 0.06, xP1_top - 0.35) : xP1_top;
+
             for(var iv = 0; iv < numV; iv++){
                 var zv = -zLen * 0.9 + stVp * iv;
-                var pv1 = prj(xP1_base - 0.03, y0 + 0.04, zv, cx, cy);
-                var pv2 = prj(xP1_top - 0.03, y2 - 0.04, zv, cx, cy); 
-                ctx.beginPath(); ctx.moveTo(pv1.x, pv1.y); ctx.lineTo(pv2.x, pv2.y); ctx.stroke();
-                
+                var pHookB = prj(xHookBot3D, y0 + 0.04, zv, cx, cy);
+                var pv1 = prj(xP1_base - 0.025, y0 + 0.04, zv, cx, cy);
+                var pv2 = prj(xP1_top - 0.025, y2 + (D3.mTipo === 'sotano' ? hLosa * 0.55 : -0.03), zv, cx, cy);
+                ctx.beginPath();
+                ctx.moveTo(pHookB.x, pHookB.y);
+                ctx.lineTo(pv1.x, pv1.y);
+                ctx.lineTo(pv2.x, pv2.y);
+                if(D3.mTipo === 'sotano'){
+                    var pHookT = prj(xHookTop3D, y2 + hLosa * 0.55, zv, cx, cy);
+                    ctx.lineTo(pHookT.x, pHookT.y);
+                }
+                ctx.stroke();
+
+                // Segunda Malla Vertical (Cara Interior) cuando mVmalla === 2
                 if(D3.mVmalla === 2){
-                    var pm1 = prj(xP0 + 0.03, y0 + 0.04, zv, cx, cy);
-                    var pm2 = prj(xP0 + 0.03, y2 - 0.04, zv, cx, cy); 
-                    ctx.beginPath(); ctx.moveTo(pm1.x, pm1.y); ctx.lineTo(pm2.x, pm2.y); ctx.stroke();
+                    var xHookFront3D = Math.max(x0 + 0.05, xP0 - 0.22);
+                    var pmHookB = prj(xHookFront3D, y0 + 0.05, zv, cx, cy);
+                    var pm1 = prj(xP0 + 0.025, y0 + 0.05, zv, cx, cy);
+                    var pm2 = prj(xP0 + 0.025, y2 + (D3.mTipo === 'sotano' ? hLosa * 0.40 : -0.03), zv, cx, cy);
+                    ctx.beginPath();
+                    ctx.moveTo(pmHookB.x, pmHookB.y);
+                    ctx.lineTo(pm1.x, pm1.y);
+                    ctx.lineTo(pm2.x, pm2.y);
+                    if(D3.mTipo === 'sotano'){
+                        var pmHookT = prj(Math.max(xP0 - wLosa + 0.08, xP0 - 0.25), y2 + hLosa * 0.40, zv, cx, cy);
+                        ctx.lineTo(pmHookT.x, pmHookT.y);
+                    }
+                    ctx.stroke();
                 }
             }
-            
-            ctx.strokeStyle = phiC(D3.mPhiH); 
-            var nHp = Math.max(4, Math.min(12, Math.floor((D3.mH * 100) / D3.spH)));
-            var stH = (hP * 0.9) / nHp;
+
+            // 3. Acero Horizontal de Pantalla (1 o 2 Mallas)
+            ctx.strokeStyle = phiC(D3.mPhiH);
+            var nHp = Math.max(5, Math.min(11, Math.floor((D3.mH * 100) / D3.spH)));
+            var stH = (hP * 0.90) / nHp;
             for(var ih = 1; ih <= nHp; ih++){
-                var yh = y1 + 0.05 + stH * ih;
+                var yh = y1 + 0.04 + stH * ih;
                 var rt = (yh - y1) / hP;
-                var xh = xP1_base - 0.03 - rt * (wE - wC);
-                var ph1 = prj(xh, yh, -zLen * 0.9, cx, cy);
-                var ph2 = prj(xh, yh, zLen * 0.9, cx, cy); 
+                var xh = xP1_base - 0.025 - rt * (wE - wC);
+                var ph1 = prj(xh, yh, -zLen * 0.9, cx, cy), ph2 = prj(xh, yh, zLen * 0.9, cx, cy);
                 ctx.beginPath(); ctx.moveTo(ph1.x, ph1.y); ctx.lineTo(ph2.x, ph2.y); ctx.stroke();
-                
-                if(D3.mHmalla === 2){
-                    var pxm = xP0 + 0.03;
-                    var pmh1 = prj(pxm, yh, -zLen * 0.9, cx, cy);
-                    var pmh2 = prj(pxm, yh, zLen * 0.9, cx, cy); 
+                if(D3.mHmalla === 2 || D3.mVmalla === 2){
+                    var pmh1 = prj(xP0 + 0.025, yh, -zLen * 0.9, cx, cy), pmh2 = prj(xP0 + 0.025, yh, zLen * 0.9, cx, cy);
                     ctx.beginPath(); ctx.moveTo(pmh1.x, pmh1.y); ctx.lineTo(pmh2.x, pmh2.y); ctx.stroke();
                 }
             }
@@ -2249,12 +2069,8 @@ function render3D(){
 window.addEventListener('load', function(){
     setTimeout(function(){
         var s = el('splash-screen'); 
-        if(s){ 
-            s.style.opacity = '0'; 
-            setTimeout(function(){ s.style.display = 'none'; }, 500); 
-        }
+        if(s){ s.style.opacity = '0'; setTimeout(function(){ s.style.display = 'none'; }, 500); }
     }, 900);
-    
     var cargado = cargarEstadoLocal();
     calcularAnchoTribAuto();
     resetCam(); 
@@ -2263,5 +2079,3 @@ window.addEventListener('load', function(){
 </script>
 </body>
 </html>
-
-```
