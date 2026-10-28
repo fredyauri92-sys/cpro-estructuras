@@ -1491,6 +1491,14 @@ function runEng(t){
     el('v_txt_cortante').innerText = 'Ve = ' + Vu_cortV.toFixed(1) + 'T ≤ ØVn = ' + phiVnV.toFixed(1) + 'T';
     el('v_txt_acero').innerHTML = '<span style="color:' + phiC(phS_V) + '">Sup(-): ' + nSV + 'Ø' + phiL(phS_V) + '</span> | <span style="color:' + phiC(phI_V) + '">Inf(+): ' + nIV + 'Ø' + phiL(phI_V) + '</span>' + (phPV>0 ? ' | Piel: 2Ø' + phiL(phPV) : '');
 
+    var nS_comb12V = Math.max(1, Math.ceil(Math.max(0.1, asReqSupVig - 2 * 1.99) / 1.29));
+    var asSupCombProvV = 2 * 1.99 + nS_comb12V * 1.29;
+    var nI_comb12V = Math.max(1, Math.ceil(Math.max(0.1, Math.max(asReqInfVig, 0.5 * asSupCombProvV) - 2 * 1.99) / 1.29));
+    if(modoEfectivoVig === 'comb'){
+        supBarsV = [1.99, 1.99]; for(var jc=0; jc<nS_comb12V; jc++) supBarsV.push(1.29);
+        infBarsV = [1.99, 1.99]; for(var mc=0; mc<nI_comb12V; mc++) infBarsV.push(1.29);
+        el('v_txt_acero').innerHTML = '<span style="color:#ff2222">Sup(-): 2Ø5/8" corr. + ' + nS_comb12V + 'Ø1/2" bast.</span> | <span style="color:#3388ff">Inf(+): 2Ø5/8" corr. + ' + nI_comb12V + 'Ø1/2" bast.</span>' + (phPV>0 ? ' | Piel: 2Ø' + phiL(phPV) : '');
+    }
     el('v_propuestas_container').innerHTML = 
         '<div class="propuestas-title"><span>💡 PROPUESTAS DE ARMADO SÍSMICO</span><span style="color:var(--primary-cyan); font-size:9.5px;">Máx ' + max58Vig + ' var/capa</span></div>' +
         '<div class="prop-grid">' +
@@ -1503,6 +1511,16 @@ function runEng(t){
                 '<span class="prop-tag ' + (bestKeyVig==='opt34' ? 'tag-best' : 'tag-alt') + '">Opción Ø 3/4"</span>' +
                 '<div class="prop-main">Sup: ' + nS_34V + 'Ø3/4" | Inf: ' + nI_34V + 'Ø3/4"</div>' +
                 '<div class="prop-meta">As: ' + (nS_34V*2.84).toFixed(2) + ' / ' + (nI_34V*2.84).toFixed(2) + ' cm²</div>' +
+            '</div>' +
+            '<div class="prop-card ' + (modoEfectivoVig==='comb' ? 'active' : '') + '" onclick="seleccionarPropuestaViga(\'comb\', 1.99, 1.99)">' +
+                '<span class="prop-tag tag-warn">🔄 Combinada</span>' +
+                '<div class="prop-main">2Ø5/8" + ' + nS_comb12V + 'Ø1/2" / +' + nI_comb12V + 'Ø1/2"</div>' +
+                '<div class="prop-meta">2Ø5/8" corr. + bastones Ø1/2"</div>' +
+            '</div>' +
+            '<div class="prop-card ' + (modoEfectivoVig==='opt12' ? 'active' : '') + '" onclick="seleccionarPropuestaViga(\'opt12\', 1.29, 1.29)">' +
+                '<span class="prop-tag tag-alt">Opción Ø 1/2"</span>' +
+                '<div class="prop-main">Sup: ' + nS_12V + 'Ø1/2" | Inf: ' + nI_12V + 'Ø1/2"</div>' +
+                '<div class="prop-meta">As: ' + (nS_12V*1.29).toFixed(2) + ' / ' + (nI_12V*1.29).toFixed(2) + ' cm²</div>' +
             '</div>' +
         '</div>';
 
@@ -2303,6 +2321,23 @@ function render3D(){
                 var pI2 = prj(xZ2 + wZap2 - 0.08, yBotBeam, zOffsetI, cx, cy);
                 ctx.beginPath(); ctx.moveTo(pI1.x, pI1.y); ctx.lineTo(pI2.x, pI2.y); ctx.stroke();
             }
+
+            if(D3.vcPielBars && D3.vcPielBars.length > 0){
+                ctx.strokeStyle = '#3388ff';
+                var yMidVC = (yTopBeam + yBotBeam) / 2;
+                var pp1 = prj(xZ1, yMidVC, -bV*0.75, cx, cy), pp2 = prj(xZ2, yMidVC, -bV*0.75, cx, cy);
+                ctx.beginPath(); ctx.moveTo(pp1.x, pp1.y); ctx.lineTo(pp2.x, pp2.y); ctx.stroke();
+                var pp3 = prj(xZ1, yMidVC, bV*0.75, cx, cy), pp4 = prj(xZ2, yMidVC, bV*0.75, cx, cy);
+                ctx.beginPath(); ctx.moveTo(pp3.x, pp3.y); ctx.lineTo(pp4.x, pp4.y); ctx.stroke();
+            }
+
+            var nEstVC = 12;
+            for(var ie=0; ie<=nEstVC; ie++){
+                var xEst = (xZ1 + wZap1*0.5) + ie * (((xZ2 - wZap2*0.5) - (xZ1 + wZap1*0.5)) / nEstVC);
+                var clE = (ie <= 3 || ie >= nEstVC - 3) ? '#30d158' : '#ff9f0a';
+                ctx.strokeStyle = clE; ctx.lineWidth = 1.5;
+                dPol(ctx, [prj(xEst, yBotBeam, -bV*0.78, cx, cy), prj(xEst, yTopBeam, -bV*0.78, cx, cy), prj(xEst, yTopBeam, bV*0.78, cx, cy), prj(xEst, yBotBeam, bV*0.78, cx, cy)], null, clE);
+            }
         }
         dDim(ctx, prj(xZ1, -0.6 + hZp*2, bV*1.5, cx, cy), prj(xZ2, -0.6 + hZp*2, bV*1.5, cx, cy), '#00e5ff', 'Ln=' + D3.vcLuz.toFixed(2));
         dDim(ctx, prj((xZ1+xZ2)/2, -0.6 + hZp*2 - hV*2, -bV, cx, cy), prj((xZ1+xZ2)/2, -0.6 + hZp*2, -bV, cx, cy), '#ff9f0a', 'h=' + D3.vcH);
@@ -2383,6 +2418,20 @@ function render3D(){
                 var pR1 = prj(-sx * 0.95, yM, sz * 0.78, cx, cy), pR2 = prj(sx * 0.95, yM, sz * 0.78, cx, cy); 
                 ctx.beginPath(); ctx.moveTo(pR1.x, pR1.y); ctx.lineTo(pR2.x, pR2.y); ctx.stroke();
             }
+            var eX = [], cX = 0.05; eX.push(cX); 
+            for(var i = 0; i < 8; i++){ cX += D3.sLimV / 100; eX.push(cX); } 
+            var lC = cX, rX = D3.vl - 0.05, rE = [rX]; 
+            for(var j = 0; j < 8; j++){ rX -= D3.sLimV / 100; rE.push(rX); } 
+            var rC = rX; cX += 0.20; 
+            while(cX < rC - 0.05){ eX.push(cX); cX += 0.20; } 
+            eX = eX.concat(rE);
+            eX.forEach(function(xV){
+                var x3 = -sx * 0.95 + (xV / D3.vl) * (sx * 1.9);
+                var isC = (xV <= lC + 0.01 || xV >= rC - 0.01);
+                var cl = isC ? '#30d158' : '#ff9f0a'; 
+                ctx.strokeStyle = cl; ctx.lineWidth = 1.6;
+                dPol(ctx, [prj(x3, -0.2 + sy * 0.12, -sz * 0.8, cx, cy), prj(x3, -0.2 + sy * 1.88, -sz * 0.8, cx, cy), prj(x3, -0.2 + sy * 1.88, sz * 0.8, cx, cy), prj(x3, -0.2 + sy * 0.12, sz * 0.8, cx, cy)], null, cl);
+            });
         }
         dDim(ctx, prj(-sx, -0.2, sz, cx, cy), prj(sx, -0.2, sz, cx, cy), '#00e5ff', 'L=' + D3.vl.toFixed(1)); 
         dDim(ctx, prj(sx, -0.2, sz, cx, cy), prj(sx, -0.2, -sz, cx, cy), '#30d158', 'b=' + D3.vb); 
@@ -2472,6 +2521,21 @@ function render3D(){
                         ctx.lineTo(pmHookT.x, pmHookT.y);
                     }
                     ctx.stroke();
+                }
+            }
+
+            ctx.strokeStyle = phiC(D3.mPhiH);
+            var nHp = Math.max(5, Math.min(11, Math.floor((D3.mH * 100) / D3.spH)));
+            var stH = (hP * 0.90) / nHp;
+            for(var ih = 1; ih <= nHp; ih++){
+                var yh = y1 + 0.04 + stH * ih;
+                var rt = (yh - y1) / hP;
+                var xh = xP1_base - 0.025 - rt * (wE - wC);
+                var ph1 = prj(xh, yh, -zLen * 0.9, cx, cy), ph2 = prj(xh, yh, zLen * 0.9, cx, cy);
+                ctx.beginPath(); ctx.moveTo(ph1.x, ph1.y); ctx.lineTo(ph2.x, ph2.y); ctx.stroke();
+                if(D3.mHmalla === 2 || D3.mVmalla === 2){
+                    var pmh1 = prj(xP0 + 0.025, yh, -zLen * 0.9, cx, cy), pmh2 = prj(xP0 + 0.025, yh, zLen * 0.9, cx, cy);
+                    ctx.beginPath(); ctx.moveTo(pmh1.x, pmh1.y); ctx.lineTo(pmh2.x, pmh2.y); ctx.stroke();
                 }
             }
         }
