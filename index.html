@@ -56,6 +56,10 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
 .res-table td:last-child { text-align:right; }
 .val-sub { font-size:10.5px; color:var(--text-muted); font-weight:600; display:block; margin-top:3px; line-height:1.4; }
 .badge-green { background:rgba(48,209,88,0.15); color:var(--primary-green); border:1px solid rgba(48,209,88,0.35); font-size:10.5px; padding:5px 9px; border-radius:8px; font-weight:800; display:block; }
+.btn-reset-rne { background:rgba(255,159,10,0.12); color:var(--primary-orange); border:1px solid rgba(255,159,10,0.4); padding:4px 8px; border-radius:6px; font-size:9.5px; font-weight:800; cursor:pointer; text-transform:uppercase; transition:all 0.2s; display:inline-flex; align-items:center; gap:4px; }
+.btn-reset-rne:hover { background:rgba(255,159,10,0.25); }
+.wbs-subdetail { background:rgba(15,23,42,0.7); border:1px solid rgba(51,65,85,0.5); border-radius:6px; padding:8px; margin-top:6px; font-size:10.5px; line-height:1.55; }
+
 
 .propuestas-box { margin-top:12px; background:rgba(0,0,0,0.28); border:1px solid var(--card-border); border-radius:8px; padding:10px; }
 .propuestas-title { font-size:10.5px; font-weight:900; color:var(--primary-orange); text-transform:uppercase; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; }
@@ -321,7 +325,7 @@ setTimeout(pintarCodigoLicencia, 150);
                     </div>
                     <div>
                         <label>📝 N° Columnas Piso:</label>
-                        <input type="number" id="z_ncol" value="12" min="1" oninput="syncGlobal('ncol', this.value)">
+                        <input type="number" id="z_ncol" value="9" min="1" oninput="syncGlobal('ncol', this.value)">
                     </div>
                 </div>
             </div>
@@ -363,7 +367,7 @@ setTimeout(pintarCodigoLicencia, 150);
             </div>
 
             <div class="result-card">
-                <div class="result-header">✅ DISEÑO ZAPATA (E.050 / E.060)</div>
+                <div class="result-header"><span>✅ DISEÑO ZAPATA (E.050 / E.060)</span><button class="btn-reset-rne" onclick="restaurarSeccionOptima('zapatas')">🔄 Restaurar RNE</button></div>
                 <table class="res-table">
                     <tr>
                         <td style="width:46%;">Dimensiones (L × B × hz):<br><span class="val-sub" id="z_txt_carga">Carga y Punzonamiento</span></td>
@@ -436,7 +440,7 @@ setTimeout(pintarCodigoLicencia, 150);
             </div>
 
             <div class="result-card">
-                <div class="result-header" id="vc_res_title">✅ DISEÑO VIGA DE CONEXIÓN RÍGIDA (E.050 / E.060)</div>
+                <div class="result-header" id="vc_res_title"><span>✅ DISEÑO VIGA DE CONEXIÓN RÍGIDA (E.050 / E.060)</span><button class="btn-reset-rne" onclick="restaurarSeccionOptima('vconex')">🔄 Restaurar RNE</button></div>
                 <table class="res-table">
                     <tr>
                         <td style="width:45%;">Sección Rígida (b × h):<br><span class="val-sub" id="vc_txt_mu">Momento Volteo Mu</span></td>
@@ -475,7 +479,7 @@ setTimeout(pintarCodigoLicencia, 150);
                 <div class="form-group grid-3">
                     <div><label>📊 N° Pisos:</label><input type="number" id="c_pisos" value="4" min="1" oninput="syncGlobal('pisos', this.value)"></div>
                     <div><label>📐 Área (m²):</label><input type="number" id="c_aconst" value="120" oninput="syncGlobal('area', this.value)"></div>
-                    <div><label>📝 N° Cols:</label><input type="number" id="c_ncol" value="12" min="1" oninput="syncGlobal('ncol', this.value)"></div>
+                    <div><label>📝 N° Cols:</label><input type="number" id="c_ncol" value="9" min="1" oninput="syncGlobal('ncol', this.value)"></div>
                 </div>
                 <div class="form-group grid-2" style="margin-bottom:0;">
                     <div>
@@ -511,7 +515,8 @@ setTimeout(pintarCodigoLicencia, 150);
                 </div>
             </div>
             <div class="result-card">
-                <div class="result-header">✅ DISEÑO COLUMNA (E.060 CAP. 10 y 21)</div>
+                <div class="result-header"><span>✅ DISEÑO COLUMNA (E.060 CAP. 10 y 21)</span><button class="btn-reset-rne" onclick="restaurarSeccionOptima('columnas')">🔄 Restaurar RNE</button></div>
+                <div id="c_alerta_nudo" style="display:none; font-size:10.5px; font-weight:800; background:rgba(255,69,58,0.15); border:1px solid var(--primary-red); color:#ff453a; padding:6px 8px; border-radius:6px; margin-bottom:8px;"></div>
                 <table class="res-table">
                     <tr>
                         <td style="width:45%;">Sección (b × t):<br><span class="val-sub" id="c_txt_ag">Área y Carga Axial</span></td>
@@ -549,7 +554,7 @@ setTimeout(pintarCodigoLicencia, 150);
                 <div class="form-group grid-3">
                     <div><label>📊 N° Pisos:</label><input type="number" id="v_pisos" value="4" min="1" oninput="syncGlobal('pisos', this.value)"></div>
                     <div><label>📐 Área (m²):</label><input type="number" id="v_aconst" value="120" oninput="syncGlobal('area', this.value)"></div>
-                    <div><label>📝 N° Cols:</label><input type="number" id="v_ncol" value="12" min="1" oninput="syncGlobal('ncol', this.value)"></div>
+                    <div><label>📝 N° Cols:</label><input type="number" id="v_ncol" value="9" min="1" oninput="syncGlobal('ncol', this.value)"></div>
                 </div>
                 <div class="form-group grid-2" style="margin-bottom:0;">
                     <div>
@@ -611,7 +616,8 @@ setTimeout(pintarCodigoLicencia, 150);
             </div>
 
             <div class="result-card">
-                <div class="result-header">✅ DISEÑO SÍSMICO DE VIGA (E.060 CAP. 21)</div>
+                <div class="result-header"><span>✅ DISEÑO SÍSMICO DE VIGA (E.060 CAP. 21)</span><button class="btn-reset-rne" onclick="restaurarSeccionOptima('vigas')">🔄 Restaurar RNE</button></div>
+                <div id="v_alerta_deflex" style="display:none; font-size:10.5px; font-weight:800; background:rgba(255,159,10,0.15); border:1px solid var(--primary-orange); color:var(--primary-orange); padding:6px 8px; border-radius:6px; margin-bottom:8px;"></div>
                 <table class="res-table">
                     <tr>
                         <td style="width:45%;">Sección (b × h):<br><span class="val-sub" id="v_txt_wu">Carga distribuida wu</span></td>
@@ -691,7 +697,7 @@ setTimeout(pintarCodigoLicencia, 150);
             </div>
 
             <div class="result-card">
-                <div class="result-header" id="m_res_title">✅ DISEÑO MURO SÓTANO ARRIOSTRADO (KO)</div>
+                <div class="result-header" id="m_res_title"><span>✅ DISEÑO MURO SÓTANO ARRIOSTRADO (KO)</span><button class="btn-reset-rne" onclick="restaurarSeccionOptima('muros')">🔄 Restaurar RNE</button></div>
                 <table class="res-table">
                     <tr>
                         <td style="width:45%;">Base (B) y Espesor (hz):<br><span class="val-sub" id="m_txt_fs">FSV, FSD y Presión</span></td>
@@ -886,6 +892,82 @@ try {
 
 function el(id){ return document.getElementById(id); }
 function tgMem(id){ var b = el(id); if(b) b.style.display = (b.style.display === 'block') ? 'none' : 'block'; }
+
+function copyToClipboardSafe(text, successMsg) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+            alert(successMsg || "✅ ¡Copiado con éxito al portapapeles!");
+        }).catch(function() {
+            fallbackCopyText(text, successMsg);
+        });
+    } else {
+        fallbackCopyText(text, successMsg);
+    }
+}
+
+function fallbackCopyText(text, successMsg) {
+    try {
+        var textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.top = "-9999px";
+        textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        var successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        if (successful) {
+            alert(successMsg || "✅ ¡Copiado con éxito al portapapeles!");
+        } else {
+            prompt("Copia manualmente el texto:", text);
+        }
+    } catch (err) {
+        prompt("Copia manualmente el texto:", text);
+    }
+}
+
+function solveGridTopology(nCols){
+    var n = Math.max(4, parseInt(nCols) || 9);
+    var bestNx = 3, bestNy = 3, minDiff = 999;
+    for(var ny = 2; ny <= Math.ceil(Math.sqrt(n)) + 2; ny++){
+        var nx = Math.ceil(n / ny);
+        if(nx * ny >= n){
+            var diff = Math.abs(nx - ny) + (nx * ny - n) * 3;
+            if(diff < minDiff){
+                minDiff = diff; bestNx = nx; bestNy = ny;
+            }
+        }
+    }
+    var tramosX = bestNy * (bestNx - 1);
+    var tramosY = bestNx * (bestNy - 1);
+    var vigasPorPiso = tramosX + tramosY;
+    var zEsquinas = 4;
+    var zMedianeras = Math.max(0, 2 * (bestNx - 2) + 2 * (bestNy - 2));
+    var zCentricas = Math.max(0, n - zEsquinas - zMedianeras);
+    var vConexReq = zEsquinas + zMedianeras;
+    return {
+        nx: bestNx,
+        ny: bestNy,
+        nColsEfectivas: n,
+        tramosX: tramosX,
+        tramosY: tramosY,
+        vigasPorPiso: vigasPorPiso,
+        zEsquinas: zEsquinas,
+        zMedianeras: zMedianeras,
+        zCentricas: zCentricas,
+        vConexReq: vConexReq
+    };
+}
+
+function restaurarSeccionOptima(modulo){
+    if(modulo === 'zapatas') runEng('all');
+    else if(modulo === 'vconex') runEng('vc_tipo');
+    else if(modulo === 'columnas') runEng('sistema');
+    else if(modulo === 'vigas') runEng('luz');
+    else if(modulo === 'muros') runEng('muro_geom');
+}
+
 
 var cMod = 'zapatas';
 var rxM = false;
