@@ -937,36 +937,57 @@ function fallbackCopyText(text, successMsg) {
     }
 }
 
-function solveGridTopology(nCols){
-    var n = Math.max(4, parseInt(nCols) || 9);
-    var bestNx = 3, bestNy = 3, minDiff = 999;
-    for(var ny = 2; ny <= Math.ceil(Math.sqrt(n)) + 2; ny++){
-        var nx = Math.ceil(n / ny);
-        if(nx * ny >= n){
-            var diff = Math.abs(nx - ny) + (nx * ny - n) * 3;
-            if(diff < minDiff){
-                minDiff = diff; bestNx = nx; bestNy = ny;
+// ==================== BLOQUE A: TOPOLOGÍA DE EJES Y SINCRONIZACIÓN ====================
+function solveGridTopology(nCols, trigger) {
+    var n = Math.max(1, parseInt(nCols) || 10);
+    var elNx = el('g_nx'), elNy = el('g_ny');
+    var inNx = elNx ? parseInt(elNx.value) : 0;
+    var inNy = elNy ? parseInt(elNy.value) : 0;
+    var bestNx = 2, bestNy = 5;
+
+    if (trigger === 'grid_manual' && inNx > 0 && inNy > 0) {
+        bestNx = inNx;
+        bestNy = inNy;
+    } else {
+        if (n <= 3) {
+            bestNx = 1;
+            bestNy = n;
+        } else {
+            var minDiff = 999;
+            for (var ny = 2; ny <= Math.ceil(Math.sqrt(n)) + 3; ny++) {
+                var nx = Math.ceil(n / ny);
+                if (nx * ny >= n) {
+                    var diff = Math.abs(nx - ny) + (nx * ny - n) * 4;
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        bestNx = Math.min(nx, ny);
+                        bestNy = Math.max(nx, ny);
+                    }
+                }
             }
         }
+        if (elNx) elNx.value = bestNx;
+        if (elNy) elNy.value = bestNy;
     }
-    var tramosX = bestNy * (bestNx - 1);
-    var tramosY = bestNx * (bestNy - 1);
-    var vigasPorPiso = tramosX + tramosY;
-    var zEsquinas = 4;
-    var zMedianeras = Math.max(0, 2 * (bestNx - 2) + 2 * (bestNy - 2));
-    var zCentricas = Math.max(0, n - zEsquinas - zMedianeras);
-    var vConexReq = zEsquinas + zMedianeras;
+
+    var tramosX = (bestNx > 1) ? (bestNy * (bestNx - 1)) : 0;
+    var tramosY = (bestNy > 1) ? (bestNx * (bestNy - 1)) : 0;
+    var vigasPiso = Math.max(1, tramosX + tramosY);
+    var zEsq = Math.min(n, 4);
+    var zMed = Math.max(0, Math.min(n - zEsq, 2 * Math.max(0, bestNx - 2) + 2 * Math.max(0, bestNy - 2)));
+    var zCen = Math.max(0, n - zEsq - zMed);
+
     return {
         nx: bestNx,
         ny: bestNy,
         nColsEfectivas: n,
         tramosX: tramosX,
         tramosY: tramosY,
-        vigasPorPiso: vigasPorPiso,
-        zEsquinas: zEsquinas,
-        zMedianeras: zMedianeras,
-        zCentricas: zCentricas,
-        vConexReq: vConexReq
+        vigasPorPiso: vigasPiso,
+        zEsquinas: zEsq,
+        zMedianeras: zMed,
+        zCentricas: zCen,
+        vConexReq: Math.max(1, Math.ceil((zEsq + zMed) / 2))
     };
 }
 
@@ -978,7 +999,6 @@ function restaurarSeccionOptima(modulo){
     else if(modulo === 'muros') runEng('muro_geom');
 }
 
-
 var cMod = 'zapatas';
 var rxM = false;
 var showLote = false;
@@ -988,7 +1008,7 @@ var vcModoSeleccion = 'best';
 
 var INPUT_IDS = [
     'p_fc','p_fy','p_zona','p_perfil_suelo','p_uso_u','p_nf','p_rec_cim','p_desp','ac_cant_elem',
-    'z_uso','z_pisos','z_aconst','z_ncol','z_ubic','z_salitre','z_suelo','z_df_input','z_mod_l','z_mod_b','z_mod_hz','z_mod_phi',
+    'z_uso','z_pisos','z_aconst','z_ncol','g_nx','g_ny','z_ubic','z_salitre','z_suelo','z_df_input','z_mod_l','z_mod_b','z_mod_hz','z_mod_phi',
     'vc_tipo','vc_luz','vc_tabique','vc_mod_b','vc_mod_h','vc_phi_sup','vc_phi_inf','vc_phi_piel',
     'c_pisos','c_aconst','c_ncol','c_ubic','c_uso','c_sis','c_h','c_phi_esq','c_phi_mid','c_mod_b','c_mod_t',
     'v_pisos','v_aconst','v_ncol','v_luz','v_losa','v_tabique','v_rol','v_uso','v_phi_sup','v_phi_inf','v_phi_piel','v_mod_b','v_mod_h',
@@ -1002,12 +1022,12 @@ function guardarEstadoLocal(){
             var id = INPUT_IDS[i];
             if(el(id)) data[id] = el(id).value;
         }
-        safeSetStorage('cpro_estruc_state_v12', JSON.stringify(data));
+        safeSetStorage('cpro_estruc_state_v20', JSON.stringify(data));
     } catch(e){}
 }
 function cargarEstadoLocal(){
     try {
-        var raw = safeGetStorage('cpro_estruc_state_v12');
+        var raw = safeGetStorage('cpro_estruc_state_v20');
         if(!raw) return false;
         var data = JSON.parse(raw);
         for(var k in data){
@@ -1023,58 +1043,17 @@ function syncGlobal(campo, valor){
     } else if(campo === 'area'){
         el('z_aconst').value = valor; el('c_aconst').value = valor; el('v_aconst').value = valor; runEng('area');
     } else if(campo === 'ncol'){
-        el('z_ncol').value = valor; el('c_ncol').value = valor; el('v_ncol').value = valor; runEng('ncol');
+        el('z_ncol').value = valor; el('c_ncol').value = valor; el('v_ncol').value = valor;
+        solveGridTopology(valor, 'auto_recalc');
+        runEng('ncol');
     } else if(campo === 'uso'){
         el('z_uso').value = valor; el('c_uso').value = valor; el('v_uso').value = valor; runEng('uso');
     }
 }
 
-    // Resuelve la matriz real de pórticos (Nx x Ny) y conteo exacto de vanos
-function solveGridTopology(nCols) {
-    var n = Math.max(1, parseInt(nCols) || 10);
-    var inNx = el('g_nx') ? parseInt(el('g_nx').value) : 0;
-    var inNy = el('g_ny') ? parseInt(el('g_ny').value) : 0;
-    var bestNx = 2, bestNy = 5;
-
-    if (inNx > 0 && inNy > 0) {
-        bestNx = inNx;
-        bestNy = inNy;
-    } else {
-        var minDiff = 999;
-        for (var ny = 2; ny <= Math.ceil(Math.sqrt(n)) + 2; ny++) {
-            var nx = Math.ceil(n / ny);
-            if (nx * ny >= n) {
-                var diff = Math.abs(nx - ny) + (nx * ny - n) * 3;
-                if (diff < minDiff) { minDiff = diff; bestNx = nx; bestNy = ny; }
-            }
-        }
-        if (el('g_nx')) el('g_nx').value = bestNx;
-        if (el('g_ny')) el('g_ny').value = bestNy;
-    }
-
-    var tramosX = bestNy * Math.max(1, bestNx - 1);
-    var tramosY = bestNx * Math.max(1, bestNy - 1);
-    var vigasPiso = tramosX + tramosY;
-    var zEsq = 4;
-    var zMed = Math.max(0, 2 * (bestNx - 2) + 2 * (bestNy - 2));
-    var zCen = Math.max(0, n - zEsq - zMed);
-
-    return {
-        nx: bestNx,
-        ny: bestNy,
-        nColsEfectivas: n,
-        tramosX: tramosX,
-        tramosY: tramosY,
-        vigasPorPiso: vigasPiso,
-        zEsquinas: zEsq,
-        zMedianeras: zMed,
-        zCentricas: zCen,
-        vConexReq: zEsq + zMed
-    };
-}
 function calcularAnchoTribAuto(){
     var aC = Math.max(10, parseFloat(el('z_aconst').value) || 120);
-    var nC = Math.max(1, parseFloat(el('z_ncol').value) || 12);
+    var nC = Math.max(1, parseFloat(el('z_ncol').value) || 10);
     var luz = Math.max(1.5, parseFloat(el('v_luz').value) || 4.5);
     var rol = el('v_rol') ? el('v_rol').value : 'principal';
     var aTribCol = aC / nC;
@@ -1094,19 +1073,20 @@ function rnd5(v){ return Math.round(v * 20) / 20; }
 
 var D3 = {
     zl:1.40, zb:1.40, zh:60, df:1.20, zpPhi:1.99, zUbic:'centrica',
-    vcTipo:'conexion', vcLuz:4.20, vcB:30, vcH:65, vcPhiS:1.99, vcPhiI:1.29, vcPhiP:1.29, vcMu:26.4, vcR1:54.8, vcPu1:48.0, vcE:0.55, vcSupBars:[1.99,1.99,1.99,1.99], vcInfBars:[1.29,1.29], vcPielBars:[1.29,1.29], vcLimS:10,
-    cx:30, cy:35, ch:2.8, nE:4, nM:2, cPhiE:1.99, cPhiM:1.29, cPata:30, sLimC:8, ldCol:65,
-    vl:4.5, vb:25, vh:40, vPiel:0, phS:1.99, phI:1.99, sLimV:8,
+    vcTipo:'conexion', vcLuz:4.20, vcB:30, vcH:65, vcPhiS:1.99, vcPhiI:1.29, vcPhiP:1.29, vcMu:26.4, vcR1:54.8, vcPu1:48.0, vcE:0.55, vcSupBars:[1.99,1.99,1.99,1.99], vcInfBars:[1.29,1.29], vcPielBars:[1.29,1.29], vcLimS:10, vcRestoS:20,
+    cx:30, cy:35, ch:2.8, nE:4, nM:2, cPhiE:1.99, cPhiM:1.29, cPata:30, sLimC:8, sRestoC:20, ldCol:65,
+    vl:4.5, vb:25, vh:40, vPiel:0, phS:1.99, phI:1.99, sLimV:8, sRestoV:20,
     vSupBars:[], vInfBars:[], MuNeg:8.5, MuPos:5.2, Ldh:25,
-    mTipo:'sotano', mH:2.8, mB:1.00, mHz:40, mC:20, mE:20, mPunt:0.80, mTal:0.0, spV:20, spH:20, spZ:20, mVmalla:1, mHmalla:1, mPhiV:1.99, mPhiH:1.29, mPhiZ:1.99, mDent:false
+    mTipo:'sotano', mH:2.8, mB:1.00, mHz:40, mC:20, mE:20, mPunt:0.80, mTal:0.0, spV:20, spH:20, spZ:20, mVmalla:1, mHmalla:1, mPhiV:1.99, mPhiH:1.29, mPhiZ:1.99, mDent:false,
+    gridNx:2, gridNy:5
 };
 
 var WBS_STORE = {
-    zapatas: { active: true, name: 'Zapatas Aisladas y Medianeras', count: 12, vol: 0, m38: 0, m12: 0, m58: 0, m34: 0, peso: 0, cem: 0, arena: 0, piedra: 0, agua: 0 },
-    vconex:  { active: true, name: 'Vigas de Conexión / Cimentación', count: 6, vol: 0, m38: 0, m12: 0, m58: 0, m34: 0, peso: 0, cem: 0, arena: 0, piedra: 0, agua: 0 },
-    columnas:{ active: true, name: 'Columnas de Pórticos', count: 12, vol: 0, m38: 0, m12: 0, m58: 0, m34: 0, peso: 0, cem: 0, arena: 0, piedra: 0, agua: 0 },
-    vigas:   { active: true, name: 'Vigas de Entrepiso y Techo', count: 18, vol: 0, m38: 0, m12: 0, m58: 0, m34: 0, peso: 0, cem: 0, arena: 0, piedra: 0, agua: 0 },
-    muros:   { active: false, name: 'Muros de Contención / Sótano', count: 10, vol: 0, m38: 0, m12: 0, m58: 0, m34: 0, peso: 0, cem: 0, arena: 0, piedra: 0, agua: 0 }
+    zapatas: { active: true, name: 'Zapatas Aisladas y Medianeras', count: 10, vol: 0, m38: 0, m12: 0, m58: 0, m34: 0, peso: 0, cem: 0, arena: 0, piedra: 0, agua: 0, detailText: '' },
+    vconex:  { active: true, name: 'Vigas de Conexión / Cimentación', count: 5, vol: 0, m38: 0, m12: 0, m58: 0, m34: 0, peso: 0, cem: 0, arena: 0, piedra: 0, agua: 0, detailText: '' },
+    columnas:{ active: true, name: 'Columnas de Pórticos', count: 20, vol: 0, m38: 0, m12: 0, m58: 0, m34: 0, peso: 0, cem: 0, arena: 0, piedra: 0, agua: 0, detailText: '' },
+    vigas:   { active: true, name: 'Vigas de Entrepiso y Techo', count: 26, vol: 0, m38: 0, m12: 0, m58: 0, m34: 0, peso: 0, cem: 0, arena: 0, piedra: 0, agua: 0, detailText: '' },
+    muros:   { active: false, name: 'Muros de Contención / Sótano', count: 10, vol: 0, m38: 0, m12: 0, m58: 0, m34: 0, peso: 0, cem: 0, arena: 0, piedra: 0, agua: 0, detailText: '' }
 };
 
 function toggleWBSItem(key){
@@ -1227,7 +1207,7 @@ function runEng(t){
     var qU = parseFloat(el('z_uso').value) || 1000;
     var p = Math.max(1, parseInt(el('z_pisos').value) || 1);
     var aC = Math.max(10, parseFloat(el('z_aconst').value) || 120);
-    var nC = Math.max(1, parseFloat(el('z_ncol').value) || 12);
+    var nC = Math.max(1, parseFloat(el('z_ncol').value) || 10);
     var aTrib = aC / nC;
 
     var P_serv_col1 = (aTrib * qU * p) / 1000;
@@ -1829,47 +1809,78 @@ function runEng(t){
     D3.mTipo = m_tipo; D3.mH = hMur; D3.mB = bMur; D3.mHz = hzMur * 100; D3.mC = ccMur * 100; D3.mE = ebMur * 100; D3.mPunt = pTMur; D3.mTal = tTMur; D3.spV = cvMur.s; D3.spH = chMur.s; D3.spZ = czMur.s; D3.mVmalla = cvMur.m; D3.mHmalla = chMur.m; D3.mPhiV = phVMur; D3.mPhiH = phHMur; D3.mPhiZ = phZMur; D3.mDent = dentMur; 
     rMur(hMur, bMur, hzMur * 100, ccMur * 100, ebMur * 100, pTMur, tTMur, phVMur, phHMur, phZMur, cvMur.m, chMur.m, dentMur, m_tipo);
 
-    // ==================== ACTUALIZAR MATRIZ WBS DE METRADOS ====================
+// ==================== ACTUALIZAR MATRIZ WBS DE METRADOS Y SEMÁFORO RNE ====================
     var bolsasM3 = (fc <= 210) ? 9.73 : ((fc <= 280) ? 11.50 : 13.00);
     var arenaM3 = (fc <= 210) ? 0.52 : 0.48;
     var piedraM3 = (fc <= 210) ? 0.53 : 0.51;
     var aguaM3 = 185;
 
+    var gridInfo = solveGridTopology(nC, t);
+    D3.gridNx = gridInfo.nx;
+    D3.gridNy = gridInfo.ny;
+    D3.vcRestoS = sResto_vc;
+    D3.sRestoC = 20;
+    D3.sRestoV = sRestoV;
+    D3.phS = phS_V;
+    D3.phI = phI_V;
+
+    // 1. ZAPATAS
     var vZapUnit = zl * zb * (zh / 100);
-    var mZapUnit_ph = nVZap * (zl - 0.15) + nVZap * (zb - 0.15);
+    var cutZapX = zl - 0.15 + 0.30;
+    var cutZapY = zb - 0.15 + 0.30;
+    var mZapUnit_ph = nVZap * cutZapX + nVZap * cutZapY;
     WBS_STORE.zapatas.count = nC;
     WBS_STORE.zapatas.vol = vZapUnit * nC * 1.05;
     WBS_STORE.zapatas.m38 = 0; WBS_STORE.zapatas.m12 = 0; WBS_STORE.zapatas.m58 = 0; WBS_STORE.zapatas.m34 = 0;
-    if(phZap < 1.5) WBS_STORE.zapatas.m12 = mZapUnit_ph * nC; else if(phZap < 2.2) WBS_STORE.zapatas.m58 = mZapUnit_ph * nC; else WBS_STORE.zapatas.m34 = mZapUnit_ph * nC;
-    
+    if(phZap < 1.5) WBS_STORE.zapatas.m12 = mZapUnit_ph * nC;
+    else if(phZap < 2.2) WBS_STORE.zapatas.m58 = mZapUnit_ph * nC;
+    else WBS_STORE.zapatas.m34 = mZapUnit_ph * nC;
+    WBS_STORE.zapatas.detailText = '• ' + nC + ' zapatas (' + zl.toFixed(2) + '×' + zb.toFixed(2) + '×' + (zh/100).toFixed(2) + 'm) | Parrilla: ' + nVZap + 'Ø' + phiL(phZap) + ' en X e Y.<br>• Corte unitario c/gancho: ' + cutZapX.toFixed(2) + 'm | Encofrado lateral: ' + (2*(zl+zb)*(zh/100)*nC).toFixed(1) + ' m².';
+
+    // 2. VIGAS DE CONEXIÓN
     var vVCUnit = (vc_b / 100) * (vc_h / 100) * vc_luz;
-    var nVigConex = Math.max(2, Math.floor(nC / 2));
+    var nVigConex = gridInfo.vConexReq;
+    var cutVCSup = vc_luz + 2 * 0.45;
+    var cutVCInf = vc_luz + 2 * 0.35;
+    var nEstVC_unit = Math.ceil(2 * 9 + Math.max(0, vc_luz - 2 * (0.05 + 8 * sConf_vc / 100)) / (sResto_vc / 100));
+    var perimEstVC = 2 * ((vc_b - 8) + (vc_h - 8)) / 100 + 0.20;
     WBS_STORE.vconex.count = nVigConex;
     WBS_STORE.vconex.vol = vVCUnit * nVigConex * 1.05;
-    WBS_STORE.vconex.m38 = 24 * (2 * ((vc_b-8)+(vc_h-8))/100 + 0.20) * nVigConex;
-    WBS_STORE.vconex.m12 = (nI_vc * (vc_luz + 0.8) + (nPiel_vc>0 ? 2*(vc_luz+0.4) : 0)) * nVigConex;
-    WBS_STORE.vconex.m58 = (nS_vc * (vc_luz + 1.2)) * nVigConex;
-    WBS_STORE.vconex.m34 = 0;
+    WBS_STORE.vconex.m38 = nEstVC_unit * perimEstVC * nVigConex;
+    WBS_STORE.vconex.m12 = (nI_vc * cutVCInf + (nPiel_vc > 0 ? 2 * (vc_luz + 0.4) : 0)) * nVigConex;
+    WBS_STORE.vconex.m58 = (phS_vc < 2.2 ? (nS_vc * cutVCSup) * nVigConex : 0);
+    WBS_STORE.vconex.m34 = (phS_vc >= 2.2 ? (nS_vc * cutVCSup) * nVigConex : 0);
+    WBS_STORE.vconex.detailText = '• ' + nVigConex + ' vigas (' + vc_b + '×' + vc_h + 'cm, Ln=' + vc_luz.toFixed(2) + 'm) | Sup: ' + nS_vc + 'Ø' + phiL(phS_vc) + ' + Inf: ' + nI_vc + 'Ø' + phiL(phI_vc) + '.<br>• Estribos: ' + nEstVC_unit + ' und/viga (1@5, 8@' + sConf_vc + ', R@' + sResto_vc + 'cm) | Corte Sup c/ganchos 90°: ' + cutVCSup.toFixed(2) + 'm.';
 
+    // 3. COLUMNAS
     var vColUnit = (cb / 100) * (ct / 100) * ch;
     var nTotalCols = nC * p;
+    var cutColBar = ch + (ldTraslape / 100) + (patCol / 100);
+    var nEstCol_unit = Math.ceil(2 * 7 + Math.max(0, ch - 2 * (0.05 + 6 * sConfCol / 100)) / 0.20);
+    var perimEstCol = 2 * ((cb - 8) + (ct - 8)) / 100 + 0.22;
     WBS_STORE.columnas.count = nTotalCols;
     WBS_STORE.columnas.vol = vColUnit * nTotalCols * 1.05;
-    WBS_STORE.columnas.m38 = 22 * (2 * ((cb-8)+(ct-8))/100 + 0.20) * nTotalCols;
-    WBS_STORE.columnas.m12 = (nMCol * (ch + 0.6 + patCol/100)) * nTotalCols;
-    WBS_STORE.columnas.m58 = (4 * (ch + 0.6 + patCol/100)) * nTotalCols;
-    WBS_STORE.columnas.m34 = 0;
+    WBS_STORE.columnas.m38 = nEstCol_unit * perimEstCol * nTotalCols;
+    WBS_STORE.columnas.m12 = (nMCol * cutColBar) * nTotalCols;
+    WBS_STORE.columnas.m58 = (phE < 2.2 ? (4 * cutColBar) * nTotalCols : 0);
+    WBS_STORE.columnas.m34 = (phE >= 2.2 ? (4 * cutColBar) * nTotalCols : 0);
+    WBS_STORE.columnas.detailText = '• ' + nC + ' cols/piso × ' + p + ' pisos = ' + nTotalCols + ' cols (' + cb + '×' + ct + 'cm, H=' + ch.toFixed(2) + 'm).<br>• Corte barra (H+Ld+Pata ' + patCol + 'cm): ' + cutColBar.toFixed(2) + 'm | ' + nEstCol_unit + ' estribos/col c/gancho 135° | Encofrado: ' + (2*(cb+ct)/100*ch*nTotalCols).toFixed(1) + ' m².';
 
+    // 4. VIGAS DE ENTREPISO Y TECHO (CONTEO EXACTO POR EJES Nx x Ny)
     var vVigUnit = (vbVig / 100) * (vhVig / 100) * lVig;
-    var gridInfo = solveGridTopology(nC);
     var nTotalVigas = gridInfo.vigasPorPiso * p;
+    var cutVigBar = lVig + 2 * (Ldh_ganchoV / 100);
+    var nEstVig_unit = Math.ceil(2 * 9 + Math.max(0, lVig - 2 * (0.05 + 8 * sLimV / 100)) / (sRestoV / 100));
+    var perimEstVig = 2 * ((vbVig - 8) + (vhVig - 8)) / 100 + 0.20;
     WBS_STORE.vigas.count = nTotalVigas;
     WBS_STORE.vigas.vol = vVigUnit * nTotalVigas * 1.05;
-    WBS_STORE.vigas.m38 = 26 * (2 * ((vbVig-8)+(vhVig-8))/100 + 0.20) * nTotalVigas;
-    WBS_STORE.vigas.m12 = (phPV>0 ? 2*(lVig+0.4) : 0) * nTotalVigas;
-    WBS_STORE.vigas.m58 = ((nSV + nIV) * (lVig + 1.0)) * nTotalVigas;
+    WBS_STORE.vigas.m38 = nEstVig_unit * perimEstVig * nTotalVigas;
+    WBS_STORE.vigas.m12 = (phPV > 0 ? 2 * (lVig + 0.4) : 0) * nTotalVigas;
+    WBS_STORE.vigas.m58 = ((nSV + nIV) * cutVigBar) * nTotalVigas;
     WBS_STORE.vigas.m34 = 0;
+    WBS_STORE.vigas.detailText = '• Grilla ' + gridInfo.nx + '×' + gridInfo.ny + ' ejes = ' + gridInfo.vigasPorPiso + ' tramos/piso (' + gridInfo.tramosX + ' en X + ' + gridInfo.tramosY + ' en Y) × ' + p + ' pisos = <b>' + nTotalVigas + ' vigas</b>.<br>• Sección ' + vbVig + '×' + vhVig + 'cm (L=' + lVig.toFixed(2) + 'm) | ' + nEstVig_unit + ' estribos/viga (1@5, 8@' + sLimV + ', R@' + sRestoV + 'cm).';
 
+    // 5. MUROS
     var vMurUnit = (bMur * hzMur) + (((ebMur + ccMur) / 2) * hMur);
     var mlMuro = Math.max(1, parseInt(el('ac_cant_elem') ? el('ac_cant_elem').value : 10) || 10);
     WBS_STORE.muros.count = mlMuro;
@@ -1878,6 +1889,7 @@ function runEng(t){
     WBS_STORE.muros.m12 = (chMur.m * (hMur * 100 / chMur.s)) * mlMuro;
     WBS_STORE.muros.m58 = (cvMur.m * (100 / cvMur.s) * (hMur + hzMur + 0.45) + 2 * (100 / czMur.s) * bMur) * mlMuro;
     WBS_STORE.muros.m34 = 0;
+    WBS_STORE.muros.detailText = '• ' + mlMuro + ' ml de muro (H=' + hMur.toFixed(2) + 'm, Base B=' + bMur.toFixed(2) + 'm, e=' + (ebMur*100).toFixed(0) + 'cm).';
 
     for(var k in WBS_STORE){
         var item = WBS_STORE[k];
@@ -1892,10 +1904,93 @@ function runEng(t){
         item.agua = Math.ceil(item.vol * aguaM3);
     }
 
+    // Re-dibujar planos 2D con todos los parámetros de estribos y ganchos completos
+    rVCon(vc_b, vc_h, vc_luz, nS_vc, phS_vc, nI_vc, phI_vc, nPiel_vc, p_piel_vc, e_med, Mu_vc, sConf_vc, sResto_vc);
+    rCol(cb, ct, 4, phE, phM, nMCol, patCol);
+    rVig(vbVig, vhVig, supBarsV, infBarsV, phPV, MuNegVig, MuPosVig, lVig, L_bastonSupV, Ldh_ganchoV, sLimV, sRestoV);
+
+    // Evaluar Semáforo Normativo RNE 3D (Detector de absurdos e incumplimientos)
+    evaluarSemaforoRNE(nC, aC, aTrib, zl, zb, Vu_punz, phiVc_punz, sis, cb, ct, Pu_col, phiPn_col, lVig, vhVig, Vu_vc, phiVn_vc);
+
     renderMetradosWBS();
-    renderExpedienteTecnico(fc, fy, zSismo, perfilSuelo, factorU, p, aC, nC);
+    renderExpedienteTecnico(fc, fy, zSismo, perfilSuelo, factorU, p, aC, nC, gridInfo);
     guardarEstadoLocal();
     render3D();
+}
+
+var LISTA_ALERTAS_RNE = [];
+function evaluarSemaforoRNE(nC, aC, aTrib, zl, zb, Vu_punz, phiVc_punz, sis, cb, ct, Pu_col, phiPn_col, lVig, vhVig, Vu_vc, phiVn_vc){
+    LISTA_ALERTAS_RNE = [];
+    if(nC < 4 || aTrib > 30.0){
+        LISTA_ALERTAS_RNE.push('❌ ERROR CRÍTICO (RNE E.030 / E.060): Ingresaste solo ' + nC + ' columnas para ' + aC + ' m² (Área tributaria = ' + aTrib.toFixed(1) + ' m² > 30 m² máx). Es físicamente inviable para pórticos convencionales y genera zapatas gigantescas. Aumenta el N° de columnas.');
+    }
+    if(zl > 2.60 || zb > 2.60 || (zl * zb * nC) > (aC * 0.65)){
+        LISTA_ALERTAS_RNE.push('❌ ERROR CIMENTACIÓN (RNE E.050): Zapata aislada de ' + zl.toFixed(2) + '×' + zb.toFixed(2) + ' m sobredimensionada o supera el 65% del lote. Aumenta el N° de columnas o cambia a platea de cimentación.');
+    }
+    if(Vu_punz > phiVc_punz){
+        LISTA_ALERTAS_RNE.push('❌ FALLA PUNZONAMIENTO (RNE E.060 Art. 11.12): Cortante Vu (' + Vu_punz.toFixed(1) + ' T) > ØVc (' + phiVc_punz.toFixed(1) + ' T). Incrementa el espesor hz de la zapata.');
+    }
+    if(sis === 'portico' && (cb < 25 || ct < 25)){
+        LISTA_ALERTAS_RNE.push('❌ ERROR SÍSMICO COLUMNA (RNE E.060 Cap. 21): En sistema aporticado el lado mínimo de columna es 25 cm (actual: ' + cb + '×' + ct + ' cm).');
+    }
+    if(Pu_col > phiPn_col){
+        LISTA_ALERTAS_RNE.push('❌ SOBRECARGA EN COLUMNA (RNE E.060): Carga última Pu (' + Pu_col.toFixed(1) + ' T) supera resistencia ØPn (' + phiPn_col.toFixed(1) + ' T). Aumenta sección b×t.');
+    }
+    var hMinReqV = Math.ceil(lVig * 100 / 14);
+    if(lVig > 7.0 || vhVig < hMinReqV){
+        LISTA_ALERTAS_RNE.push('⚠️ ALERTA DEFLEXIÓN VIGA (RNE E.060 Tabla 9.5): Para luz L=' + lVig.toFixed(2) + 'm el peralte mínimo sin verificar deflexiones es L/14 = ' + hMinReqV + ' cm (actual: ' + vhVig + ' cm).');
+    }
+    if(Vu_vc > phiVn_vc){
+        LISTA_ALERTAS_RNE.push('⚠️ ALERTA VIGA CONEXIÓN (RNE E.060): Cortante Vu (' + Vu_vc.toFixed(1) + ' T) supera ØVn (' + phiVn_vc.toFixed(1) + ' T). Aumenta el peralte h de la viga de conexión.');
+    }
+
+    var cont3D = document.querySelector('.schematic-container');
+    if(!cont3D) return;
+    var btnSem = el('btn_semaforo_rne');
+    if(!btnSem){
+        btnSem = document.createElement('button');
+        btnSem.id = 'btn_semaforo_rne';
+        btnSem.className = 'pill-badge';
+        btnSem.style.bottom = '12px';
+        btnSem.style.left = '12px';
+        btnSem.onclick = mostrarDetalleSemaforoRNE;
+        cont3D.appendChild(btnSem);
+    }
+    var boxSem = el('box_semaforo_rne');
+    if(!boxSem){
+        boxSem = document.createElement('div');
+        boxSem.id = 'box_semaforo_rne';
+        boxSem.style.cssText = 'display:none; position:absolute; top:44px; left:10px; right:10px; max-height:215px; overflow-y:auto; background:rgba(15,23,42,0.96); border:2px solid #ff453a; border-radius:10px; padding:10px; z-index:40; font-size:10.5px; line-height:1.45; color:#fff; box-shadow:0 10px 25px rgba(0,0,0,0.8);';
+        cont3D.appendChild(boxSem);
+    }
+
+    if(LISTA_ALERTAS_RNE.length > 0){
+        btnSem.innerText = '🚨 ' + LISTA_ALERTAS_RNE.length + (LISTA_ALERTAS_RNE.length === 1 ? ' ALERTA RNE' : ' ALERTAS RNE');
+        btnSem.style.background = 'rgba(255, 69, 58, 0.92)';
+        btnSem.style.color = '#fff';
+        btnSem.style.borderColor = '#fff';
+        btnSem.style.boxShadow = '0 0 12px rgba(255,69,58,0.8)';
+        boxSem.style.borderColor = '#ff453a';
+        boxSem.innerHTML = '<div style="font-weight:900; color:#ff453a; margin-bottom:6px; display:flex; justify-content:space-between;"><span>🚨 AUDITORÍA NORMATIVA RNE:</span><span style="cursor:pointer; color:#00e5ff;" onclick="el(\'box_semaforo_rne\').style.display=\'none\'">[Cerrar ✖]</span></div>' +
+            LISTA_ALERTAS_RNE.map(function(a){ return '<div style="margin-bottom:6px; padding-bottom:5px; border-bottom:1px dashed rgba(255,255,255,0.15);">' + a + '</div>'; }).join('');
+    } else {
+        btnSem.innerText = '✅ RNE OK';
+        btnSem.style.background = 'rgba(48, 209, 88, 0.22)';
+        btnSem.style.color = '#30d158';
+        btnSem.style.borderColor = '#30d158';
+        btnSem.style.boxShadow = 'none';
+        boxSem.style.display = 'none';
+    }
+}
+
+function mostrarDetalleSemaforoRNE(){
+    var boxSem = el('box_semaforo_rne');
+    if(!boxSem) return;
+    if(LISTA_ALERTAS_RNE.length === 0){
+        alert('✅ AUDITORÍA RNE CONFORME:\nTodas las dimensiones, áreas tributarias, cuantías y esfuerzos cumplen con las normas E.020, E.030, E.050 y E.060.');
+    } else {
+        boxSem.style.display = (boxSem.style.display === 'block') ? 'none' : 'block';
+    }
 }
 
 function renderMetradosWBS(){
@@ -1929,11 +2024,12 @@ function renderMetradosWBS(){
         htmlWBS += 
             '<div class="wbs-card" style="opacity:' + (it.active ? '1' : '0.45') + ';">' +
                 '<div class="wbs-header" onclick="toggleWBSItem(\'' + k + '\')">' +
-                    '<span class="wbs-title"><span>' + (it.active ? '✅' : '⚪') + '</span> ' + it.name + ' (' + it.count + ' unid)</span>' +
+                    '<span class="wbs-title"><span>' + (it.active ? '✅' : '⚪') + '</span> ' + it.name + ' (' + it.count + ' ' + (k==='muros'?'ml':'unid') + ')</span>' +
                     '<button class="wbs-toggle">' + (it.active ? '👁️ Incluido' : '👁️ Excluido') + '</button>' +
                 '</div>' +
                 '<div class="wbs-content">' +
-                    '<div style="font-size:11px; display:flex; justify-content:space-between; margin-bottom:4px;"><span>Concreto (+5%): <b>' + it.vol.toFixed(2) + ' m³</b></span><span style="color:var(--primary-orange);"><b>' + it.cem + ' bls</b> Cemento</span></div>' +
+                    '<div class="wbs-subdetail">' + (it.detailText || '') + '</div>' +
+                    '<div style="font-size:11px; display:flex; justify-content:space-between; margin:6px 0 4px 0;"><span>Concreto (+5%): <b>' + it.vol.toFixed(2) + ' m³</b></span><span style="color:var(--primary-orange);"><b>' + it.cem + ' bls</b> Cemento</span></div>' +
                     '<div style="font-size:10.5px; color:var(--text-muted); margin-bottom:6px;">Arena: ' + it.arena.toFixed(2) + ' m³ | Piedra: ' + it.piedra.toFixed(2) + ' m³ | Agua: ' + it.agua + ' L</div>' +
                     '<div style="font-size:11px; color:#fff; border-top:1px dotted rgba(255,255,255,0.1); padding-top:4px;">' +
                         (v38 > 0 ? 'Ø 3/8": <b>' + v38 + ' var</b> (9m)  ' : '') +
@@ -1976,36 +2072,35 @@ function copiarPedidoGlobal(){
               '• Arena Gruesa Lavada: ' + el('tot_arena').innerText + '\n' +
               '• Piedra Chancada 1/2" a 3/4": ' + el('tot_piedra').innerText + '\n' +
               '• Agua Potable: ' + el('tot_agua').innerText;
-    if(navigator.clipboard) navigator.clipboard.writeText(txt);
-    alert('✅ ¡Pedido consolidado copiado al portapapeles!');
+    copyToClipboardSafe(txt, '✅ ¡Pedido consolidado copiado al portapapeles!');
 }
 
 function compartirFicha(){
     var raw = el('ficha_tecnica_live').innerText;
-    if(navigator.clipboard) navigator.clipboard.writeText(raw);
-    alert('✅ ¡Expediente técnico copiado para pegar en WhatsApp!');
+    copyToClipboardSafe(raw, '✅ ¡Expediente técnico copiado para pegar en WhatsApp!');
 }
 
-function renderExpedienteTecnico(fc, fy, zSismo, suelo, factorU, pisos, area, nCols){
+function renderExpedienteTecnico(fc, fy, zSismo, suelo, factorU, pisos, area, nCols, gridInfo){
     var cont = el('ficha_tecnica_live');
     if(!cont) return;
+    var gStr = gridInfo ? (gridInfo.nx + '×' + gridInfo.ny + ' ejes (' + gridInfo.vigasPorPiso + ' vigas/piso)') : '';
 
     var txt = 
         '<b>CAPÍTULO I: MEMORIA DESCRIPTIVA Y PARÁMETROS SÍSMICOS (RNE)</b><br>' +
         '• Normas de Aplicación: RNE E.020 (Cargas), E.030 (Sismo), E.050 (Suelos), E.060 (Concreto).<br>' +
         '• Parámetros de Sitio: Zona Z = ' + zSismo.toFixed(2) + 'g | Perfil Suelo: ' + suelo + ' | Uso: U = ' + factorU.toFixed(2) + '<br>' +
         '• Propiedades de Materiales: Concreto fc = ' + fc + ' kg/cm² | Acero fy = ' + fy + ' kg/cm² (Grado 60).<br>' +
-        '• Características del Proyecto: ' + pisos + ' Pisos | Área Construida = ' + area + ' m² | ' + nCols + ' Columnas.<br><br>' +
+        '• Características del Proyecto: ' + pisos + ' Pisos | Área = ' + area + ' m² | ' + nCols + ' Columnas | ' + gStr + '.<br><br>' +
 
         '<b>CAPÍTULO II: ESPECIFICACIONES POR ELEMENTO ESTRUCTURAL</b><br>' +
         '1. <b>Zapatas (' + D3.zUbic.toUpperCase() + '):</b> L=' + D3.zl.toFixed(2) + 'm × B=' + D3.zb.toFixed(2) + 'm × hz=' + D3.zh + 'cm | Cota zanja: -' + (D3.df+0.10).toFixed(2) + 'm.<br>' +
         '   - Parrilla: ' + D3.nE + ' Ø ' + phiL(D3.zpPhi) + ' en ambas direcciones (Recubrimiento 7.5 cm).<br>' +
         '2. <b>Viga de Conexión (' + D3.vcTipo.toUpperCase() + '):</b> b=' + D3.vcB + 'cm × h=' + D3.vcH + 'cm (Luz=' + D3.vcLuz.toFixed(2) + 'm).<br>' +
-        '   - Refuerzo: ' + D3.vcSupBars.length + ' Ø ' + phiL(D3.vcPhiS) + ' Sup (Tracción) + ' + D3.vcInfBars.length + ' Ø ' + phiL(D3.vcPhiI) + ' Inf | Estribos 1@5, 8@' + D3.vcLimS + ', R@20.<br>' +
+        '   - Refuerzo: ' + D3.vcSupBars.length + ' Ø ' + phiL(D3.vcPhiS) + ' Sup (Gancho 90° en ambos extremos) + ' + D3.vcInfBars.length + ' Ø ' + phiL(D3.vcPhiI) + ' Inf | Estribos 1@5, 8@' + D3.vcLimS + ', R@' + (D3.vcRestoS||20) + '.<br>' +
         '3. <b>Columnas:</b> b=' + D3.cx + 'cm × t=' + D3.cy + 'cm (H libre=' + D3.ch.toFixed(2) + 'm).<br>' +
-        '   - Acero: 4 Ø ' + phiL(D3.cPhiE) + ' (Esquinas) + ' + D3.nM + ' Ø ' + phiL(D3.cPhiM) + ' (Caras) | Traslape Ld=' + D3.ldCol + 'cm.<br>' +
+        '   - Acero: 4 Ø ' + phiL(D3.cPhiE) + ' (Esquinas) + ' + D3.nM + ' Ø ' + phiL(D3.cPhiM) + ' (Caras c/patas ' + D3.cPata + 'cm y grapas 135°) | Traslape Ld=' + D3.ldCol + 'cm.<br>' +
         '4. <b>Vigas de Entrepiso:</b> b=' + D3.vb + 'cm × h=' + D3.vh + 'cm (Luz=' + D3.vl.toFixed(2) + 'm).<br>' +
-        '   - Refuerzo: Sup ' + D3.vSupBars.length + ' Ø ' + phiL(D3.phS) + ' | Inf ' + D3.vInfBars.length + ' Ø ' + phiL(D3.phI) + ' | Estribos 1@5, 8@' + D3.sLimV + ', R@' + Math.min(20, Math.floor((D3.vh-6)/2)) + 'cm.<br>' +
+        '   - Refuerzo: Sup ' + D3.vSupBars.length + ' Ø ' + phiL(D3.phS) + ' | Inf ' + D3.vInfBars.length + ' Ø ' + phiL(D3.phI) + ' | Estribos 1@5, 8@' + D3.sLimV + ', R@' + (D3.sRestoV||20) + 'cm.<br>' +
         '5. <b>Muros (' + (D3.mTipo==='voladizo'?'Voladizo':'Sótano') + '):</b> H=' + D3.mH.toFixed(2) + 'm | Base e=' + D3.mE + 'cm | Corona c=' + D3.mC + 'cm.<br>' +
         '   - Armado: Vert Ø ' + phiL(D3.mPhiV) + ' @ ' + D3.spV + 'cm (' + (D3.mVmalla===2?'Doble Malla':'1 Malla') + ') | Horz Ø ' + phiL(D3.mPhiH) + ' @ ' + D3.spH + 'cm.<br><br>' +
 
@@ -2017,7 +2112,7 @@ function renderExpedienteTecnico(fc, fy, zSismo, suelo, factorU, pisos, area, nC
     cont.innerHTML = txt;
 }
 
-// ==================== PLANOS 2D DETALLADOS ====================
+// ==================== PLANOS 2D DETALLADOS (CON GANCHOS 90°/135°, PATAS Y ESTRIBOS) ====================
 function rZap(L, B, nV, ph){
     var c = el('cvs_2d_zap'); if(!c) return; 
     var ctx = c.getContext('2d'); ctx.clearRect(0, 0, c.width, c.height);
@@ -2040,9 +2135,11 @@ function rZap(L, B, nV, ph){
     ctx.fillStyle = '#30d158'; ctx.textAlign = 'left'; ctx.fillText('B = ' + B.toFixed(2) + 'm', cx + w / 2 + 8, cy);
 }
 
-function rVCon(b_cm, h_cm, Ln_m, nS, phS, nI, phI, nPiel, phPiel, e_m, Mu_tm){
+function rVCon(b_cm, h_cm, Ln_m, nS, phS, nI, phI, nPiel, phPiel, e_m, Mu_tm, sConf_vc, sResto_vc){
     var c = el('cvs_2d_vc'); if(!c) return;
     var ctx = c.getContext('2d'); ctx.clearRect(0, 0, c.width, c.height);
+    var sC = sConf_vc || D3.vcLimS || 10;
+    var sR = sResto_vc || D3.vcRestoS || 20;
 
     var cxSec = 65, cySec = c.height / 2 + 10;
     var scSec = Math.min(75 / b_cm, 130 / h_cm);
@@ -2050,6 +2147,9 @@ function rVCon(b_cm, h_cm, Ln_m, nS, phS, nI, phI, nPiel, phPiel, e_m, Mu_tm){
     ctx.strokeStyle = '#475569'; ctx.lineWidth = 2; ctx.strokeRect(cxSec - wS/2, cySec - hS/2, wS, hS);
     ctx.fillStyle = 'rgba(255, 255, 255, 0.03)'; ctx.fillRect(cxSec - wS/2, cySec - hS/2, wS, hS);
     ctx.strokeStyle = '#ff9f0a'; ctx.lineWidth = 2; ctx.strokeRect(cxSec - wS/2 + rP, cySec - hS/2 + rP, wS - 2*rP, hS - 2*rP);
+
+    // Gancho 135° en sección de viga de conexión
+    ctx.beginPath(); ctx.moveTo(cxSec - wS/2 + rP + 2, cySec - hS/2 + rP + 2); ctx.lineTo(cxSec - wS/2 + rP + 10, cySec - hS/2 + rP + 10); ctx.stroke();
 
     var exS = wS/2 - rP - 5;
     for(var s=0; s<nS; s++){
@@ -2072,39 +2172,65 @@ function rVCon(b_cm, h_cm, Ln_m, nS, phS, nI, phI, nPiel, phPiel, e_m, Mu_tm){
     ctx.beginPath(); ctx.moveTo(135, 12); ctx.lineTo(135, c.height - 12); ctx.stroke();
 
     var xL = 152, xR = 305, bY = c.height - 25;
-    var wZap1 = 38, hZap1 = 30, wCol1 = 18;
-    var wZap2 = 38, hZap2 = 30, wCol2 = 18;
-    var hBeam = 26;
+    var wZap1 = 42, hZap1 = 30, wCol1 = 20;
+    var wZap2 = 40, hZap2 = 30, wCol2 = 20;
+    var hBeam = 28;
 
     ctx.strokeStyle = '#ff453a'; ctx.lineWidth = 2.0; ctx.setLineDash([5, 3]);
     ctx.beginPath(); ctx.moveTo(xL, 18); ctx.lineTo(xL, bY + 12); ctx.stroke();
     ctx.setLineDash([]);
     ctx.fillStyle = '#ff453a'; ctx.font = 'bold 8.5px sans-serif'; ctx.textAlign = 'left';
-    ctx.fillText('LINDERO', xL + 2, 28);
+    ctx.fillText('LINDERO', xL + 3, 28);
 
+    // Zapata Medianera Izquierda y Columna en Lindero
     ctx.fillStyle = 'rgba(148, 163, 184, 0.15)'; ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.6;
     ctx.fillRect(xL, bY - hZap1, wZap1, hZap1); ctx.strokeRect(xL, bY - hZap1, wZap1, hZap1);
     ctx.fillRect(xL, bY - hZap1 - 42, wCol1, 42); ctx.strokeRect(xL, bY - hZap1 - 42, wCol1, 42);
 
+    // Zapata Interior Derecha y Columna Central
     var xZ2 = xR - wZap2;
+    var xCol2 = xZ2 + (wZap2 - wCol2)/2;
     ctx.fillRect(xZ2, bY - hZap2, wZap2, hZap2); ctx.strokeRect(xZ2, bY - hZap2, wZap2, hZap2);
-    ctx.fillRect(xZ2 + (wZap2 - wCol2)/2, bY - hZap2 - 42, wCol2, 42); ctx.strokeRect(xZ2 + (wZap2 - wCol2)/2, bY - hZap2 - 42, wCol2, 42);
+    ctx.fillRect(xCol2, bY - hZap2 - 42, wCol2, 42); ctx.strokeRect(xCol2, bY - hZap2 - 42, wCol2, 42);
 
-    ctx.fillStyle = 'rgba(0, 229, 255, 0.14)'; ctx.strokeStyle = '#00e5ff'; ctx.lineWidth = 2;
-    ctx.fillRect(xL + wCol1, bY - hZap1, (xZ2 + (wZap2-wCol2)/2) - (xL + wCol1), hBeam);
-    ctx.strokeRect(xL + wCol1, bY - hZap1, (xZ2 + (wZap2-wCol2)/2) - (xL + wCol1), hBeam);
+    // Viga de Conexión
+    var yTopB = bY - hZap1;
+    var yBotB = yTopB + hBeam;
+    ctx.fillStyle = 'rgba(0, 229, 255, 0.12)'; ctx.strokeStyle = '#00e5ff'; ctx.lineWidth = 1.8;
+    ctx.fillRect(xL + wCol1, yTopB, xCol2 - (xL + wCol1), hBeam);
+    ctx.strokeRect(xL + wCol1, yTopB, xCol2 - (xL + wCol1), hBeam);
 
-    ctx.strokeStyle = phiC(phS); ctx.lineWidth = 2.2;
+    // Estribos 2D en Viga de Conexión (Confinados en verde en ambos extremos, naranja al centro)
+    var xStStart = xL + wCol1 + 3, xStEnd = xCol2 - 3;
+    ctx.lineWidth = 1.3;
+    for(var ie = 0; ie < 5; ie++){
+        ctx.strokeStyle = '#30d158';
+        var xE_L = xStStart + ie * 4.5;
+        var xE_R = xStEnd - ie * 4.5;
+        ctx.beginPath(); ctx.moveTo(xE_L, yTopB + 3); ctx.lineTo(xE_L, yBotB - 3); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(xE_R, yTopB + 3); ctx.lineTo(xE_R, yBotB - 3); ctx.stroke();
+    }
+    ctx.strokeStyle = '#ff9f0a';
+    for(var xm = xStStart + 26; xm < xStEnd - 24; xm += 10){
+        ctx.beginPath(); ctx.moveTo(xm, yTopB + 3); ctx.lineTo(xm, yBotB - 3); ctx.stroke();
+    }
+
+    // Acero Superior (Tracción) con Gancho 90° vertical hacia abajo en LINDERO (Izquierda) y en Columna Interior (Derecha)
+    ctx.strokeStyle = phiC(phS); ctx.lineWidth = 2.5;
     ctx.beginPath();
-    ctx.moveTo(xL + 4, bY - hZap1 + hBeam - 4);
-    ctx.lineTo(xL + 4, bY - hZap1 + 5);
-    ctx.lineTo(xZ2 + wZap2 - 4, bY - hZap1 + 5);
+    ctx.moveTo(xL + 5, yBotB - 2);
+    ctx.lineTo(xL + 5, yTopB + 4);
+    ctx.lineTo(xCol2 + wCol2 - 4, yTopB + 4);
+    ctx.lineTo(xCol2 + wCol2 - 4, yBotB - 2);
     ctx.stroke();
 
-    ctx.strokeStyle = phiC(phI); ctx.lineWidth = 1.8;
+    // Acero Inferior con Ganchos 90° hacia arriba en ambos extremos
+    ctx.strokeStyle = phiC(phI); ctx.lineWidth = 2.0;
     ctx.beginPath();
-    ctx.moveTo(xL + 5, bY - hZap1 + hBeam - 5);
-    ctx.lineTo(xZ2 + wZap2 - 5, bY - hZap1 + hBeam - 5);
+    ctx.moveTo(xL + 9, yTopB + 8);
+    ctx.lineTo(xL + 9, yBotB - 4);
+    ctx.lineTo(xCol2 + wCol2 - 8, yBotB - 4);
+    ctx.lineTo(xCol2 + wCol2 - 8, yTopB + 8);
     ctx.stroke();
 
     var yDiag = 56;
@@ -2120,7 +2246,7 @@ function rVCon(b_cm, h_cm, Ln_m, nS, phS, nI, phI, nPiel, phPiel, e_m, Mu_tm){
     ctx.fillStyle = '#ff453a'; ctx.textAlign = 'left';
     ctx.fillText('Mu = ' + Mu_tm.toFixed(1) + ' T·m', xL + wCol1 + 4, yDiag - 12);
     ctx.fillStyle = '#00e5ff'; ctx.textAlign = 'center';
-    ctx.fillText('Ln = ' + Ln_m.toFixed(2) + 'm (Viga h=' + h_cm + 'cm)', (xL + xR)/2, bY + 14);
+    ctx.fillText('Ln=' + Ln_m.toFixed(2) + 'm | Est: 1@5, 8@' + sC + ', R@' + sR, (xL + xR)/2, bY + 14);
 }
 
 function rCol(b, t, r, phE, phM, nM, pat){
@@ -2129,44 +2255,78 @@ function rCol(b, t, r, phE, phM, nM, pat){
     var cx = c.width / 2, cy = c.height / 2 + 6, sc = Math.min((c.width - 110) / b, (c.height - 65) / t), w = b * sc, h = t * sc, rP = 4 * sc;
     ctx.strokeStyle = '#475569'; ctx.lineWidth = 2; ctx.strokeRect(cx - w / 2, cy - h / 2, w, h); 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.03)'; ctx.fillRect(cx - w / 2, cy - h / 2, w, h); 
-    ctx.strokeStyle = '#ff9f0a'; ctx.lineWidth = 2; ctx.strokeRect(cx - w / 2 + rP, cy - h / 2 + rP, w - 2 * rP, h - 2 * rP);
+
+    // Estribo perimetral con ganchos sísmicos a 135° hacia el núcleo (E.060 Cap. 21)
+    var xE0 = cx - w / 2 + rP, yE0 = cy - h / 2 + rP, wE = w - 2 * rP, hE = h - 2 * rP;
+    ctx.strokeStyle = '#ff9f0a'; ctx.lineWidth = 2; ctx.strokeRect(xE0, yE0, wE, hE);
+    ctx.beginPath();
+    ctx.moveTo(xE0 + 2, yE0 + 2); ctx.lineTo(xE0 + 13, yE0 + 13);
+    ctx.moveTo(xE0 + 2, yE0 + 2); ctx.lineTo(xE0 + 9, yE0 + 15);
+    ctx.stroke();
+
     var rE = Math.max(4, phE * 2.5), rM = Math.max(3.5, phM * 2.3), ex = w / 2 - rP - rE, ey = h / 2 - rP - rE;
-    function dPt(x, y, col, sz){
-        var dx = Math.sign(x - cx) * 18, dy = Math.sign(y - cy) * 18; 
-        ctx.strokeStyle = col; ctx.lineWidth = 2.5; 
-        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + dx, y + dy); ctx.stroke(); 
+    function dBarConPata(x, y, col, sz, dxPata, dyPata){
+        ctx.strokeStyle = col; ctx.lineWidth = 2.4; 
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + dxPata, y + dyPata); ctx.stroke(); 
         ctx.beginPath(); ctx.arc(x, y, sz, 0, Math.PI * 2); ctx.fillStyle = col; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.stroke();
     }
-    dPt(cx - ex, cy - ey, phiC(phE), rE); dPt(cx + ex, cy - ey, phiC(phE), rE); dPt(cx + ex, cy + ey, phiC(phE), rE); dPt(cx - ex, cy + ey, phiC(phE), rE);
+
+    // 4 Varillas de Esquina con sus patas diagonales
+    dBarConPata(cx - ex, cy - ey, phiC(phE), rE, -16, -16);
+    dBarConPata(cx + ex, cy - ey, phiC(phE), rE, 16, -16);
+    dBarConPata(cx + ex, cy + ey, phiC(phE), rE, 16, 16);
+    dBarConPata(cx - ex, cy + ey, phiC(phE), rE, -16, 16);
+
+    // Varillas Intermedias (Ø 1/2" o 5/8") CON SUS PATAS DOBLADAS Y GRAPAS SÍSMICAS A 135°
     if(nM > 0){
         var nTB = Math.ceil(nM / 4) * 2, nS = nM - nTB; 
         if(nTB > 0){
             var st = (ex * 2) / (nTB / 2 + 1); 
             for(var i = 1; i <= nTB / 2; i++){
-                ctx.beginPath(); ctx.arc(cx - ex + st * i, cy - ey, rM, 0, Math.PI * 2); ctx.fillStyle = phiC(phM); ctx.fill(); ctx.stroke(); 
-                ctx.beginPath(); ctx.arc(cx - ex + st * i, cy + ey, rM, 0, Math.PI * 2); ctx.fillStyle = phiC(phM); ctx.fill(); ctx.stroke();
+                var xi = cx - ex + st * i;
+                // Grapa suplementaria vertical con gancho 135°
+                ctx.strokeStyle = 'rgba(255, 159, 10, 0.75)'; ctx.lineWidth = 1.4; ctx.setLineDash([3, 2]);
+                ctx.beginPath(); ctx.moveTo(xi, cy - ey); ctx.lineTo(xi, cy + ey); ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.beginPath(); ctx.moveTo(xi, cy - ey); ctx.lineTo(xi + 6, cy - ey + 7); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(xi, cy + ey); ctx.lineTo(xi - 6, cy + ey - 7); ctx.stroke();
+                // Barras intermedias superior e inferior con sus patas de anclaje
+                dBarConPata(xi, cy - ey, phiC(phM), rM, 0, -16);
+                dBarConPata(xi, cy + ey, phiC(phM), rM, 0, 16);
             }
         } 
         if(nS > 0){
             var st2 = (ey * 2) / (nS / 2 + 1); 
             for(var j = 1; j <= nS / 2; j++){
-                ctx.beginPath(); ctx.arc(cx - ex, cy - ey + st2 * j, rM, 0, Math.PI * 2); ctx.fillStyle = phiC(phM); ctx.fill(); ctx.stroke(); 
-                ctx.beginPath(); ctx.arc(cx + ex, cy - ey + st2 * j, rM, 0, Math.PI * 2); ctx.fillStyle = phiC(phM); ctx.fill(); ctx.stroke();
+                var yj = cy - ey + st2 * j;
+                // Grapa suplementaria horizontal con gancho 135°
+                ctx.strokeStyle = 'rgba(255, 159, 10, 0.75)'; ctx.lineWidth = 1.4; ctx.setLineDash([3, 2]);
+                ctx.beginPath(); ctx.moveTo(cx - ex, yj); ctx.lineTo(cx + ex, yj); ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.beginPath(); ctx.moveTo(cx - ex, yj); ctx.lineTo(cx - ex + 7, yj + 6); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(cx + ex, yj); ctx.lineTo(cx + ex - 7, yj - 6); ctx.stroke();
+                // Barras intermedias izquierda y derecha con sus patas de anclaje
+                dBarConPata(cx - ex, yj, phiC(phM), rM, -16, 0);
+                dBarConPata(cx + ex, yj, phiC(phM), rM, 16, 0);
             }
         }
     }
-    ctx.fillStyle = '#00e5ff'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('b = ' + b + 'cm (Pata: ' + pat + 'cm)', cx, cy - h / 2 - 18); 
-    ctx.fillStyle = '#30d158'; ctx.textAlign = 'left'; ctx.fillText('t = ' + t + 'cm', cx + w / 2 + 16, cy);
+    ctx.fillStyle = '#00e5ff'; ctx.font = 'bold 10.5px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('b=' + b + 'cm (Patas: ' + pat + 'cm | Gancho 135°)', cx, cy - h / 2 - 20); 
+    ctx.fillStyle = '#30d158'; ctx.textAlign = 'left'; ctx.fillText('t=' + t + 'cm', cx + w / 2 + 18, cy);
 }
 
-function rVig(b, ht, supBars, infBars, phPiel, MuNeg, MuPos, L, LbastSup, Ldh){
+function rVig(b, ht, supBars, infBars, phPiel, MuNeg, MuPos, L, LbastSup, Ldh, sLimV, sRestoV){
     var c = el('cvs_2d_vig'); if(!c) return; 
     var ctx = c.getContext('2d'); ctx.clearRect(0, 0, c.width, c.height);
+    var sL = sLimV || D3.sLimV || 8;
+    var sR = sRestoV || D3.sRestoV || 20;
     var cx = 78, cy = c.height / 2 + 8, sc = Math.min(100 / b, (c.height - 52) / ht);
     var w = b * sc, h = ht * sc, rP = Math.max(7, 3.2 * sc);
     ctx.strokeStyle = '#475569'; ctx.lineWidth = 2; ctx.strokeRect(cx - w / 2, cy - h / 2, w, h); 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.03)'; ctx.fillRect(cx - w / 2, cy - h / 2, w, h); 
     ctx.strokeStyle = '#ff9f0a'; ctx.lineWidth = 2; ctx.strokeRect(cx - w / 2 + rP, cy - h / 2 + rP, w - 2 * rP, h - 2 * rP);
+    ctx.beginPath(); ctx.moveTo(cx - w / 2 + rP + 2, cy - h / 2 + rP + 2); ctx.lineTo(cx - w / 2 + rP + 10, cy - h / 2 + rP + 10); ctx.stroke();
+
     function dr(x, y, col, sz){
         ctx.beginPath(); ctx.arc(x, y, sz, 0, Math.PI * 2); ctx.fillStyle = col; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.stroke();
     }
@@ -2202,12 +2362,26 @@ function rVig(b, ht, supBars, infBars, phPiel, MuNeg, MuPos, L, LbastSup, Ldh){
     ctx.textAlign = 'right'; ctx.fillText('-' + (MuNeg || 8.0).toFixed(1) + ' T·m', xR - 4, yAxisM - 26);
     ctx.fillStyle = '#30d158'; ctx.textAlign = 'center'; ctx.fillText('+' + (MuPos || 5.0).toFixed(1) + ' T·m', xMid, yAxisM + 34);
     var yBeamTop = 135, yBeamBot = 178;
-    ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('CONTINUIDAD Y ANCLAJE (L=' + (L || 4.5).toFixed(1) + 'm)', xMid, 122);
+    ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 8.5px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('ESTRIBOS: 1@5, 8@' + sL + ', R@' + sR + 'cm', xMid, 122);
     ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.5; ctx.strokeRect(xL, yBeamTop, xR - xL, yBeamBot - yBeamTop);
-    ctx.strokeStyle = phiC(supBars[0] || 1.99); ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(xL - 6, yBeamTop + 20); ctx.lineTo(xL - 6, yBeamTop + 6); ctx.lineTo(xR + 6, yBeamTop + 6); ctx.lineTo(xR + 6, yBeamTop + 20); ctx.stroke();
-    ctx.strokeStyle = phiC(infBars[0] || 1.99); ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(xL - 6, yBeamBot - 20); ctx.lineTo(xL - 6, yBeamBot - 6); ctx.lineTo(xR + 6, yBeamBot - 6); ctx.lineTo(xR + 6, yBeamBot - 20); ctx.stroke();
+
+    // Estribos verticales 2D en Viga
+    ctx.lineWidth = 1.2;
+    for(var iv = 0; iv < 6; iv++){
+        ctx.strokeStyle = '#30d158';
+        var xvL = xL + 4 + iv * 4.2, xvR = xR - 4 - iv * 4.2;
+        ctx.beginPath(); ctx.moveTo(xvL, yBeamTop + 5); ctx.lineTo(xvL, yBeamBot - 5); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(xvR, yBeamTop + 5); ctx.lineTo(xvR, yBeamBot - 5); ctx.stroke();
+    }
+    ctx.strokeStyle = '#ff9f0a';
+    for(var xvm = xL + 32; xvm < xR - 30; xvm += 10){
+        ctx.beginPath(); ctx.moveTo(xvm, yBeamTop + 5); ctx.lineTo(xvm, yBeamBot - 5); ctx.stroke();
+    }
+
+    ctx.strokeStyle = phiC(supBars[0] || 1.99); ctx.lineWidth = 2.2;
+    ctx.beginPath(); ctx.moveTo(xL - 4, yBeamTop + 22); ctx.lineTo(xL - 4, yBeamTop + 5); ctx.lineTo(xR + 4, yBeamTop + 5); ctx.lineTo(xR + 4, yBeamTop + 22); ctx.stroke();
+    ctx.strokeStyle = phiC(infBars[0] || 1.99); ctx.lineWidth = 2.0;
+    ctx.beginPath(); ctx.moveTo(xL - 4, yBeamBot - 22); ctx.lineTo(xL - 4, yBeamBot - 5); ctx.lineTo(xR + 4, yBeamBot - 5); ctx.lineTo(xR + 4, yBeamBot - 22); ctx.stroke();
     ctx.fillStyle = '#00e5ff'; ctx.font = 'bold 8.5px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('L/3=' + (LbastSup || '1.50') + 'm | Gancho Ldh=' + (Ldh || 25) + 'cm', xMid, yBeamBot + 15);
 }
 
@@ -2376,15 +2550,18 @@ function render3D(){
         ctx.fillStyle = '#00e5ff';
         ctx.fillText('FRENTE (CALLE)', (pc1.x + pc2.x)/2, (pc1.y + pc2.y)/2 + 14);
 
-        var gridX = [-wLot * 0.75, 0, wLot * 0.75];
-        var gridZ = [-dLot * 0.75, 0, dLot * 0.75];
-        for(var gx = 0; gx < 3; gx++){
-            for(var gz = 0; gz < 3; gz++){
-                if(cMod === 'zapatas' && ((D3.zUbic==='centrica' && gx===1 && gz===1) || (D3.zUbic==='medianera' && gx===0 && gz===1) || (D3.zUbic==='esquina' && gx===0 && gz===0))) continue;
-                var zSec1 = prj(gridX[gx] - 0.22, -0.6, gridZ[gz] - 0.22, cx, cy);
-                var zSec2 = prj(gridX[gx] + 0.22, -0.6, gridZ[gz] - 0.22, cx, cy);
-                var zSec3 = prj(gridX[gx] + 0.22, -0.6, gridZ[gz] + 0.22, cx, cy);
-                var zSec4 = prj(gridX[gx] - 0.22, -0.6, gridZ[gz] + 0.22, cx, cy);
+        var nGx = D3.gridNx || 2, nGy = D3.gridNy || 5;
+        var startGX = -wLot * 0.75, spanGX = (wLot * 1.5) / Math.max(1, nGx - 1);
+        var startGZ = -dLot * 0.75, spanGZ = (dLot * 1.5) / Math.max(1, nGy - 1);
+        for(var gx = 0; gx < nGx; gx++){
+            for(var gz = 0; gz < nGy; gz++){
+                var curGX = (nGx === 1) ? 0 : (startGX + gx * spanGX);
+                var curGZ = (nGy === 1) ? 0 : (startGZ + gz * spanGZ);
+                if(cMod === 'zapatas' && ((D3.zUbic==='centrica' && gx===Math.floor(nGx/2) && gz===Math.floor(nGy/2)) || (D3.zUbic==='medianera' && gx===0 && gz===Math.floor(nGy/2)) || (D3.zUbic==='esquina' && gx===0 && gz===0))) continue;
+                var zSec1 = prj(curGX - 0.18, -0.6, curGZ - 0.18, cx, cy);
+                var zSec2 = prj(curGX + 0.18, -0.6, curGZ - 0.18, cx, cy);
+                var zSec3 = prj(curGX + 0.18, -0.6, curGZ + 0.18, cx, cy);
+                var zSec4 = prj(curGX - 0.18, -0.6, curGZ + 0.18, cx, cy);
                 dPol(ctx, [zSec1, zSec2, zSec3, zSec4], 'rgba(148, 163, 184, 0.14)', 'rgba(148, 163, 184, 0.35)');
             }
         }
@@ -2422,7 +2599,7 @@ function render3D(){
         dDim(ctx, prj(posX + sx, -0.6, posZ - sz, cx, cy), prj(posX + sx, -0.6 + sy * 2, posZ - sz, cx, cy), '#ff9f0a', 'hz=' + D3.zh);
     }
     else if(cMod === 'vconex'){
-        var wZap1 = (D3.zl / 2) * 0.45, wZap2 = 0.32, hZp = (D3.zh / 100) * 0.45;
+        var wZap1 = (D3.zl / 2) * 0.45, wZap2 = 0.34, hZp = (D3.zh / 100) * 0.45;
         var xZ1 = -1.2, xZ2 = 1.0;
         var bV = (D3.vcB / 100) * 0.55, hV = (D3.vcH / 100) * 0.55;
         var cZp = rxM ? {f: 'rgba(148, 163, 184, 0.12)', s: 'rgba(148, 163, 184, 0.4)'} : {f: '#334155', s: '#64748b'};
@@ -2437,25 +2614,32 @@ function render3D(){
         fc.forEach(function(f){ dPol(ctx, f.i.map(function(i){ return f.p[i]; }), f.f, f.s); });
 
         if(rxM){
-            ctx.lineWidth = 2.2;
+            ctx.lineWidth = 2.3;
             var yTopBeam = -0.6 + hZp*2 - 0.04;
             var yBotBeam = -0.6 + hZp*2 - hV*2 + 0.04;
+            var xLeftAnc = xZ1 - wZap1 + 0.06;
+            var xRightAnc = xZ2 + wZap2 - 0.06;
 
+            // Acero Superior con Gancho 90° hacia abajo en AMBOS extremos (Lindero Izquierdo y Apoyo Derecho)
             ctx.strokeStyle = phiC(D3.vcPhiS);
             for(var sb=0; sb<D3.vcSupBars.length; sb++){
                 var zOffset = (D3.vcSupBars.length===1)?0:(-bV*0.75 + sb*(bV*1.5/(D3.vcSupBars.length-1)));
-                var pHook1 = prj(xZ1 - wZap1 + 0.06, yTopBeam - hV*0.5, zOffset, cx, cy);
-                var pS1 = prj(xZ1 - wZap1 + 0.06, yTopBeam, zOffset, cx, cy);
-                var pS2 = prj(xZ2 + wZap2 - 0.06, yTopBeam, zOffset, cx, cy);
-                ctx.beginPath(); ctx.moveTo(pHook1.x, pHook1.y); ctx.lineTo(pS1.x, pS1.y); ctx.lineTo(pS2.x, pS2.y); ctx.stroke();
+                var pHookL = prj(xLeftAnc, yBotBeam + 0.02, zOffset, cx, cy);
+                var pS1 = prj(xLeftAnc, yTopBeam, zOffset, cx, cy);
+                var pS2 = prj(xRightAnc, yTopBeam, zOffset, cx, cy);
+                var pHookR = prj(xRightAnc, yBotBeam + 0.02, zOffset, cx, cy);
+                ctx.beginPath(); ctx.moveTo(pHookL.x, pHookL.y); ctx.lineTo(pS1.x, pS1.y); ctx.lineTo(pS2.x, pS2.y); ctx.lineTo(pHookR.x, pHookR.y); ctx.stroke();
             }
 
+            // Acero Inferior con Gancho 90° hacia arriba en AMBOS extremos
             ctx.strokeStyle = phiC(D3.vcPhiI);
             for(var ib=0; ib<D3.vcInfBars.length; ib++){
                 var zOffsetI = (D3.vcInfBars.length===1)?0:(-bV*0.75 + ib*(bV*1.5/(D3.vcInfBars.length-1)));
-                var pI1 = prj(xZ1 - wZap1 + 0.08, yBotBeam, zOffsetI, cx, cy);
-                var pI2 = prj(xZ2 + wZap2 - 0.08, yBotBeam, zOffsetI, cx, cy);
-                ctx.beginPath(); ctx.moveTo(pI1.x, pI1.y); ctx.lineTo(pI2.x, pI2.y); ctx.stroke();
+                var pHookIL = prj(xLeftAnc + 0.04, yTopBeam - 0.05, zOffsetI, cx, cy);
+                var pI1 = prj(xLeftAnc + 0.04, yBotBeam, zOffsetI, cx, cy);
+                var pI2 = prj(xRightAnc - 0.04, yBotBeam, zOffsetI, cx, cy);
+                var pHookIR = prj(xRightAnc - 0.04, yTopBeam - 0.05, zOffsetI, cx, cy);
+                ctx.beginPath(); ctx.moveTo(pHookIL.x, pHookIL.y); ctx.lineTo(pI1.x, pI1.y); ctx.lineTo(pI2.x, pI2.y); ctx.lineTo(pHookIR.x, pHookIR.y); ctx.stroke();
             }
 
             if(D3.vcPielBars && D3.vcPielBars.length > 0){
@@ -2467,13 +2651,23 @@ function render3D(){
                 ctx.beginPath(); ctx.moveTo(pp3.x, pp3.y); ctx.lineTo(pp4.x, pp4.y); ctx.stroke();
             }
 
-            var nEstVC = 12;
-            for(var ie=0; ie<=nEstVC; ie++){
-                var xEst = (xZ1 + wZap1*0.5) + ie * (((xZ2 - wZap2*0.5) - (xZ1 + wZap1*0.5)) / nEstVC);
-                var clE = (ie <= 3 || ie >= nEstVC - 3) ? '#30d158' : '#ff9f0a';
+            // Estribos 3D en Viga de Conexión (1@5, 8@s_conf, R@s_resto)
+            var sConfM = (D3.vcLimS || 10) / 100, sRestoM = (D3.vcRestoS || 20) / 100;
+            var eX_vc = [], curX = 0.05; eX_vc.push(curX);
+            for(var ic=0; ic<8; ic++){ curX += sConfM; if(curX < D3.vcLuz/2) eX_vc.push(curX); }
+            var endConfL = curX, rX_vc = D3.vcLuz - 0.05, rArr = [rX_vc];
+            for(var jc=0; jc<8; jc++){ rX_vc -= sConfM; if(rX_vc > D3.vcLuz/2) rArr.push(rX_vc); }
+            var startConfR = rX_vc; curX += sRestoM;
+            while(curX < startConfR - 0.04){ eX_vc.push(curX); curX += sRestoM; }
+            eX_vc = eX_vc.concat(rArr);
+
+            var xStart3D = xZ1 + wZap1 * 0.35, xSpan3D = (xZ2 - wZap2 * 0.35) - xStart3D;
+            eX_vc.forEach(function(xPosM){
+                var xEst = xStart3D + (xPosM / D3.vcLuz) * xSpan3D;
+                var clE = (xPosM <= endConfL + 0.01 || xPosM >= startConfR - 0.01) ? '#30d158' : '#ff9f0a';
                 ctx.strokeStyle = clE; ctx.lineWidth = 1.5;
                 dPol(ctx, [prj(xEst, yBotBeam, -bV*0.78, cx, cy), prj(xEst, yTopBeam, -bV*0.78, cx, cy), prj(xEst, yTopBeam, bV*0.78, cx, cy), prj(xEst, yBotBeam, bV*0.78, cx, cy)], null, clE);
-            }
+            });
         }
         dDim(ctx, prj(xZ1, -0.6 + hZp*2, bV*1.5, cx, cy), prj(xZ2, -0.6 + hZp*2, bV*1.5, cx, cy), '#00e5ff', 'Ln=' + D3.vcLuz.toFixed(2));
         dDim(ctx, prj((xZ1+xZ2)/2, -0.6 + hZp*2 - hV*2, -bV, cx, cy), prj((xZ1+xZ2)/2, -0.6 + hZp*2, -bV, cx, cy), '#ff9f0a', 'h=' + D3.vcH);
@@ -2485,7 +2679,7 @@ function render3D(){
         fc.sort(function(a, b){ return a.az - b.az; }); 
         fc.forEach(function(f){ dPol(ctx, f.i.map(function(i){ return f.p[i]; }), f.f, f.s); });
         if(rxM){
-            ctx.lineWidth = 2; 
+            ctx.lineWidth = 2.2; 
             var rxs = sx * 0.78, rzs = sz * 0.78;
             var esq = [[-rxs, -rzs], [rxs, -rzs], [rxs, rzs], [-rxs, rzs]]; 
             ctx.strokeStyle = phiC(D3.cPhiE);
@@ -2494,14 +2688,34 @@ function render3D(){
                 var pPata = prj(r[0] + Math.sign(r[0]) * 0.25, -0.6, r[1] + Math.sign(r[1]) * 0.25, cx, cy); 
                 ctx.beginPath(); ctx.moveTo(pPata.x, pPata.y); ctx.lineTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
             });
+            // Barras Intermedias en 3D CON PATAS DE ANCLAJE DOBLADAS EN LA BASE
             var mids = []; 
-            if(D3.nM >= 2){ mids.push([0, -rzs]); mids.push([0, rzs]); } 
-            if(D3.nM >= 4){ mids.push([-rxs, 0]); mids.push([rxs, 0]); } 
+            if(D3.nM > 0){
+                var nTB3 = Math.ceil(D3.nM / 4) * 2, nS3 = D3.nM - nTB3;
+                if(nTB3 > 0){
+                    var stX3 = (rxs * 2) / (nTB3 / 2 + 1);
+                    for(var m1 = 1; m1 <= nTB3 / 2; m1++){
+                        var xm3 = -rxs + stX3 * m1;
+                        mids.push({x: xm3, z: -rzs, dx: 0, dz: -0.25});
+                        mids.push({x: xm3, z: rzs,  dx: 0, dz: 0.25});
+                    }
+                }
+                if(nS3 > 0){
+                    var stZ3 = (rzs * 2) / (nS3 / 2 + 1);
+                    for(var m2 = 1; m2 <= nS3 / 2; m2++){
+                        var zm3 = -rzs + stZ3 * m2;
+                        mids.push({x: -rxs, z: zm3, dx: -0.25, dz: 0});
+                        mids.push({x: rxs,  z: zm3, dx: 0.25,  dz: 0});
+                    }
+                }
+            }
             ctx.strokeStyle = phiC(D3.cPhiM);
             mids.forEach(function(r){
-                var p1 = prj(r[0], -0.6, r[1], cx, cy), p2 = prj(r[0], -0.6 + sy * 2, r[1], cx, cy); 
-                ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+                var p1 = prj(r.x, -0.6, r.z, cx, cy), p2 = prj(r.x, -0.6 + sy * 2, r.z, cx, cy);
+                var pPataM = prj(r.x + r.dx, -0.6, r.z + r.dz, cx, cy);
+                ctx.beginPath(); ctx.moveTo(pPataM.x, pPataM.y); ctx.lineTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
             });
+
             var estY = [], cY = 0.05; estY.push(cY); 
             for(var i = 0; i < 6; i++){ cY += D3.sLimC / 100; estY.push(cY); } 
             var bC = cY, tY = D3.ch - 0.05, topE = [tY]; 
@@ -2513,8 +2727,17 @@ function render3D(){
                 var y3d = -0.6 + (yV / D3.ch) * (sy * 2);
                 var isConf = (yV <= bC + 0.01 || yV >= tC - 0.01);
                 var cl = isConf ? '#30d158' : '#ff9f0a'; 
-                ctx.strokeStyle = cl; 
+                ctx.strokeStyle = cl; ctx.lineWidth = 1.6;
                 dPol(ctx, [prj(-rxs, y3d, -rzs, cx, cy), prj(rxs, y3d, -rzs, cx, cy), prj(rxs, y3d, rzs, cx, cy), prj(-rxs, y3d, rzs, cx, cy)], null, cl);
+                // Grapas suplementarias internas en 3D
+                if(D3.nM >= 2){
+                    var pg1 = prj(0, y3d, -rzs, cx, cy), pg2 = prj(0, y3d, rzs, cx, cy);
+                    ctx.beginPath(); ctx.moveTo(pg1.x, pg1.y); ctx.lineTo(pg2.x, pg2.y); ctx.stroke();
+                }
+                if(D3.nM >= 4){
+                    var pg3 = prj(-rxs, y3d, 0, cx, cy), pg4 = prj(rxs, y3d, 0, cx, cy);
+                    ctx.beginPath(); ctx.moveTo(pg3.x, pg3.y); ctx.lineTo(pg4.x, pg4.y); ctx.stroke();
+                }
             });
         }
         dDim(ctx, prj(-sx, -0.6, sz, cx, cy), prj(sx, -0.6, sz, cx, cy), '#00e5ff', 'b=' + D3.cx); 
@@ -2539,7 +2762,7 @@ function render3D(){
                         ctx.strokeStyle = phiC(phVal);
                         var cZ = (nC === 1) ? (-sz * 0.78) : (-sz * 0.78 + k * ((sz * 1.56) / (nC - 1)));
                         var p1 = prj(-sx * 0.95, fY, cZ, cx, cy), p2 = prj(sx * 0.95, fY, cZ, cx, cy);
-                        var pHook1 = prj(-sx * 0.95, fY - dir * (sy * 0.38), cZ, cx, cy), pHook2 = prj(sx * 0.95, fY - dir * (sy * 0.38), cZ, cx, cy);
+                        var pHook1 = prj(-sx * 0.95, fY - dir * (sy * 0.45), cZ, cx, cy), pHook2 = prj(sx * 0.95, fY - dir * (sy * 0.45), cZ, cx, cy);
                         ctx.beginPath(); ctx.moveTo(pHook1.x, pHook1.y); ctx.lineTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(pHook2.x, pHook2.y); ctx.stroke();
                     }
                 }
@@ -2554,12 +2777,13 @@ function render3D(){
                 var pR1 = prj(-sx * 0.95, yM, sz * 0.78, cx, cy), pR2 = prj(sx * 0.95, yM, sz * 0.78, cx, cy); 
                 ctx.beginPath(); ctx.moveTo(pR1.x, pR1.y); ctx.lineTo(pR2.x, pR2.y); ctx.stroke();
             }
+            var sRestoVM = (D3.sRestoV || 20) / 100;
             var eX = [], cX = 0.05; eX.push(cX); 
             for(var i = 0; i < 8; i++){ cX += D3.sLimV / 100; eX.push(cX); } 
             var lC = cX, rX = D3.vl - 0.05, rE = [rX]; 
             for(var j = 0; j < 8; j++){ rX -= D3.sLimV / 100; rE.push(rX); } 
-            var rC = rX; cX += 0.20; 
-            while(cX < rC - 0.05){ eX.push(cX); cX += 0.20; } 
+            var rC = rX; cX += sRestoVM; 
+            while(cX < rC - 0.05){ eX.push(cX); cX += sRestoVM; } 
             eX = eX.concat(rE);
             eX.forEach(function(xV){
                 var x3 = -sx * 0.95 + (xV / D3.vl) * (sx * 1.9);
