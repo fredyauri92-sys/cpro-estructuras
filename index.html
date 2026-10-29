@@ -323,9 +323,19 @@ setTimeout(pintarCodigoLicencia, 150);
                         <label>📐 Área Construida (m²):</label>
                         <input type="number" id="z_aconst" value="120" oninput="syncGlobal('area', this.value)">
                     </div>
-                    <div>
+                  <div>
                         <label>📝 N° Columnas Piso:</label>
-                        <input type="number" id="z_ncol" value="9" min="1" oninput="syncGlobal('ncol', this.value)">
+                        <input type="number" id="z_ncol" value="10" min="1" oninput="syncGlobal('ncol', this.value)">
+                    </div>
+                </div>
+                <div class="form-group grid-2" style="margin-top:8px; margin-bottom:0;">
+                    <div>
+                        <label>↔️ Ejes Frente (Nx):</label>
+                        <input type="number" id="g_nx" value="2" min="1" placeholder="Auto" oninput="runEng('grid_manual')">
+                    </div>
+                    <div>
+                        <label>↕️ Ejes Fondo (Ny):</label>
+                        <input type="number" id="g_ny" value="5" min="1" placeholder="Auto" oninput="runEng('grid_manual')">
                     </div>
                 </div>
             </div>
@@ -1019,6 +1029,49 @@ function syncGlobal(campo, valor){
     }
 }
 
+    // Resuelve la matriz real de pórticos (Nx x Ny) y conteo exacto de vanos
+function solveGridTopology(nCols) {
+    var n = Math.max(1, parseInt(nCols) || 10);
+    var inNx = el('g_nx') ? parseInt(el('g_nx').value) : 0;
+    var inNy = el('g_ny') ? parseInt(el('g_ny').value) : 0;
+    var bestNx = 2, bestNy = 5;
+
+    if (inNx > 0 && inNy > 0) {
+        bestNx = inNx;
+        bestNy = inNy;
+    } else {
+        var minDiff = 999;
+        for (var ny = 2; ny <= Math.ceil(Math.sqrt(n)) + 2; ny++) {
+            var nx = Math.ceil(n / ny);
+            if (nx * ny >= n) {
+                var diff = Math.abs(nx - ny) + (nx * ny - n) * 3;
+                if (diff < minDiff) { minDiff = diff; bestNx = nx; bestNy = ny; }
+            }
+        }
+        if (el('g_nx')) el('g_nx').value = bestNx;
+        if (el('g_ny')) el('g_ny').value = bestNy;
+    }
+
+    var tramosX = bestNy * Math.max(1, bestNx - 1);
+    var tramosY = bestNx * Math.max(1, bestNy - 1);
+    var vigasPiso = tramosX + tramosY;
+    var zEsq = 4;
+    var zMed = Math.max(0, 2 * (bestNx - 2) + 2 * (bestNy - 2));
+    var zCen = Math.max(0, n - zEsq - zMed);
+
+    return {
+        nx: bestNx,
+        ny: bestNy,
+        nColsEfectivas: n,
+        tramosX: tramosX,
+        tramosY: tramosY,
+        vigasPorPiso: vigasPiso,
+        zEsquinas: zEsq,
+        zMedianeras: zMed,
+        zCentricas: zCen,
+        vConexReq: zEsq + zMed
+    };
+}
 function calcularAnchoTribAuto(){
     var aC = Math.max(10, parseFloat(el('z_aconst').value) || 120);
     var nC = Math.max(1, parseFloat(el('z_ncol').value) || 12);
@@ -1808,7 +1861,8 @@ function runEng(t){
     WBS_STORE.columnas.m34 = 0;
 
     var vVigUnit = (vbVig / 100) * (vhVig / 100) * lVig;
-    var nTotalVigas = Math.max(4, Math.floor(nC * 1.5)) * p;
+    var gridInfo = solveGridTopology(nC);
+    var nTotalVigas = gridInfo.vigasPorPiso * p;
     WBS_STORE.vigas.count = nTotalVigas;
     WBS_STORE.vigas.vol = vVigUnit * nTotalVigas * 1.05;
     WBS_STORE.vigas.m38 = 26 * (2 * ((vbVig-8)+(vhVig-8))/100 + 0.20) * nTotalVigas;
