@@ -58,15 +58,15 @@ select:focus, input:focus { border-color:var(--primary-cyan); }
 .badge-green { background:rgba(48,209,88,0.15); color:var(--primary-green); border:1px solid rgba(48,209,88,0.35); font-size:10.5px; padding:5px 9px; border-radius:8px; font-weight:800; display:block; }
 .btn-reset-rne { background:rgba(255,159,10,0.12); color:var(--primary-orange); border:1px solid rgba(255,159,10,0.4); padding:4px 8px; border-radius:6px; font-size:9.5px; font-weight:800; cursor:pointer; text-transform:uppercase; transition:all 0.2s; display:inline-flex; align-items:center; gap:4px; }
 .btn-reset-rne:hover { background:rgba(255,159,10,0.25); }
-.wbs-subdetail { background:rgba(15,23,42,0.7); border:1px solid rgba(51,65,85,0.5); border-radius:6px; padding:8px; margin-top:6px; font-size:10.5px; line-height:1.55; }
+.wbs-subdetail { background:rgba(15,23,42,0.85); border:1px solid rgba(0,229,255,0.25); border-left:3px solid var(--primary-cyan); border-radius:6px; padding:9px; margin-top:6px; font-size:10.5px; line-height:1.6; color:#e2e8f0; }
 
 .propuestas-box { margin-top:12px; background:rgba(0,0,0,0.28); border:1px solid var(--card-border); border-radius:8px; padding:10px; }
 .propuestas-title { font-size:10.5px; font-weight:900; color:var(--primary-orange); text-transform:uppercase; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; }
 .prop-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
 .prop-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; }
-.prop-card { background:var(--input-bg); border:1.5px solid var(--card-border); border-radius:7px; padding:8px 8px; cursor:pointer; transition:all 0.2s; text-align:left; position:relative; }
-.prop-card.active { border-color:var(--primary-cyan); background:rgba(0,229,255,0.10); box-shadow:0 0 12px rgba(0,229,255,0.18); }
-.prop-card.best.active { border-color:var(--primary-green); background:rgba(48,209,88,0.14); box-shadow:0 0 14px rgba(48,209,88,0.25); }
+.prop-card { background:var(--input-bg); border:1.5px solid var(--card-border); border-radius:7px; padding:8px 8px; cursor:pointer; transition:all 0.2s; text-align:left; position:relative; user-select:none; }
+.prop-card.active { border:2px solid var(--primary-cyan) !important; background:rgba(0,229,255,0.14) !important; box-shadow:0 0 14px rgba(0,229,255,0.32) !important; transform:translateY(-1px); }
+.prop-card.best.active { border:2px solid var(--primary-green) !important; background:rgba(48,209,88,0.16) !important; box-shadow:0 0 14px rgba(48,209,88,0.35) !important; }
 .prop-tag { font-size:8.5px; font-weight:900; text-transform:uppercase; padding:2px 5px; border-radius:4px; display:inline-block; margin-bottom:4px; }
 .tag-best { background:var(--primary-green); color:#000; }
 .tag-alt { background:#334155; color:#e2e8f0; }
@@ -744,20 +744,19 @@ setTimeout(pintarCodigoLicencia, 150);
         </div>
     </div>
 
-    <!-- ==================== VISTA METRADO JERÁRQUICO POR NIVEL Y ELEMENTO ==================== -->
+    <!-- ==================== VISTA METRADO EXCLUSIVO DE ACERO ESTRUCTURAL Y ALAMBRES N°16 / N°8 ==================== -->
     <div id="view_acero" class="main-viewport">
         <div class="result-card">
             <div class="result-header">
-                <span>✂️ PLANILLA Y METRADO POR PARTIDAS</span>
+                <span>✂️ PLANILLA DE ACERO Y ALAMBRES</span>
                 <select id="met_filtro" onchange="renderMetradosWBS()" style="width:auto; padding:3px 8px; font-size:10.5px; background:#1c2331; color:var(--primary-cyan); border-radius:6px; border:1px solid var(--card-border);">
                     <option value="todos" selected>Ver Todo el Edificio</option>
                     <option value="cimentacion">Solo Cimentación (Zapatas + V. Conex)</option>
-                    <option value="piso1">Piso 1 (Columnas + Vigas)</option>
-                    <option value="superiores">Pisos Superiores (Tipo)</option>
+                    <option value="piso1">Pórticos (Columnas + Vigas)</option>
                     <option value="muros">Muros de Contención / Sótano</option>
                 </select>
             </div>
-            <div style="font-size:11px; color:var(--text-muted); margin-bottom:12px;">Desglose analítico de materiales con control individual por partida constructiva.</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-bottom:12px;">Despiece analítico de varillas corrugadas (L=9.00m), longitudes de corte con ganchos RNE, Alambre N° 16 (amarre) y Alambre N° 8 (atirantamiento estructural).</div>
             <div class="form-group">
                 <label>📏 Metros Lineales de Muro de Contención (si aplica):</label>
                 <input type="number" id="ac_cant_elem" value="10" min="1" oninput="runEng('recalc_only')">
@@ -765,21 +764,17 @@ setTimeout(pintarCodigoLicencia, 150);
 
             <div id="wbs_container"></div>
 
-            <div class="result-header" style="margin-top:16px;">📦 PEDIDO CONSOLIDADO GLOBAL DE OBRA</div>
+            <div class="result-header" style="margin-top:16px;">📦 PEDIDO CONSOLIDADO DE FIERRERÍA (ASTM A615 G60)</div>
             <table class="res-table">
-                <tr><td>Varilla Corrugada Ø 3/8" (0.56 kg/m):<span class="val-sub">Estribos de Confinamiento</span></td><td style="color:#00e5ff;" id="tot_ac_38">-- und</td></tr>
-                <tr><td>Varilla Corrugada Ø 1/2" (0.99 kg/m):<span class="val-sub">Refuerzo / Temperatura / Piel</span></td><td style="color:#3388ff;" id="tot_ac_12">-- und</td></tr>
-                <tr><td>Varilla Corrugada Ø 5/8" (1.55 kg/m):<span class="val-sub">Refuerzo Longitudinal Principal</span></td><td style="color:#ff2222;" id="tot_ac_58">-- und</td></tr>
-                <tr><td>Varilla Corrugada Ø 3/4" (2.24 kg/m):<span class="val-sub">Refuerzo Mayor</span></td><td style="color:#ffcc00;" id="tot_ac_34">-- und</td></tr>
-                <tr><td>Alambre Negro Recocido N° 16:<span class="val-sub">Para amarre estructural (4%)</span></td><td style="color:var(--primary-orange);" id="tot_alambre">-- kg</td></tr>
-                <tr><td>Peso Total de Acero (+Desp.):<span class="val-sub">Con factor de desperdicio RNE</span></td><td style="color:var(--primary-green); font-size:14px;" id="tot_peso_acero">-- kg</td></tr>
-                <tr><td>Volumen Total Concreto:<span class="val-sub">Incluye 5% esponjamiento en vaciado</span></td><td style="color:var(--primary-cyan); font-size:14px;" id="tot_vol_conc">-- m³</td></tr>
-                <tr><td>Cemento Portland (Bolsas 42.5kg):<span class="val-sub" id="tot_dosif_txt">Dosificación según f'c</span></td><td style="color:var(--primary-orange); font-size:13px;" id="tot_cemento">-- bls</td></tr>
-                <tr><td>Arena Gruesa Lavada:<span class="val-sub">Agregado fino</span></td><td id="tot_arena">-- m³</td></tr>
-                <tr><td>Piedra Chancada 1/2" - 3/4":<span class="val-sub">Agregado grueso</span></td><td id="tot_piedra">-- m³</td></tr>
-                <tr><td>Agua Potable Controlada:<span class="val-sub">Relación a/c</span></td><td id="tot_agua">-- Litros</td></tr>
+                <tr><td>Varilla Corrugada Ø 3/8" (0.56 kg/m):<span class="val-sub">Estribos y Grapas Sísmicas 135° (Barras de 9m)</span></td><td style="color:#00e5ff; font-size:13px;" id="tot_ac_38">-- var</td></tr>
+                <tr><td>Varilla Corrugada Ø 1/2" (0.99 kg/m):<span class="val-sub">Refuerzo / Bastones / Piel / Mallas (Barras de 9m)</span></td><td style="color:#3388ff; font-size:13px;" id="tot_ac_12">-- var</td></tr>
+                <tr><td>Varilla Corrugada Ø 5/8" (1.55 kg/m):<span class="val-sub">Refuerzo Longitudinal Principal (Barras de 9m)</span></td><td style="color:#ff2222; font-size:13px;" id="tot_ac_58">-- var</td></tr>
+                <tr><td>Varilla Corrugada Ø 3/4" (2.24 kg/m):<span class="val-sub">Refuerzo Estructural Mayor (Barras de 9m)</span></td><td style="color:#ffcc00; font-size:13px;" id="tot_ac_34">-- var</td></tr>
+                <tr><td>Alambre Negro Recocido N° 16:<span class="val-sub">Para amarre de cruces de armadura y estribos (4%)</span></td><td style="color:var(--primary-orange); font-size:13px;" id="tot_alambre16">-- kg</td></tr>
+                <tr><td>Alambre Negro Recocido N° 8:<span class="val-sub">Para aseguramiento, tensores y arriostre de elementos</span></td><td style="color:var(--primary-orange); font-size:13px;" id="tot_alambre8">-- kg</td></tr>
+                <tr><td>Peso Total de Acero Corrugado (+Desp.):<span class="val-sub">Incluye factor de desperdicio por cortes RNE</span></td><td style="color:var(--primary-green); font-size:14px;" id="tot_peso_acero">-- kg</td></tr>
             </table>
-            <button class="action-btn" onclick="copiarPedidoGlobal()">📋 Copiar Pedido Consolidado de Materiales</button>
+            <button class="action-btn" onclick="copiarPedidoGlobal()">📋 Copiar Planilla Consolidada de Acero y Alambres</button>
         </div>
     </div>
     
@@ -921,7 +916,7 @@ function fallbackCopyText(text, successMsg) {
     }
 }
 
-// ==================== BLOQUE A: SISTEMA DE EJES (Nx × Ny), LUCES AUTOMÁTICAS Y CONTROL MANUAL ====================
+// ==================== BLOQUE A: SISTEMA DE EJES (Nx × Ny), LUCES AUTOMÁTICAS Y CONTROL DE PROPUESTAS ====================
 var MANUAL_FLAGS = { zapatas: false, vconex: false, columnas: false, vigas: false, muros: false };
 
 function syncGridAxes(axis, val){
@@ -975,7 +970,6 @@ function solveGridTopology(nCols, trigger) {
     var zMed = Math.max(0, Math.min(n - zEsq, 2 * Math.max(0, bestNx - 2) + 2 * Math.max(0, bestNy - 2)));
     var zCen = Math.max(0, n - zEsq - zMed);
 
-    // Cálculo geométrico de dimensiones de lote y luces libres reales entre ejes (Lx y Ly)
     var vanosX = Math.max(1, bestNx - 1);
     var vanosY = Math.max(1, bestNy - 1);
     var ratioLote = vanosY / vanosX;
@@ -1034,9 +1028,9 @@ function restaurarSeccionOptima(modulo){
     var boxSem = el('box_semaforo_rne');
     if(boxSem) boxSem.style.display = 'none';
     if(modulo === 'zapatas') runEng('all');
-    else if(modulo === 'vconex') runEng('vc_tipo');
+    else if(modulo === 'vconex'){ vcModoSeleccion = 'best'; runEng('vc_tipo'); }
     else if(modulo === 'columnas') runEng('sistema');
-    else if(modulo === 'vigas') runEng('luz');
+    else if(modulo === 'vigas'){ vModoSeleccion = 'best'; runEng('luz'); }
     else if(modulo === 'muros') runEng('muro_geom');
 }
 
@@ -1063,15 +1057,19 @@ function guardarEstadoLocal(){
             var id = INPUT_IDS[i];
             if(el(id)) data[id] = el(id).value;
         }
-        safeSetStorage('cpro_estruc_state_v30', JSON.stringify(data));
+        data._vModo = vModoSeleccion;
+        data._vcModo = vcModoSeleccion;
+        safeSetStorage('cpro_estruc_state_v35', JSON.stringify(data));
     } catch(e){}
 }
 function cargarEstadoLocal(){
     try {
-        var raw = safeGetStorage('cpro_estruc_state_v30');
+        var raw = safeGetStorage('cpro_estruc_state_v35');
         if(!raw) return false;
         var data = JSON.parse(raw);
         for(var k in data){
+            if(k === '_vModo'){ vModoSeleccion = data[k] || 'best'; continue; }
+            if(k === '_vcModo'){ vcModoSeleccion = data[k] || 'best'; continue; }
             if(el(k) && data[k] !== undefined && data[k] !== '') el(k).value = data[k];
         }
         return true;
@@ -1120,7 +1118,7 @@ function rnd5(v){ return Math.round(v * 20) / 20; }
 var D3 = {
     zl:1.40, zb:1.40, zh:60, df:1.20, zpPhi:1.99, zUbic:'centrica', zNVar:8,
     vcTipo:'conexion', vcLuz:3.80, vcB:30, vcH:60, vcPhiS:1.99, vcPhiI:1.29, vcPhiP:1.29, vcMu:26.4, vcR1:54.8, vcPu1:48.0, vcE:0.55, vcSupBars:[1.99,1.99,1.99], vcInfBars:[1.29,1.29], vcPielBars:[1.29,1.29], vcLimS:10, vcRestoS:20,
-    cx:30, cy:35, ch:2.8, nE:4, nM:2, cPhiE:1.99, cPhiM:1.29, cPata:30, sLimC:8, sRestoC:20, ldCol:65,
+    cx:30, cy:35, ch:2.8, nE:4, nM:2, cPhiE:1.99, cPhiM:1.29, cPata:30, sLimC:8, sRestoC:20, ldCol:65, cUbic:'central',
     vl:3.8, vb:25, vh:40, vPiel:0, phS:1.99, phI:1.99, sLimV:8, sRestoV:20,
     vSupBars:[], vInfBars:[], MuNeg:8.5, MuPos:5.2, Ldh:25,
     mTipo:'sotano', mH:2.8, mB:1.00, mHz:40, mC:20, mE:20, mPunt:0.80, mTal:0.0, spV:20, spH:20, spZ:20, mVmalla:1, mHmalla:1, mPhiV:1.99, mPhiH:1.29, mPhiZ:1.99, mDent:false,
@@ -1128,11 +1126,11 @@ var D3 = {
 };
 
 var WBS_STORE = {
-    zapatas: { active: true, name: 'Zapatas Aisladas y Medianeras', count: 10, vol: 0, m38: 0, m12: 0, m58: 0, m34: 0, peso: 0, cem: 0, arena: 0, piedra: 0, agua: 0, detailText: '' },
-    vconex:  { active: true, name: 'Vigas de Conexión / Cimentación', count: 5, vol: 0, m38: 0, m12: 0, m58: 0, m34: 0, peso: 0, cem: 0, arena: 0, piedra: 0, agua: 0, detailText: '' },
-    columnas:{ active: true, name: 'Columnas de Pórticos', count: 20, vol: 0, m38: 0, m12: 0, m58: 0, m34: 0, peso: 0, cem: 0, arena: 0, piedra: 0, agua: 0, detailText: '' },
-    vigas:   { active: true, name: 'Vigas de Entrepiso y Techo', count: 26, vol: 0, m38: 0, m12: 0, m58: 0, m34: 0, peso: 0, cem: 0, arena: 0, piedra: 0, agua: 0, detailText: '' },
-    muros:   { active: false, name: 'Muros de Contención / Sótano', count: 10, vol: 0, m38: 0, m12: 0, m58: 0, m34: 0, peso: 0, cem: 0, arena: 0, piedra: 0, agua: 0, detailText: '' }
+    zapatas: { active: true, name: 'Zapatas Aisladas y Medianeras', count: 10, m38: 0, m12: 0, m58: 0, m34: 0, peso: 0, alambre16: 0, alambre8: 0, detailText: '' },
+    vconex:  { active: true, name: 'Vigas de Conexión / Cimentación', count: 5, m38: 0, m12: 0, m58: 0, m34: 0, peso: 0, alambre16: 0, alambre8: 0, detailText: '' },
+    columnas:{ active: true, name: 'Columnas de Pórticos', count: 20, m38: 0, m12: 0, m58: 0, m34: 0, peso: 0, alambre16: 0, alambre8: 0, detailText: '' },
+    vigas:   { active: true, name: 'Vigas de Entrepiso y Techo', count: 26, m38: 0, m12: 0, m58: 0, m34: 0, peso: 0, alambre16: 0, alambre8: 0, detailText: '' },
+    muros:   { active: false, name: 'Muros de Contención / Sótano', count: 10, m38: 0, m12: 0, m58: 0, m34: 0, peso: 0, alambre16: 0, alambre8: 0, detailText: '' }
 };
 
 function toggleWBSItem(key){
@@ -1223,14 +1221,14 @@ function organizarCapasViga(barsArray, b_cm){
 
 function seleccionarPropuestaViga(modo, phS, phI){
     vModoSeleccion = modo;
-    if(phS > 0) el('v_phi_sup').value = phS.toFixed(2);
-    if(phI > 0) el('v_phi_inf').value = phI.toFixed(2);
+    if(phS > 0 && el('v_phi_sup')) el('v_phi_sup').value = phS.toFixed(2);
+    if(phI > 0 && el('v_phi_inf')) el('v_phi_inf').value = phI.toFixed(2);
     runEng('propuesta_click');
 }
 function seleccionarPropuestaVCon(modo, phS, phI){
     vcModoSeleccion = modo;
-    if(phS > 0) el('vc_phi_sup').value = phS.toFixed(2);
-    if(phI > 0) el('vc_phi_inf').value = phI.toFixed(2);
+    if(phS > 0 && el('vc_phi_sup')) el('vc_phi_sup').value = phS.toFixed(2);
+    if(phI > 0 && el('vc_phi_inf')) el('vc_phi_inf').value = phI.toFixed(2);
     runEng('vc_propuesta_click');
 }
 function aplicarPropuestaZapata(ph){ el('z_mod_phi').value = ph.toFixed(2); runEng('acero'); }
@@ -1251,7 +1249,26 @@ function runEng(t){
     if(t === 'geom' && cMod === 'vigas') MANUAL_FLAGS.vigas = true;
     if(t === 'geom' && cMod === 'muros') MANUAL_FLAGS.muros = true;
 
-    if(t === 'all' || t === 'pisos' || t === 'area' || t === 'ncol' || t === 'grid_axes' || t === 'uso'){
+    // Si el usuario cambia manualmente los selectores de acero de viga o viga de conexión, sincronizar con la tarjeta correspondiente
+    if(t === 'vc_acero_manual'){
+        var s_m = parseFloat(el('vc_phi_sup').value) || 1.99;
+        var i_m = parseFloat(el('vc_phi_inf').value) || 1.29;
+        if(Math.abs(s_m - 1.99) < 0.1 && Math.abs(i_m - 1.29) < 0.1) vcModoSeleccion = 'opt58';
+        else if(Math.abs(s_m - 2.84) < 0.1 && Math.abs(i_m - 1.99) < 0.1) vcModoSeleccion = 'opt34';
+        else if(Math.abs(s_m - 1.99) < 0.1 && Math.abs(i_m - 1.99) < 0.1) vcModoSeleccion = 'comb';
+        else vcModoSeleccion = 'manual';
+    }
+    if(t === 'acero_manual'){
+        var sv_m = parseFloat(el('v_phi_sup').value) || 1.99;
+        var iv_m = parseFloat(el('v_phi_inf').value) || 1.99;
+        if(Math.abs(sv_m - 1.99) < 0.1 && Math.abs(iv_m - 1.99) < 0.1) vModoSeleccion = 'opt58';
+        else if(Math.abs(sv_m - 2.84) < 0.1 && Math.abs(iv_m - 2.84) < 0.1) vModoSeleccion = 'opt34';
+        else if(Math.abs(sv_m - 1.29) < 0.1 && Math.abs(iv_m - 1.29) < 0.1) vModoSeleccion = 'opt12';
+        else vModoSeleccion = 'manual';
+    }
+
+    var isGlobalTrigger = (t === 'all' || t === 'pisos' || t === 'area' || t === 'ncol' || t === 'grid_axes' || t === 'uso');
+    if(isGlobalTrigger){
         MANUAL_FLAGS.zapatas = false; MANUAL_FLAGS.vconex = false; MANUAL_FLAGS.columnas = false; MANUAL_FLAGS.vigas = false;
         limpiarBordesAlerta();
     }
@@ -1307,7 +1324,7 @@ function runEng(t){
     var zb = parseFloat(el('z_mod_b').value) || 1.4;
     var zh = parseFloat(el('z_mod_hz').value) || 60;
     
-    if(!MANUAL_FLAGS.zapatas){
+    if(!MANUAL_FLAGS.zapatas && (isGlobalTrigger || t === 'suelo' || t === 'ubic')){
         if(zUbic === 'medianera'){
             zb = rnd5(Math.max(1.0, Math.sqrt(aR / 1.3)));
             zl = rnd5(Math.max(1.2, aR / zb));
@@ -1319,7 +1336,7 @@ function runEng(t){
         el('z_mod_l').value = zl.toFixed(2);
         el('z_mod_b').value = zb.toFixed(2);
         el('z_mod_hz').value = zh;
-    } else {
+    } else if(MANUAL_FLAGS.zapatas){
         if(t === 'geom_l'){ zb = rnd5(Math.max(0.8, aR / zl)); el('z_mod_b').value = zb.toFixed(2); }
         else if(t === 'geom_b'){ zl = rnd5(Math.max(0.8, aR / zb)); el('z_mod_l').value = zl.toFixed(2); }
     }
@@ -1365,16 +1382,18 @@ function runEng(t){
 
     var n12Zap = Math.max(5, Math.ceil(asReqZap / 1.29));
     var n58Zap = Math.max(5, Math.ceil(asReqZap / 1.99));
+    var isZ58 = (Math.abs(phZap - 1.99) < 0.1);
+    var isZ12 = (Math.abs(phZap - 1.29) < 0.1);
     el('z_propuestas_container').innerHTML = 
         '<div class="propuestas-title"><span>💡 PROPUESTAS DE PARRILLA (TOCA PARA APLICAR)</span></div>' +
         '<div class="prop-grid">' +
-            '<div class="prop-card best ' + (Math.abs(phZap-1.99)<0.1?'active':'') + '" onclick="aplicarPropuestaZapata(1.99)">' +
-                '<span class="prop-tag tag-best">🌟 Mejor Propuesta</span>' +
+            '<div class="prop-card best ' + (isZ58 ? 'active' : '') + '" onclick="aplicarPropuestaZapata(1.99)">' +
+                '<span class="prop-tag tag-best">' + (isZ58 ? '✅ ' : '🌟 ') + 'Mejor Propuesta</span>' +
                 '<div class="prop-main">' + n58Zap + ' Ø 5/8" en X e Y</div>' +
                 '<div class="prop-meta">As prov: ' + (n58Zap*1.99).toFixed(2) + ' cm² (@ ' + (((zb-0.15)*100)/Math.max(1,n58Zap-1)).toFixed(0) + 'cm)</div>' +
             '</div>' +
-            '<div class="prop-card ' + (Math.abs(phZap-1.29)<0.1?'active':'') + '" onclick="aplicarPropuestaZapata(1.29)">' +
-                '<span class="prop-tag tag-alt">Opción Ø 1/2"</span>' +
+            '<div class="prop-card ' + (isZ12 ? 'active' : '') + '" onclick="aplicarPropuestaZapata(1.29)">' +
+                '<span class="prop-tag tag-alt">' + (isZ12 ? '✅ ' : '') + 'Opción Ø 1/2"</span>' +
                 '<div class="prop-main">' + n12Zap + ' Ø 1/2" en X e Y</div>' +
                 '<div class="prop-meta">As prov: ' + (n12Zap*1.29).toFixed(2) + ' cm² (@ ' + (((zb-0.15)*100)/Math.max(1,n12Zap-1)).toFixed(0) + 'cm)</div>' +
             '</div>' +
@@ -1417,13 +1436,12 @@ function runEng(t){
     var vc_b = parseFloat(el('vc_mod_b').value) || 30;
     var vc_h = parseFloat(el('vc_mod_h').value) || 60;
     
-    if(!MANUAL_FLAGS.vconex){
+    if(!MANUAL_FLAGS.vconex && (isGlobalTrigger || t === 'vc_luz' || t === 'vc_tipo')){
         var hBaseVC = (vc_tipo === 'conexion') ? (e_med > 0 ? (L_ejes * 100 / 7.0) : (L_ejes * 100 / 10.0)) : (L_ejes * 100 / 9.5);
         vc_h = Math.max(45, Math.ceil(hBaseVC / 5) * 5);
         vc_b = Math.max(25, Math.ceil((vc_h / 2) / 5) * 5);
         el('vc_mod_b').value = vc_b;
         el('vc_mod_h').value = vc_h;
-        vcModoSeleccion = 'best';
     }
     
     var d_vc = Math.max(20, vc_h - 6.5);
@@ -1461,8 +1479,14 @@ function runEng(t){
     var bestKeyVC = (nS_vc_58 > 5 && nS_vc_34 <= 4) ? 'opt34' : 'opt58';
     var modoEfectivoVC = (vcModoSeleccion === 'best') ? bestKeyVC : vcModoSeleccion;
 
-    var phS_vc = (modoEfectivoVC === 'opt34') ? 2.84 : (parseFloat(el('vc_phi_sup').value) || 1.99);
-    var phI_vc = (modoEfectivoVC === 'opt34') ? 1.99 : (parseFloat(el('vc_phi_inf').value) || 1.29);
+    var phS_vc, phI_vc;
+    if(modoEfectivoVC === 'opt58'){ phS_vc = 1.99; phI_vc = 1.29; }
+    else if(modoEfectivoVC === 'opt34'){ phS_vc = 2.84; phI_vc = 1.99; }
+    else if(modoEfectivoVC === 'comb'){ phS_vc = 1.99; phI_vc = 1.99; }
+    else {
+        phS_vc = parseFloat(el('vc_phi_sup').value) || 1.99;
+        phI_vc = parseFloat(el('vc_phi_inf').value) || 1.29;
+    }
     el('vc_phi_sup').value = phS_vc.toFixed(2);
     el('vc_phi_inf').value = phI_vc.toFixed(2);
 
@@ -1502,22 +1526,22 @@ function runEng(t){
                                     (nPiel_vc > 0 ? ' | <span style="color:#3388ff">Piel: 2 Ø ' + phiL(p_piel_vc) + '</span>' : '');
 
     el('vc_propuestas_container').innerHTML = 
-        '<div class="propuestas-title"><span>💡 PROPUESTAS DE ARMADO DE CIMENTACIÓN</span></div>' +
+        '<div class="propuestas-title"><span>💡 PROPUESTAS DE ARMADO DE CIMENTACIÓN (TOCA PARA ELEGIR)</span></div>' +
         '<div class="prop-grid-3">' +
             '<div class="prop-card best ' + (modoEfectivoVC==='opt58' ? 'active' : '') + '" onclick="seleccionarPropuestaVCon(\'opt58\', 1.99, 1.29)">' +
-                '<span class="prop-tag tag-best">🌟 Refuerzo Óptimo</span>' +
+                '<span class="prop-tag tag-best">' + (modoEfectivoVC==='opt58' ? '✅ ' : '🌟 ') + 'Refuerzo Óptimo</span>' +
                 '<div class="prop-main">' + nS_vc_58 + 'Ø5/8" Sup + ' + nI_vc_12 + 'Ø1/2" Inf</div>' +
                 '<div class="prop-meta">As: ' + (nS_vc_58*1.99).toFixed(2) + ' / ' + (nI_vc_12*1.29).toFixed(2) + ' cm²</div>' +
             '</div>' +
             '<div class="prop-card ' + (modoEfectivoVC==='opt34' ? 'active' : '') + '" onclick="seleccionarPropuestaVCon(\'opt34\', 2.84, 1.99)">' +
-                '<span class="prop-tag tag-alt">Mayor Diámetro</span>' +
+                '<span class="prop-tag tag-alt">' + (modoEfectivoVC==='opt34' ? '✅ ' : '') + 'Mayor Diámetro</span>' +
                 '<div class="prop-main">' + nS_vc_34 + 'Ø3/4" Sup + ' + nI_vc_58 + 'Ø5/8" Inf</div>' +
-                '<div class="prop-meta">Menos congestión nudo</div>' +
+                '<div class="prop-meta">As: ' + (nS_vc_34*2.84).toFixed(2) + ' / ' + (nI_vc_58*1.99).toFixed(2) + ' cm²</div>' +
             '</div>' +
             '<div class="prop-card ' + (modoEfectivoVC==='comb' ? 'active' : '') + '" onclick="seleccionarPropuestaVCon(\'comb\', 1.99, 1.99)">' +
-                '<span class="prop-tag tag-warn">Simétrico 5/8"</span>' +
+                '<span class="prop-tag tag-warn">' + (modoEfectivoVC==='comb' ? '✅ ' : '') + 'Simétrico 5/8"</span>' +
                 '<div class="prop-main">' + nS_vc_58 + 'Ø5/8" Sup + ' + nI_vc_58 + 'Ø5/8" Inf</div>' +
-                '<div class="prop-meta">Un solo diámetro</div>' +
+                '<div class="prop-meta">As: ' + (nS_vc_58*1.99).toFixed(2) + ' / ' + (nI_vc_58*1.99).toFixed(2) + ' cm²</div>' +
             '</div>' +
         '</div>';
 
@@ -1560,7 +1584,7 @@ function runEng(t){
     var Pu_col = P_serv_col1 * factorMayoracion;
     var agReqGravedad = (P_serv_col1 * 1000) / (factorBlanco * fc);
 
-    if(!MANUAL_FLAGS.columnas){
+    if(!MANUAL_FLAGS.columnas && (isGlobalTrigger || t === 'sistema' || t === 'ubic' || t === 'altura')){
         var minB = (sis === 'portico') ? 25 : 15;
         var minArea = (sis === 'portico') ? Math.max(900, agReqGravedad) : Math.max(450, agReqGravedad);
         var ladoBase = Math.max(minB, Math.ceil(Math.sqrt(minArea) / 5) * 5);
@@ -1616,16 +1640,18 @@ function runEng(t){
     
     var nM_opt1 = Math.max(0, Math.ceil((asRCol - 4 * 1.99) / 1.29)); if(nM_opt1 % 2 !== 0) nM_opt1++;
     var nM_opt2 = Math.max(0, Math.ceil((asRCol - 4 * 2.84) / 1.99)); if(nM_opt2 % 2 !== 0) nM_opt2++;
+    var isColOpt1 = (Math.abs(phE - 1.99) < 0.1 && Math.abs(phM - 1.29) < 0.1);
+    var isColOpt2 = (Math.abs(phE - 2.84) < 0.1 && Math.abs(phM - 1.99) < 0.1);
     el('c_propuestas_container').innerHTML = 
-        '<div class="propuestas-title"><span>💡 PROPUESTAS DE ARMADO EN COLUMNA</span></div>' +
+        '<div class="propuestas-title"><span>💡 PROPUESTAS DE ARMADO EN COLUMNA (TOCA PARA ELEGIR)</span></div>' +
         '<div class="prop-grid">' +
-            '<div class="prop-card best ' + (Math.abs(phE-1.99)<0.1?'active':'') + '" onclick="aplicarPropuestaColumna(1.99, 1.29)">' +
-                '<span class="prop-tag tag-best">🌟 Mejor Propuesta</span>' +
+            '<div class="prop-card best ' + (isColOpt1 ? 'active' : '') + '" onclick="aplicarPropuestaColumna(1.99, 1.29)">' +
+                '<span class="prop-tag tag-best">' + (isColOpt1 ? '✅ ' : '🌟 ') + 'Mejor Propuesta</span>' +
                 '<div class="prop-main">4Ø5/8" + ' + nM_opt1 + 'Ø1/2"</div>' +
                 '<div class="prop-meta">As: ' + (4*1.99 + nM_opt1*1.29).toFixed(2) + ' cm² (Simétrico)</div>' +
             '</div>' +
-            '<div class="prop-card ' + (Math.abs(phE-2.84)<0.1?'active':'') + '" onclick="aplicarPropuestaColumna(2.84, 1.99)">' +
-                '<span class="prop-tag tag-alt">Mayor Diámetro</span>' +
+            '<div class="prop-card ' + (isColOpt2 ? 'active' : '') + '" onclick="aplicarPropuestaColumna(2.84, 1.99)">' +
+                '<span class="prop-tag tag-alt">' + (isColOpt2 ? '✅ ' : '') + 'Mayor Diámetro</span>' +
                 '<div class="prop-main">4Ø3/4"' + (nM_opt2>0 ? ' + '+nM_opt2+'Ø5/8"' : ' (4 esq)') + '</div>' +
                 '<div class="prop-meta">As: ' + (4*2.84 + nM_opt2*1.99).toFixed(2) + ' cm² (Menos varillas)</div>' +
             '</div>' +
@@ -1649,7 +1675,7 @@ function runEng(t){
             '<span class="mem-verdict-ok">✅ ESTRIBOS Ø 3/8" C/GANCHO 135°: 1 @ 5 cm, 6 @ ' + sConfCol + ' cm (Extremos Lo), Resto @ ' + sRestoCol + ' cm</span>' +
         '</div>';
 
-    D3.cx = cb; D3.cy = ct; D3.ch = ch; D3.nE = 4; D3.nM = nMCol; D3.cPhiE = phE; D3.cPhiM = phM; D3.cPata = patCol; D3.sLimC = sConfCol; D3.sRestoC = sRestoCol; D3.ldCol = ldTraslape;
+    D3.cx = cb; D3.cy = ct; D3.ch = ch; D3.nE = 4; D3.nM = nMCol; D3.cPhiE = phE; D3.cPhiM = phM; D3.cPata = patCol; D3.sLimC = sConfCol; D3.sRestoC = sRestoCol; D3.ldCol = ldTraslape; D3.cUbic = ubic;
     rCol(cb, ct, 4, phE, phM, nMCol, patCol);
 
     // ==================== 4. VIGAS DE ENTREPISO Y LOSA (RNE E.060 CAP. 9, 10, 11 Y 21) ====================
@@ -1661,13 +1687,12 @@ function runEng(t){
     var vbVig = parseFloat(el('v_mod_b').value) || 25;
     var vhVig = parseFloat(el('v_mod_h').value) || 40;
 
-    if(!MANUAL_FLAGS.vigas){
+    if(!MANUAL_FLAGS.vigas && (isGlobalTrigger || t === 'luz' || t === 'carga' || t === 'losa' || t === 'tabique')){
         var divLVig = (rolVig === 'voladizo') ? 8.0 : ((rolVig === 'principal') ? (qU > 1000 ? 10.5 : 11.5) : 13.0);
         var hBaseV = Math.max(lVig * 100 / divLVig, lVig * 100 / 13.8) * (1 + Math.max(0, p - 2) * 0.02);
         vhVig = Math.max(30, Math.ceil(hBaseV / 5) * 5); 
         vbVig = Math.max(25, Math.ceil((vhVig / 2) / 5) * 5); 
         el('v_mod_b').value = vbVig; el('v_mod_h').value = vhVig;
-        vModoSeleccion = 'best';
     }
 
     var wLosa_Tm2 = (wLosa_kg / 1000) + 0.10;
@@ -1713,8 +1738,8 @@ function runEng(t){
     var bestKeyVig = ((nS_58V > max58Vig || nI_58V > max58Vig) && (nS_34V <= max34Vig && nI_34V <= max34Vig)) ? 'opt34' : 'opt58';
     var modoEfectivoVig = (vModoSeleccion === 'best') ? bestKeyVig : vModoSeleccion;
 
-    var phS_V = (modoEfectivoVig === 'opt34') ? 2.84 : ((modoEfectivoVig === 'opt12') ? 1.29 : ((modoEfectivoVig === 'opt58') ? 1.99 : (parseFloat(el('v_phi_sup').value) || 1.99)));
-    var phI_V = (modoEfectivoVig === 'opt34') ? 2.84 : ((modoEfectivoVig === 'opt12') ? 1.29 : ((modoEfectivoVig === 'opt58') ? 1.99 : (parseFloat(el('v_phi_inf').value) || 1.99)));
+    var phS_V = (modoEfectivoVig === 'opt34') ? 2.84 : ((modoEfectivoVig === 'opt12') ? 1.29 : ((modoEfectivoVig === 'opt58' || modoEfectivoVig === 'comb') ? 1.99 : (parseFloat(el('v_phi_sup').value) || 1.99)));
+    var phI_V = (modoEfectivoVig === 'opt34') ? 2.84 : ((modoEfectivoVig === 'opt12') ? 1.29 : ((modoEfectivoVig === 'opt58' || modoEfectivoVig === 'comb') ? 1.99 : (parseFloat(el('v_phi_inf').value) || 1.99)));
     el('v_phi_sup').value = phS_V.toFixed(2); el('v_phi_inf').value = phI_V.toFixed(2);
 
     var nSV = Math.max(2, Math.ceil(asReqSupVig / phS_V));
@@ -1722,6 +1747,14 @@ function runEng(t){
     var supBarsV = [], infBarsV = [];
     for(var sv=0; sv<nSV; sv++) supBarsV.push(phS_V);
     for(var qv=0; qv<nIV; qv++) infBarsV.push(phI_V);
+
+    var nS_comb12V = Math.max(1, Math.ceil(Math.max(0.1, asReqSupVig - 2 * 1.99) / 1.29));
+    var asSupCombProvV = 2 * 1.99 + nS_comb12V * 1.29;
+    var nI_comb12V = Math.max(1, Math.ceil(Math.max(0.1, Math.max(asReqInfVig, 0.5 * asSupCombProvV) - 2 * 1.99) / 1.29));
+    if(modoEfectivoVig === 'comb'){
+        supBarsV = [1.99, 1.99]; for(var jc=0; jc<nS_comb12V; jc++) supBarsV.push(1.29);
+        infBarsV = [1.99, 1.99]; for(var mc=0; mc<nI_comb12V; mc++) infBarsV.push(1.29);
+    }
 
     var p_pielV = parseFloat(el('v_phi_piel').value) || 0;
     var phPV = p_pielV > 0 ? p_pielV : (vhVig >= 60 ? 1.29 : 0);
@@ -1731,10 +1764,14 @@ function runEng(t){
     var Ldh_ganchoV = Math.max(Math.ceil((0.06 * dbMayorV * fy) / Math.sqrt(fc)), Math.ceil(8 * dbMayorV), 15);
     var Ld_rectoSupV = Math.ceil(1.3 * (0.08 * dbMayorV * fy) / Math.sqrt(fc));
 
-    var a_pr1V = (nSV * phS_V * 1.25 * fy) / (0.85 * fc * vbVig);
-    var Mpr1V = (nSV * phS_V * 1.25 * fy * (dEVig - a_pr1V / 2)) / 100000;
-    var a_pr2V = (nIV * phI_V * 1.25 * fy) / (0.85 * fc * vbVig);
-    var Mpr2V = (nIV * phI_V * 1.25 * fy * (dEVig - a_pr2V / 2)) / 100000;
+    var asSupRealV = 0, asInfRealV = 0;
+    for(var isb=0; isb<supBarsV.length; isb++) asSupRealV += supBarsV[isb];
+    for(var iib=0; iib<infBarsV.length; iib++) asInfRealV += infBarsV[iib];
+
+    var a_pr1V = (asSupRealV * 1.25 * fy) / (0.85 * fc * vbVig);
+    var Mpr1V = (asSupRealV * 1.25 * fy * (dEVig - a_pr1V / 2)) / 100000;
+    var a_pr2V = (asInfRealV * 1.25 * fy) / (0.85 * fc * vbVig);
+    var Mpr2V = (asInfRealV * 1.25 * fy * (dEVig - a_pr2V / 2)) / 100000;
     var V_isostV = (1.25 * (wCM_Vig + wCV_Vig) * lVig) / 2;
     var Ve_capV = (rolVig === 'principal') ? (((Mpr1V + Mpr2V) / lVig) + V_isostV) : (1.15 * wU_Vig * lVig / 2);
     var Vu_cortV = (rolVig === 'voladizo') ? (wU_Vig * lVig) : Math.max(1.15 * wU_Vig * lVig / 2, Ve_capV);
@@ -1758,36 +1795,33 @@ function runEng(t){
     el('v_txt_estr').innerText = 'Ø3/8": 1@5, 8@' + sLimV + ', R@' + sRestoV; 
     el('v_txt_as').innerText = 'As Req: ' + asReqSupVig.toFixed(2) + ' / ' + asReqInfVig.toFixed(2) + 'cm² | Gancho Ldh=' + Ldh_ganchoV + 'cm';
     el('v_txt_cortante').innerText = 'Ve = ' + Vu_cortV.toFixed(1) + 'T ≤ ØVn = ' + phiVnV.toFixed(1) + 'T';
-    el('v_txt_acero').innerHTML = '<span style="color:' + phiC(phS_V) + '">Sup(-): ' + nSV + 'Ø' + phiL(phS_V) + '</span> | <span style="color:' + phiC(phI_V) + '">Inf(+): ' + nIV + 'Ø' + phiL(phI_V) + '</span>' + (phPV>0 ? ' | Piel: 2Ø' + phiL(phPV) : '');
 
-    var nS_comb12V = Math.max(1, Math.ceil(Math.max(0.1, asReqSupVig - 2 * 1.99) / 1.29));
-    var asSupCombProvV = 2 * 1.99 + nS_comb12V * 1.29;
-    var nI_comb12V = Math.max(1, Math.ceil(Math.max(0.1, Math.max(asReqInfVig, 0.5 * asSupCombProvV) - 2 * 1.99) / 1.29));
     if(modoEfectivoVig === 'comb'){
-        supBarsV = [1.99, 1.99]; for(var jc=0; jc<nS_comb12V; jc++) supBarsV.push(1.29);
-        infBarsV = [1.99, 1.99]; for(var mc=0; mc<nI_comb12V; mc++) infBarsV.push(1.29);
         el('v_txt_acero').innerHTML = '<span style="color:#ff2222">Sup(-): 2Ø5/8" corr. + ' + nS_comb12V + 'Ø1/2" bast.</span> | <span style="color:#3388ff">Inf(+): 2Ø5/8" corr. + ' + nI_comb12V + 'Ø1/2" bast.</span>' + (phPV>0 ? ' | Piel: 2Ø' + phiL(phPV) : '');
+    } else {
+        el('v_txt_acero').innerHTML = '<span style="color:' + phiC(phS_V) + '">Sup(-): ' + nSV + 'Ø' + phiL(phS_V) + '</span> | <span style="color:' + phiC(phI_V) + '">Inf(+): ' + nIV + 'Ø' + phiL(phI_V) + '</span>' + (phPV>0 ? ' | Piel: 2Ø' + phiL(phPV) : '');
     }
+
     el('v_propuestas_container').innerHTML = 
-        '<div class="propuestas-title"><span>💡 PROPUESTAS DE ARMADO SÍSMICO</span><span style="color:var(--primary-cyan); font-size:9.5px;">Máx ' + max58Vig + ' var/capa</span></div>' +
+        '<div class="propuestas-title"><span>💡 PROPUESTAS DE ARMADO SÍSMICO (TOCA PARA ELEGIR)</span><span style="color:var(--primary-cyan); font-size:9.5px;">Máx ' + max58Vig + ' var/capa</span></div>' +
         '<div class="prop-grid">' +
-            '<div class="prop-card ' + (bestKeyVig==='opt58' ? 'best' : '') + ' ' + (modoEfectivoVig==='opt58' ? 'active' : '') + '" onclick="seleccionarPropuestaViga(\'opt58\', 1.99, 1.99)">' +
-                '<span class="prop-tag ' + (bestKeyVig==='opt58' ? 'tag-best' : 'tag-alt') + '">🌟 Opción Ø 5/8"</span>' +
+            '<div class="prop-card ' + (bestKeyVig==='opt58' ? 'best ' : '') + (modoEfectivoVig==='opt58' ? 'active' : '') + '" onclick="seleccionarPropuestaViga(\'opt58\', 1.99, 1.99)">' +
+                '<span class="prop-tag ' + (bestKeyVig==='opt58' ? 'tag-best' : 'tag-alt') + '">' + (modoEfectivoVig==='opt58' ? '✅ ' : '🌟 ') + 'Opción Ø 5/8"</span>' +
                 '<div class="prop-main">Sup: ' + nS_58V + 'Ø5/8" | Inf: ' + nI_58V + 'Ø5/8"</div>' +
                 '<div class="prop-meta">As: ' + (nS_58V*1.99).toFixed(2) + ' / ' + (nI_58V*1.99).toFixed(2) + ' cm²</div>' +
             '</div>' +
-            '<div class="prop-card ' + (bestKeyVig==='opt34' ? 'best' : '') + ' ' + (modoEfectivoVig==='opt34' ? 'active' : '') + '" onclick="seleccionarPropuestaViga(\'opt34\', 2.84, 2.84)">' +
-                '<span class="prop-tag tag-alt">Opción Ø 3/4"</span>' +
+            '<div class="prop-card ' + (bestKeyVig==='opt34' ? 'best ' : '') + (modoEfectivoVig==='opt34' ? 'active' : '') + '" onclick="seleccionarPropuestaViga(\'opt34\', 2.84, 2.84)">' +
+                '<span class="prop-tag ' + (bestKeyVig==='opt34' ? 'tag-best' : 'tag-alt') + '">' + (modoEfectivoVig==='opt34' ? '✅ ' : '') + 'Opción Ø 3/4"</span>' +
                 '<div class="prop-main">Sup: ' + nS_34V + 'Ø3/4" | Inf: ' + nI_34V + 'Ø3/4"</div>' +
                 '<div class="prop-meta">As: ' + (nS_34V*2.84).toFixed(2) + ' / ' + (nI_34V*2.84).toFixed(2) + ' cm²</div>' +
             '</div>' +
             '<div class="prop-card ' + (modoEfectivoVig==='comb' ? 'active' : '') + '" onclick="seleccionarPropuestaViga(\'comb\', 1.99, 1.99)">' +
-                '<span class="prop-tag tag-warn">🔄 Combinada</span>' +
+                '<span class="prop-tag tag-warn">' + (modoEfectivoVig==='comb' ? '✅ ' : '🔄 ') + 'Combinada</span>' +
                 '<div class="prop-main">2Ø5/8" + ' + nS_comb12V + 'Ø1/2" / +' + nI_comb12V + 'Ø1/2"</div>' +
-                '<div class="prop-meta">2Ø5/8" corr. + bastones Ø1/2"</div>' +
+                '<div class="prop-meta">As: ' + asSupCombProvV.toFixed(2) + ' / ' + (2*1.99+nI_comb12V*1.29).toFixed(2) + ' cm²</div>' +
             '</div>' +
             '<div class="prop-card ' + (modoEfectivoVig==='opt12' ? 'active' : '') + '" onclick="seleccionarPropuestaViga(\'opt12\', 1.29, 1.29)">' +
-                '<span class="prop-tag tag-alt">Opción Ø 1/2"</span>' +
+                '<span class="prop-tag tag-alt">' + (modoEfectivoVig==='opt12' ? '✅ ' : '') + 'Opción Ø 1/2"</span>' +
                 '<div class="prop-main">Sup: ' + nS_12V + 'Ø1/2" | Inf: ' + nI_12V + 'Ø1/2"</div>' +
                 '<div class="prop-meta">As: ' + (nS_12V*1.29).toFixed(2) + ' / ' + (nI_12V*1.29).toFixed(2) + ' cm²</div>' +
             '</div>' +
@@ -1804,7 +1838,7 @@ function runEng(t){
         '<div class="memoria-section">2. ¿POR QUÉ USAMOS ρ_min = 0.70√f\'c/fy (ART. 10.5) Y LA REGLA SÍSMICA DEL 50%?</div>' +
         '<div class="mem-step">' +
             '<div class="mem-explain"><b>🔩 Criterio normativo E.060 de varillas:</b> En vigas NO se usa 0.0018 (que es solo para losas), sino la fórmula del <b>Art. 10.5.1: ρ_min = 0.70√f\'c / fy = ' + rhoMinVig.toFixed(5) + '</b> para evitar fallas frágiles. Además, el <b>Cap. 21 (Art. 21.5.2.2)</b> exige que la resistencia positiva en el nudo sea al menos el <b>50% de la negativa (As_inf ≥ 0.50·As_sup)</b> porque el sismo invierte los momentos.</div>' +
-            '<div class="mem-eq">• Acero Mínimo E.060 = ' + asMinVig.toFixed(2) + ' cm²\n• Acero Superior Req: ' + asReqSupVig.toFixed(2) + ' cm² → Provisto: ' + supBarsV.length + ' varillas\n• Acero Inferior Req: ' + asReqInfVig.toFixed(2) + ' cm² → Provisto: ' + infBarsV.length + ' varillas (Ganchos 90° Ldh = ' + Ldh_ganchoV + ' cm)</div>' +
+            '<div class="mem-eq">• Acero Mínimo E.060 = ' + asMinVig.toFixed(2) + ' cm²\n• Acero Superior Req: ' + asReqSupVig.toFixed(2) + ' cm² → Provisto: ' + supBarsV.length + ' varillas (' + asSupRealV.toFixed(2) + ' cm²)\n• Acero Inferior Req: ' + asReqInfVig.toFixed(2) + ' cm² → Provisto: ' + infBarsV.length + ' varillas (' + asInfRealV.toFixed(2) + ' cm² | Gancho Ldh = ' + Ldh_ganchoV + ' cm)</div>' +
         '</div>' +
         '<div class="memoria-section">3. ¿POR QUÉ CALCULAMOS CORTANTE POR CAPACIDAD (Ve) Y ESTRIBOS EN ZONA 2h?</div>' +
         '<div class="mem-step">' +
@@ -1836,7 +1870,7 @@ function runEng(t){
     var K_usarMur = (m_tipo === 'sotano') ? K0Mur : KaMur;
     var khMur = 0.5 * zSismo; 
     
-    if(!MANUAL_FLAGS.muros){
+    if(!MANUAL_FLAGS.muros && (t === 'muro_geom' || t === 'all')){
         hzMur = rnd5(Math.max(0.40, hMur / 9.5)); 
         ebMur = (m_tipo === 'sotano') ? rnd5(Math.max(0.20, hMur / 12)) : rnd5(Math.max(0.30, hMur / 9)); 
         if(cond_aguaMur === 'saturado') ebMur = rnd5(Math.max(ebMur, 0.25));
@@ -1942,22 +1976,25 @@ function runEng(t){
     var cv1M_58M = calcMalla(1.99, asVMur, 1, ebMur * 100);
     var cv2M_12M = calcMalla(1.29, asVMur, 2, ebMur * 100);
     var cv1M_12M = calcMalla(1.29, asVMur, 1, ebMur * 100);
+    var isMur1 = (cvMur.m===1 && Math.abs(phVMur-1.99)<0.1);
+    var isMur2 = (cvMur.m===2);
+    var isMur3 = (cvMur.m===1 && Math.abs(phVMur-1.29)<0.1);
 
     el('m_propuestas_container').innerHTML = 
-        '<div class="propuestas-title"><span>💡 PROPUESTAS DE ARMADO EN PANTALLA</span></div>' +
+        '<div class="propuestas-title"><span>💡 PROPUESTAS DE ARMADO EN PANTALLA (TOCA PARA ELEGIR)</span></div>' +
         '<div class="prop-grid-3">' +
-            '<div class="prop-card best ' + (cvMur.m===1 && Math.abs(phVMur-1.99)<0.1 ? 'active' : '') + '" onclick="aplicarPropuestaMuro(1, 1.99, 1.29, 1.99)">' +
-                '<span class="prop-tag tag-best">🌟 1 Malla 5/8"</span>' +
+            '<div class="prop-card best ' + (isMur1 ? 'active' : '') + '" onclick="aplicarPropuestaMuro(1, 1.99, 1.29, 1.99)">' +
+                '<span class="prop-tag tag-best">' + (isMur1 ? '✅ ' : '🌟 ') + '1 Malla 5/8"</span>' +
                 '<div class="prop-main">1M Ø5/8"@' + cv1M_58M.s + 'cm</div>' +
                 '<div class="prop-meta">Horz: 1M Ø1/2"</div>' +
             '</div>' +
-            '<div class="prop-card ' + (cvMur.m===2 ? 'active' : '') + '" onclick="aplicarPropuestaMuro(2, 1.29, 0.71, 1.99)">' +
-                '<span class="prop-tag tag-warn">🛡️ Doble Malla</span>' +
+            '<div class="prop-card ' + (isMur2 ? 'active' : '') + '" onclick="aplicarPropuestaMuro(2, 1.29, 0.71, 1.99)">' +
+                '<span class="prop-tag tag-warn">' + (isMur2 ? '✅ ' : '🛡️ ') + 'Doble Malla</span>' +
                 '<div class="prop-main">2M Ø1/2"@' + cv2M_12M.s + 'cm</div>' +
                 '<div class="prop-meta">2 Caras E.060</div>' +
             '</div>' +
-            '<div class="prop-card ' + (cvMur.m===1 && Math.abs(phVMur-1.29)<0.1 ? 'active' : '') + '" onclick="aplicarPropuestaMuro(1, 1.29, 1.29, 1.29)">' +
-                '<span class="prop-tag tag-alt">Todo Ø 1/2"</span>' +
+            '<div class="prop-card ' + (isMur3 ? 'active' : '') + '" onclick="aplicarPropuestaMuro(1, 1.29, 1.29, 1.29)">' +
+                '<span class="prop-tag tag-alt">' + (isMur3 ? '✅ ' : '') + 'Todo Ø 1/2"</span>' +
                 '<div class="prop-main">1M Ø1/2"@' + cv1M_12M.s + 'cm</div>' +
                 '<div class="prop-meta">Un solo diámetro</div>' +
             '</div>' +
@@ -1980,73 +2017,119 @@ function runEng(t){
     D3.mTipo = m_tipo; D3.mH = hMur; D3.mB = bMur; D3.mHz = hzMur * 100; D3.mC = ccMur * 100; D3.mE = ebMur * 100; D3.mPunt = pTMur; D3.mTal = tTMur; D3.spV = cvMur.s; D3.spH = chMur.s; D3.spZ = czMur.s; D3.mVmalla = cvMur.m; D3.mHmalla = chMur.m; D3.mPhiV = phVMur; D3.mPhiH = phHMur; D3.mPhiZ = phZMur; D3.mDent = dentMur; 
     rMur(hMur, bMur, hzMur * 100, ccMur * 100, ebMur * 100, pTMur, tTMur, phVMur, phHMur, phZMur, cvMur.m, chMur.m, dentMur, m_tipo);
 
-    // ==================== 6. ACTUALIZAR MATRIZ WBS DE METRADOS ====================
-    var bolsasM3 = (fc <= 210) ? 9.73 : ((fc <= 280) ? 11.50 : 13.00);
-    var arenaM3 = (fc <= 210) ? 0.52 : 0.48;
-    var piedraM3 = (fc <= 210) ? 0.53 : 0.51;
-    var aguaM3 = 185;
-
-    var vZapUnit = zl * zb * (zh / 100);
+    // ==================== 6. PLANILLA EXCLUSIVA DE ACERO ESTRUCTURAL, ALAMBRE N° 16 Y ALAMBRE N° 8 ====================
+    // 6.1 ZAPATAS
     var cutZapX = zl - 0.15 + 0.30;
     var cutZapY = zb - 0.15 + 0.30;
     var mZapUnit_ph = nVZap * cutZapX + nVZap * cutZapY;
     WBS_STORE.zapatas.count = nC;
-    WBS_STORE.zapatas.vol = vZapUnit * nC * 1.05;
     WBS_STORE.zapatas.m38 = 0; WBS_STORE.zapatas.m12 = 0; WBS_STORE.zapatas.m58 = 0; WBS_STORE.zapatas.m34 = 0;
     if(phZap < 1.5) WBS_STORE.zapatas.m12 = mZapUnit_ph * nC;
     else if(phZap < 2.2) WBS_STORE.zapatas.m58 = mZapUnit_ph * nC;
     else WBS_STORE.zapatas.m34 = mZapUnit_ph * nC;
-    WBS_STORE.zapatas.detailText = '• ' + nC + ' zapatas (' + zl.toFixed(2) + '×' + zb.toFixed(2) + '×' + (zh/100).toFixed(2) + 'm) | Parrilla: ' + nVZap + 'Ø' + phiL(phZap) + ' en X e Y.<br>• Corte c/gancho: ' + cutZapX.toFixed(2) + 'm | Encofrado lateral: ' + (2*(zl+zb)*(zh/100)*nC).toFixed(1) + ' m².';
+    WBS_STORE.zapatas.alambre8 = nC * 0.65;
+    WBS_STORE.zapatas.detailText = 
+        '• <b>Elemento:</b> ' + nC + ' Zapatas (' + zUbic.toUpperCase() + ') de L=' + zl.toFixed(2) + 'm × B=' + zb.toFixed(2) + 'm × hz=' + zh + 'cm.<br>' +
+        '• <b>Parrilla Inferior:</b> ' + nVZap + ' Ø ' + phiL(phZap) + ' @ ' + sepZap.toFixed(0) + 'cm en X + ' + nVZap + ' Ø ' + phiL(phZap) + ' @ ' + sepZap.toFixed(0) + 'cm en Y (' + (nVZap*2) + ' pzas/zapata).<br>' +
+        '• <b>Despiece de Corte:</b> Long. corte X = ' + cutZapX.toFixed(2) + 'm | Long. corte Y = ' + cutZapY.toFixed(2) + 'm (incluye patas 90° de 15cm en extremos).';
 
-    var vVCUnit = (vc_b / 100) * (vc_h / 100) * vc_luz;
+    // 6.2 VIGAS DE CONEXIÓN / CIMENTACIÓN
     var nVigConex = gridInfo.vConexReq;
     var cutVCSup = vc_luz + 2 * 0.45;
     var cutVCInf = vc_luz + 2 * 0.35;
     var nEstVC_unit = Math.ceil(2 * 9 + Math.max(0, vc_luz - 2 * (0.05 + 8 * sConf_vc / 100)) / (sResto_vc / 100));
-    var perimEstVC = 2 * ((vc_b - 8) + (vc_h - 8)) / 100 + 0.20;
+    var perimEstVC = 2 * ((vc_b - 8) + (vc_h - 8)) / 100 + 0.24;
     WBS_STORE.vconex.count = nVigConex;
-    WBS_STORE.vconex.vol = vVCUnit * nVigConex * 1.05;
     WBS_STORE.vconex.m38 = nEstVC_unit * perimEstVC * nVigConex;
-    WBS_STORE.vconex.m12 = (nI_vc * cutVCInf + (nPiel_vc > 0 ? 2 * (vc_luz + 0.4) : 0)) * nVigConex;
-    WBS_STORE.vconex.m58 = (phS_vc < 2.2 ? (nS_vc * cutVCSup) * nVigConex : 0);
-    WBS_STORE.vconex.m34 = (phS_vc >= 2.2 ? (nS_vc * cutVCSup) * nVigConex : 0);
-    WBS_STORE.vconex.detailText = '• ' + nVigConex + ' vigas (' + vc_b + '×' + vc_h + 'cm, Ln=' + vc_luz.toFixed(2) + 'm) | Sup: ' + nS_vc + 'Ø' + phiL(phS_vc) + ' + Inf: ' + nI_vc + 'Ø' + phiL(phI_vc) + '.<br>• Estribos: ' + nEstVC_unit + ' und/viga (1@5, 8@' + sConf_vc + ', R@' + sResto_vc + 'cm).';
+    WBS_STORE.vconex.m12 = 0; WBS_STORE.vconex.m58 = 0; WBS_STORE.vconex.m34 = 0;
+    if(phS_vc < 1.5) WBS_STORE.vconex.m12 += (nS_vc * cutVCSup) * nVigConex;
+    else if(phS_vc < 2.2) WBS_STORE.vconex.m58 += (nS_vc * cutVCSup) * nVigConex;
+    else WBS_STORE.vconex.m34 += (nS_vc * cutVCSup) * nVigConex;
 
-    var vColUnit = (cb / 100) * (ct / 100) * ch;
+    if(phI_vc < 1.5) WBS_STORE.vconex.m12 += (nI_vc * cutVCInf) * nVigConex;
+    else if(phI_vc < 2.2) WBS_STORE.vconex.m58 += (nI_vc * cutVCInf) * nVigConex;
+    else WBS_STORE.vconex.m34 += (nI_vc * cutVCInf) * nVigConex;
+
+    if(nPiel_vc > 0) WBS_STORE.vconex.m12 += (2 * (vc_luz + 0.40)) * nVigConex;
+    WBS_STORE.vconex.alambre8 = nVigConex * 1.35;
+    WBS_STORE.vconex.detailText = 
+        '• <b>Elemento:</b> ' + nVigConex + ' Vigas (' + (vc_tipo==='conexion'?'Conexión Rígida':'Cimentación') + ') de ' + vc_b + '×' + vc_h + 'cm, Luz libre Ln=' + vc_luz.toFixed(2) + 'm.<br>' +
+        '• <b>Acero Longitudinal:</b> Sup: ' + nS_vc + ' Ø ' + phiL(phS_vc) + ' (Corte=' + cutVCSup.toFixed(2) + 'm c/ganchos 90° de 45cm) + Inf: ' + nI_vc + ' Ø ' + phiL(phI_vc) + ' (Corte=' + cutVCInf.toFixed(2) + 'm)' + (nPiel_vc>0 ? ' + Piel: 2 Ø 1/2"' : '') + '.<br>' +
+        '• <b>Estribos Ø 3/8":</b> ' + nEstVC_unit + ' estribos/viga (1@5, 8@' + sConf_vc + ', R@' + sResto_vc + 'cm) | Long. corte estribo = ' + perimEstVC.toFixed(2) + 'm (c/ganchos 135°).';
+
+    // 6.3 COLUMNAS
     var nTotalCols = nC * p;
     var cutColBar = ch + (ldTraslape / 100) + (patCol / 100);
     var nEstCol_unit = Math.ceil(2 * 7 + Math.max(0, ch - 2 * (0.05 + 6 * sConfCol / 100)) / 0.20);
-    var perimEstCol = 2 * ((cb - 8) + (ct - 8)) / 100 + 0.22;
+    var perimEstCol = 2 * ((cb - 8) + (ct - 8)) / 100 + 0.24;
+    var grapaFactorCol = (nMCol >= 4) ? 1.45 : ((nMCol >= 2) ? 1.25 : 1.0);
     WBS_STORE.columnas.count = nTotalCols;
-    WBS_STORE.columnas.vol = vColUnit * nTotalCols * 1.05;
-    WBS_STORE.columnas.m38 = nEstCol_unit * perimEstCol * nTotalCols;
-    WBS_STORE.columnas.m12 = (nMCol * cutColBar) * nTotalCols;
-    WBS_STORE.columnas.m58 = (phE < 2.2 ? (4 * cutColBar) * nTotalCols : 0);
-    WBS_STORE.columnas.m34 = (phE >= 2.2 ? (4 * cutColBar) * nTotalCols : 0);
-    WBS_STORE.columnas.detailText = '• ' + nC + ' cols/piso × ' + p + ' pisos = ' + nTotalCols + ' cols (' + cb + '×' + ct + 'cm, H=' + ch.toFixed(2) + 'm).<br>• Corte barra (H+Ld+Patas ' + patCol + 'cm): ' + cutColBar.toFixed(2) + 'm | Encofrado: ' + (2*(cb+ct)/100*ch*nTotalCols).toFixed(1) + ' m².';
+    WBS_STORE.columnas.m38 = nEstCol_unit * perimEstCol * grapaFactorCol * nTotalCols;
+    WBS_STORE.columnas.m12 = 0; WBS_STORE.columnas.m58 = 0; WBS_STORE.columnas.m34 = 0;
+    if(phE < 1.5) WBS_STORE.columnas.m12 += (4 * cutColBar) * nTotalCols;
+    else if(phE < 2.2) WBS_STORE.columnas.m58 += (4 * cutColBar) * nTotalCols;
+    else WBS_STORE.columnas.m34 += (4 * cutColBar) * nTotalCols;
 
-    var vVigUnit = (vbVig / 100) * (vhVig / 100) * lVig;
+    if(nMCol > 0){
+        if(phM < 1.5) WBS_STORE.columnas.m12 += (nMCol * cutColBar) * nTotalCols;
+        else if(phM < 2.2) WBS_STORE.columnas.m58 += (nMCol * cutColBar) * nTotalCols;
+        else WBS_STORE.columnas.m34 += (nMCol * cutColBar) * nTotalCols;
+    }
+    WBS_STORE.columnas.alambre8 = nTotalCols * 1.90;
+    WBS_STORE.columnas.detailText = 
+        '• <b>Elemento:</b> ' + nC + ' cols/piso × ' + p + ' pisos = ' + nTotalCols + ' Columnas (' + ubic.toUpperCase() + ') de ' + cb + '×' + ct + 'cm, Altura H=' + ch.toFixed(2) + 'm.<br>' +
+        '• <b>Acero Longitudinal:</b> 4 Ø ' + phiL(phE) + ' (Esquinas)' + (nMCol>0 ? ' + ' + nMCol + ' Ø ' + phiL(phM) + ' (Caras)' : '') + ' | Corte unitario = ' + cutColBar.toFixed(2) + 'm (H + Traslape Ld ' + ldTraslape + 'cm + Pata 90° ' + patCol + 'cm).<br>' +
+        '• <b>Estribos y Grapas Ø 3/8":</b> ' + nEstCol_unit + ' niveles/col (1@5, 6@' + sConfCol + ' en Lo=' + loConfCol + 'cm, R@20cm) | Corte estribo = ' + perimEstCol.toFixed(2) + 'm c/ganchos sísmicos 135°.';
+
+    // 6.4 VIGAS DE ENTREPISO Y TECHO
     var nTotalVigas = gridInfo.vigasPorPiso * p;
-    var cutVigBar = lVig + 2 * (Ldh_ganchoV / 100);
+    var cutVigBar = lVig + 2 * (Ldh_ganchoV / 100) + 0.30;
+    var cutBastonVig = parseFloat(L_bastonSupV) + (Ldh_ganchoV / 100);
     var nEstVig_unit = Math.ceil(2 * 9 + Math.max(0, lVig - 2 * (0.05 + 8 * sLimV / 100)) / (sRestoV / 100));
-    var perimEstVig = 2 * ((vbVig - 8) + (vhVig - 8)) / 100 + 0.20;
+    var perimEstVig = 2 * ((vbVig - 8) + (vhVig - 8)) / 100 + 0.24;
     WBS_STORE.vigas.count = nTotalVigas;
-    WBS_STORE.vigas.vol = vVigUnit * nTotalVigas * 1.05;
     WBS_STORE.vigas.m38 = nEstVig_unit * perimEstVig * nTotalVigas;
-    WBS_STORE.vigas.m12 = (phPV > 0 ? 2 * (lVig + 0.4) : 0) * nTotalVigas;
-    WBS_STORE.vigas.m58 = ((nSV + nIV) * cutVigBar) * nTotalVigas;
-    WBS_STORE.vigas.m34 = 0;
-    WBS_STORE.vigas.detailText = '• Grilla ' + gridInfo.nx + '×' + gridInfo.ny + ' ejes = ' + gridInfo.vigasPorPiso + ' tramos/piso (' + gridInfo.tramosX + ' en X + ' + gridInfo.tramosY + ' en Y) × ' + p + ' pisos = <b>' + nTotalVigas + ' vigas</b>.<br>• Sección ' + vbVig + '×' + vhVig + 'cm (L=' + lVig.toFixed(2) + 'm) | ' + nEstVig_unit + ' estribos/viga.';
+    WBS_STORE.vigas.m12 = (phPV > 0 ? 2 * (lVig + 0.40) : 0) * nTotalVigas;
+    WBS_STORE.vigas.m58 = 0; WBS_STORE.vigas.m34 = 0;
 
-    var vMurUnit = (bMur * hzMur) + (((ebMur + ccMur) / 2) * hMur);
+    if(modoEfectivoVig === 'comb'){
+        WBS_STORE.vigas.m58 += (4 * cutVigBar) * nTotalVigas;
+        WBS_STORE.vigas.m12 += ((nS_comb12V * 2 * cutBastonVig) + (nI_comb12V * (lVig * 0.75))) * nTotalVigas;
+    } else {
+        for(var ibv=0; ibv<supBarsV.length; ibv++){
+            if(supBarsV[ibv] < 1.5) WBS_STORE.vigas.m12 += cutVigBar * nTotalVigas;
+            else if(supBarsV[ibv] < 2.2) WBS_STORE.vigas.m58 += cutVigBar * nTotalVigas;
+            else WBS_STORE.vigas.m34 += cutVigBar * nTotalVigas;
+        }
+        for(var jbv=0; jbv<infBarsV.length; jbv++){
+            if(infBarsV[jbv] < 1.5) WBS_STORE.vigas.m12 += cutVigBar * nTotalVigas;
+            else if(infBarsV[jbv] < 2.2) WBS_STORE.vigas.m58 += cutVigBar * nTotalVigas;
+            else WBS_STORE.vigas.m34 += cutVigBar * nTotalVigas;
+        }
+    }
+    WBS_STORE.vigas.alambre8 = nTotalVigas * 1.70;
+    WBS_STORE.vigas.detailText = 
+        '• <b>Elemento:</b> Grilla ' + gridInfo.nx + '×' + gridInfo.ny + ' ejes = ' + gridInfo.vigasPorPiso + ' tramos/piso × ' + p + ' pisos = <b>' + nTotalVigas + ' Vigas</b> (' + vbVig + '×' + vhVig + 'cm, Luz L=' + lVig.toFixed(2) + 'm).<br>' +
+        '• <b>Acero Longitudinal:</b> ' + (modoEfectivoVig==='comb' ? ('2Ø5/8" corridos Sup/Inf (Corte=' + cutVigBar.toFixed(2) + 'm) + ' + nS_comb12V + 'Ø1/2" bastones Sup (L=' + cutBastonVig.toFixed(2) + 'm) + ' + nI_comb12V + 'Ø1/2" Inf') : ('Sup: ' + nSV + ' Ø ' + phiL(phS_V) + ' + Inf: ' + nIV + ' Ø ' + phiL(phI_V) + ' (Corte c/ganchos Ldh=' + Ldh_ganchoV + 'cm: ' + cutVigBar.toFixed(2) + 'm)')) + '.<br>' +
+        '• <b>Estribos Ø 3/8":</b> ' + nEstVig_unit + ' estribos/viga (1@5, 8@' + sLimV + ' en zona 2h=' + (2*vhVig) + 'cm, R@' + sRestoV + 'cm) | Corte estribo = ' + perimEstVig.toFixed(2) + 'm.';
+
+    // 6.5 MUROS DE CONTENCIÓN / SÓTANO
     var mlMuro = Math.max(1, parseInt(el('ac_cant_elem') ? el('ac_cant_elem').value : 10) || 10);
+    var cutVertMur = hMur + hzMur + 0.45;
     WBS_STORE.muros.count = mlMuro;
-    WBS_STORE.muros.vol = vMurUnit * mlMuro * 1.05;
-    WBS_STORE.muros.m38 = 0;
-    WBS_STORE.muros.m12 = (chMur.m * (hMur * 100 / chMur.s)) * mlMuro;
-    WBS_STORE.muros.m58 = (cvMur.m * (100 / cvMur.s) * (hMur + hzMur + 0.45) + 2 * (100 / czMur.s) * bMur) * mlMuro;
-    WBS_STORE.muros.m34 = 0;
-    WBS_STORE.muros.detailText = '• ' + mlMuro + ' ml de muro (H=' + hMur.toFixed(2) + 'm, Base B=' + bMur.toFixed(2) + 'm, e=' + (ebMur*100).toFixed(0) + 'cm).';
+    WBS_STORE.muros.m38 = 0; WBS_STORE.muros.m12 = 0; WBS_STORE.muros.m58 = 0; WBS_STORE.muros.m34 = 0;
+    var mVertTot = (cvMur.m * (100 / cvMur.s) * cutVertMur) * mlMuro;
+    var mHorzTot = (chMur.m * (hMur * 100 / chMur.s) * 1.05) * mlMuro;
+    var mZapMurTot = (2 * (100 / czMur.s) * (bMur + 0.30)) * mlMuro;
+
+    if(phVMur < 1.5) WBS_STORE.muros.m12 += mVertTot; else if(phVMur < 2.2) WBS_STORE.muros.m58 += mVertTot; else WBS_STORE.muros.m34 += mVertTot;
+    if(phHMur < 0.8) WBS_STORE.muros.m38 += mHorzTot; else if(phHMur < 1.5) WBS_STORE.muros.m12 += mHorzTot; else WBS_STORE.muros.m58 += mHorzTot;
+    if(phZMur < 1.5) WBS_STORE.muros.m12 += mZapMurTot; else if(phZMur < 2.2) WBS_STORE.muros.m58 += mZapMurTot; else WBS_STORE.muros.m34 += mZapMurTot;
+    WBS_STORE.muros.alambre8 = mlMuro * 2.40;
+    WBS_STORE.muros.detailText = 
+        '• <b>Elemento:</b> ' + mlMuro + ' metros lineales de Muro (' + (m_tipo==='voladizo'?'Voladizo':'Sótano') + ') H=' + hMur.toFixed(2) + 'm, Base B=' + bMur.toFixed(2) + 'm, Espesor e=' + (ebMur*100).toFixed(0) + 'cm.<br>' +
+        '• <b>Malla Pantalla:</b> Vertical (' + (cvMur.m===2?'Doble Malla':'1 Malla') + ') Ø ' + phiL(phVMur) + ' @ ' + cvMur.s + 'cm (Corte=' + cutVertMur.toFixed(2) + 'm c/gancho 90°) + Horizontal Ø ' + phiL(phHMur) + ' @ ' + chMur.s + 'cm.<br>' +
+        '• <b>Parrilla Zapata Corrida:</b> Ø ' + phiL(phZMur) + ' @ ' + czMur.s + 'cm transversal y longitudinal.';
 
     for(var k in WBS_STORE){
         var item = WBS_STORE[k];
@@ -2055,10 +2138,7 @@ function runEng(t){
         var v58 = Math.ceil((item.m58 * desp) / 9.0);
         var v34 = Math.ceil((item.m34 * desp) / 9.0);
         item.peso = (v38 * 9 * 0.56) + (v12 * 9 * 0.994) + (v58 * 9 * 1.552) + (v34 * 9 * 2.235);
-        item.cem = Math.ceil(item.vol * bolsasM3);
-        item.arena = item.vol * arenaM3;
-        item.piedra = item.vol * piedraM3;
-        item.agua = Math.ceil(item.vol * aguaM3);
+        item.alambre16 = item.peso * 0.04;
     }
 
     evaluarSemaforoRNE(nC, aC, aTrib, zl, zb, pA, qAdm, Vu_punz, phiVc_punz, sis, cb, ct, Pu_col, phiPn_col, lVig, vhVig, Vu_cortV, phiVnV, Vu_vc, phiVn_vc, m_tipo, FSVMur, FSDMur);
@@ -2177,9 +2257,10 @@ function renderMetradosWBS(){
     var container = el('wbs_container');
     if(!container) return;
 
+    var desp = parseFloat(el('p_desp') ? el('p_desp').value : 1.05) || 1.05;
     var keys = ['zapatas', 'vconex', 'columnas', 'vigas', 'muros'];
     var htmlWBS = '';
-    var tot38 = 0, tot12 = 0, tot58 = 0, tot34 = 0, totPeso = 0, totVol = 0, totCem = 0, totAr = 0, totPi = 0, totAg = 0;
+    var tot38 = 0, tot12 = 0, tot58 = 0, tot34 = 0, totPeso = 0, totAl16 = 0, totAl8 = 0;
 
     for(var i = 0; i < keys.length; i++){
         var k = keys[i];
@@ -2189,15 +2270,14 @@ function renderMetradosWBS(){
         if(filtro === 'piso1' && (k !== 'columnas' && k !== 'vigas')) continue;
         if(filtro === 'muros' && k !== 'muros') continue;
 
-        var v38 = Math.ceil((it.m38 * 1.05) / 9.0);
-        var v12 = Math.ceil((it.m12 * 1.05) / 9.0);
-        var v58 = Math.ceil((it.m58 * 1.05) / 9.0);
-        var v34 = Math.ceil((it.m34 * 1.05) / 9.0);
+        var v38 = Math.ceil((it.m38 * desp) / 9.0);
+        var v12 = Math.ceil((it.m12 * desp) / 9.0);
+        var v58 = Math.ceil((it.m58 * desp) / 9.0);
+        var v34 = Math.ceil((it.m34 * desp) / 9.0);
 
         if(it.active){
             tot38 += v38; tot12 += v12; tot58 += v58; tot34 += v34;
-            totPeso += it.peso; totVol += it.vol; totCem += it.cem;
-            totAr += it.arena; totPi += it.piedra; totAg += it.agua;
+            totPeso += it.peso; totAl16 += it.alambre16; totAl8 += it.alambre8;
         }
 
         htmlWBS += 
@@ -2208,14 +2288,18 @@ function renderMetradosWBS(){
                 '</div>' +
                 '<div class="wbs-content">' +
                     '<div class="wbs-subdetail">' + (it.detailText || '') + '</div>' +
-                    '<div style="font-size:11px; display:flex; justify-content:space-between; margin:6px 0 4px 0;"><span>Concreto (+5%): <b>' + it.vol.toFixed(2) + ' m³</b></span><span style="color:var(--primary-orange);"><b>' + it.cem + ' bls</b> Cemento</span></div>' +
-                    '<div style="font-size:10.5px; color:var(--text-muted); margin-bottom:6px;">Arena: ' + it.arena.toFixed(2) + ' m³ | Piedra: ' + it.piedra.toFixed(2) + ' m³ | Agua: ' + it.agua + ' L</div>' +
-                    '<div style="font-size:11px; color:#fff; border-top:1px dotted rgba(255,255,255,0.1); padding-top:4px;">' +
-                        (v38 > 0 ? 'Ø 3/8": <b>' + v38 + ' var</b> (9m)  ' : '') +
-                        (v12 > 0 ? 'Ø 1/2": <b>' + v12 + ' var</b> (9m)  ' : '') +
-                        (v58 > 0 ? 'Ø 5/8": <b>' + v58 + ' var</b> (9m)  ' : '') +
-                        (v34 > 0 ? 'Ø 3/4": <b>' + v34 + ' var</b> (9m)  ' : '') +
-                        '<span style="color:var(--primary-green); float:right;"><b>' + it.peso.toFixed(1) + ' kg</b></span>' +
+                    '<div style="font-size:11px; display:flex; justify-content:space-between; margin:7px 0 5px 0; color:var(--primary-orange); font-weight:800;">' +
+                        '<span>🔗 Alambre N°16 (Amarre): <b>' + it.alambre16.toFixed(1) + ' kg</b></span>' +
+                        '<span>⛓️ Alambre N°8 (Atirantado): <b>' + it.alambre8.toFixed(1) + ' kg</b></span>' +
+                    '</div>' +
+                    '<div style="font-size:11.5px; color:#fff; border-top:1px dotted rgba(255,255,255,0.15); padding-top:6px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between;">' +
+                        '<div>' +
+                            (v38 > 0 ? '<span style="color:#00e5ff; margin-right:8px;">Ø 3/8": <b>' + v38 + ' var</b></span>' : '') +
+                            (v12 > 0 ? '<span style="color:#3388ff; margin-right:8px;">Ø 1/2": <b>' + v12 + ' var</b></span>' : '') +
+                            (v58 > 0 ? '<span style="color:#ff453a; margin-right:8px;">Ø 5/8": <b>' + v58 + ' var</b></span>' : '') +
+                            (v34 > 0 ? '<span style="color:#ffcc00; margin-right:8px;">Ø 3/4": <b>' + v34 + ' var</b></span>' : '') +
+                        '</div>' +
+                        '<span style="color:var(--primary-green); font-weight:900;">' + it.peso.toFixed(1) + ' kg</span>' +
                     '</div>' +
                 '</div>' +
             '</div>';
@@ -2223,35 +2307,27 @@ function renderMetradosWBS(){
 
     container.innerHTML = htmlWBS;
 
-    el('tot_ac_38').innerText = tot38 + ' varillas (9m)';
-    el('tot_ac_12').innerText = tot12 + ' varillas (9m)';
-    el('tot_ac_58').innerText = tot58 + ' varillas (9m)';
-    el('tot_ac_34').innerText = tot34 + ' varillas (9m)';
-    el('tot_alambre').innerText = (totPeso * 0.04).toFixed(1) + ' kg';
-    el('tot_peso_acero').innerText = totPeso.toFixed(1) + ' kg';
-    el('tot_vol_conc').innerText = totVol.toFixed(2) + ' m³';
-    el('tot_cemento').innerText = totCem + ' bolsas';
-    el('tot_arena').innerText = totAr.toFixed(2) + ' m³';
-    el('tot_piedra').innerText = totPi.toFixed(2) + ' m³';
-    el('tot_agua').innerText = totAg + ' Litros';
+    if(el('tot_ac_38')) el('tot_ac_38').innerText = tot38 + ' varillas (9m)';
+    if(el('tot_ac_12')) el('tot_ac_12').innerText = tot12 + ' varillas (9m)';
+    if(el('tot_ac_58')) el('tot_ac_58').innerText = tot58 + ' varillas (9m)';
+    if(el('tot_ac_34')) el('tot_ac_34').innerText = tot34 + ' varillas (9m)';
+    if(el('tot_alambre16')) el('tot_alambre16').innerText = totAl16.toFixed(1) + ' kg';
+    if(el('tot_alambre8')) el('tot_alambre8').innerText = totAl8.toFixed(1) + ' kg';
+    if(el('tot_peso_acero')) el('tot_peso_acero').innerText = totPeso.toFixed(1) + ' kg (' + (totPeso/1000).toFixed(2) + ' Ton)';
 }
 
 function copiarPedidoGlobal(){
-    var txt = '📦 PEDIDO CONSOLIDADO DE MATERIALES - CONSTRUYE.PRO:\n' +
-              '--- ACERO CORRUGADO ASTM A615 GRADO 60 ---\n' +
-              '• Varilla Ø 3/8" (9.0m): ' + el('tot_ac_38').innerText + '\n' +
-              '• Varilla Ø 1/2" (9.0m): ' + el('tot_ac_12').innerText + '\n' +
-              '• Varilla Ø 5/8" (9.0m): ' + el('tot_ac_58').innerText + '\n' +
-              '• Varilla Ø 3/4" (9.0m): ' + el('tot_ac_34').innerText + '\n' +
-              '• Alambre Negro N° 16: ' + el('tot_alambre').innerText + '\n' +
-              '• Peso Total Acero (+Desp): ' + el('tot_peso_acero').innerText + '\n\n' +
-              '--- CONCRETO PREMEZCLADO / EN OBRA ---\n' +
-              '• Volumen Total: ' + el('tot_vol_conc').innerText + '\n' +
-              '• Cemento Portland: ' + el('tot_cemento').innerText + '\n' +
-              '• Arena Gruesa Lavada: ' + el('tot_arena').innerText + '\n' +
-              '• Piedra Chancada 1/2" a 3/4": ' + el('tot_piedra').innerText + '\n' +
-              '• Agua Potable: ' + el('tot_agua').innerText;
-    copyToClipboardSafe(txt, '✅ ¡Pedido consolidado copiado al portapapeles!');
+    var txt = '📦 PLANILLA CONSOLIDADA DE ACERO Y ALAMBRES - CONSTRUYE.PRO (RNE):\n' +
+              '--- ACERO CORRUGADO ASTM A615 GRADO 60 (VARILLAS DE 9.00m) ---\n' +
+              '• Varilla Ø 3/8" (Estribos/Grapas 135°): ' + (el('tot_ac_38') ? el('tot_ac_38').innerText : '') + '\n' +
+              '• Varilla Ø 1/2" (Refuerzo/Bastones/Piel): ' + (el('tot_ac_12') ? el('tot_ac_12').innerText : '') + '\n' +
+              '• Varilla Ø 5/8" (Refuerzo Principal): ' + (el('tot_ac_58') ? el('tot_ac_58').innerText : '') + '\n' +
+              '• Varilla Ø 3/4" (Refuerzo Mayor): ' + (el('tot_ac_34') ? el('tot_ac_34').innerText : '') + '\n\n' +
+              '--- ALAMBRES DE AMARRE Y ASEGURAMIENTO ESTRUCTURAL ---\n' +
+              '• Alambre Negro Recocido N° 16 (Amarre de armadura 4%): ' + (el('tot_alambre16') ? el('tot_alambre16').innerText : '') + '\n' +
+              '• Alambre Negro Recocido N° 8 (Aseguramiento y tensores): ' + (el('tot_alambre8') ? el('tot_alambre8').innerText : '') + '\n' +
+              '• Peso Total de Acero Corrugado (+Desp. RNE): ' + (el('tot_peso_acero') ? el('tot_peso_acero').innerText : '');
+    copyToClipboardSafe(txt, '✅ ¡Planilla de Acero y Alambres N°16 / N°8 copiada al portapapeles!');
 }
 
 function compartirFicha(){
@@ -2279,14 +2355,14 @@ function renderExpedienteTecnico(fc, fy, zSismo, suelo, factorU, pisos, area, nC
         '3. <b>Columnas:</b> b=' + D3.cx + 'cm × t=' + D3.cy + 'cm (H libre=' + D3.ch.toFixed(2) + 'm).<br>' +
         '   - Acero: 4 Ø ' + phiL(D3.cPhiE) + ' (Esquinas) + ' + D3.nM + ' Ø ' + phiL(D3.cPhiM) + ' (Caras c/patas ' + D3.cPata + 'cm y grapas 135°) | Traslape Ld=' + D3.ldCol + 'cm.<br>' +
         '4. <b>Vigas de Entrepiso:</b> b=' + D3.vb + 'cm × h=' + D3.vh + 'cm (Luz=' + D3.vl.toFixed(2) + 'm).<br>' +
-        '   - Refuerzo: Sup ' + D3.vSupBars.length + ' Ø ' + phiL(D3.phS) + ' | Inf ' + D3.vInfBars.length + ' Ø ' + phiL(D3.phI) + ' | Estribos 1@5, 8@' + D3.sLimV + ', R@' + (D3.sRestoV||20) + 'cm.<br>' +
+        '   - Refuerzo: Sup ' + D3.vSupBars.length + ' varillas | Inf ' + D3.vInfBars.length + ' varillas | Estribos 1@5, 8@' + D3.sLimV + ', R@' + (D3.sRestoV||20) + 'cm.<br>' +
         '5. <b>Muros (' + (D3.mTipo==='voladizo'?'Voladizo':'Sótano') + '):</b> H=' + D3.mH.toFixed(2) + 'm | Base e=' + D3.mE + 'cm | Corona c=' + D3.mC + 'cm.<br>' +
         '   - Armado: Vert Ø ' + phiL(D3.mPhiV) + ' @ ' + D3.spV + 'cm (' + (D3.mVmalla===2?'Doble Malla':'1 Malla') + ') | Horz Ø ' + phiL(D3.mPhiH) + ' @ ' + D3.spH + 'cm.<br><br>' +
 
         '<b>CAPÍTULO III: PROTOCOLOS DE INSPECCIÓN EN OBRA</b><br>' +
         '• Recubrimientos Libres: 7.5 cm en cimentación contra tierra, 4.0 cm en vigas/columnas encofradas.<br>' +
         '• Empalmes: Realizar traslapes de columnas estrictamente en el tercio central (Clase B).<br>' +
-        '• Curado: Mantener humedad continua sobre el concreto durante un mínimo de 7 días consecutivos.';
+        '• Amarre y Aseguramiento: Alambre Negro N° 16 en todos los cruces de estribos y Alambre N° 8 en tensores de aseguramiento.';
 
     cont.innerHTML = txt;
 }
@@ -2629,7 +2705,7 @@ function rMur(H, B, hz, cc, eb, puntera, talon, phV, phH, phZ, mV, mH, dent, mTi
     ctx.fillStyle = '#30d158'; ctx.fillText('B=' + B.toFixed(2) + 'm', x0 + w / 2, bY + 14);
 }
 
-// ==================== 9. MOTOR 3D INTERACTIVO Y LOTE 3D SINCRONIZADO CON EJES REALES ====================
+// ==================== 9. MOTOR 3D INTERACTIVO Y LOTE 3D SINCRONIZADO CON EJES REALES EN ZAPATAS Y COLUMNAS ====================
 var c3 = el('canvas_3d_viewport');
 if(c3){
     c3.addEventListener('mousedown', function(e){ if(e.button === 2 || e.button === 1){ iPan = true; lx = e.clientX; ly = e.clientY; } else { iDrg = true; lx = e.clientX; ly = e.clientY; } });
@@ -2700,9 +2776,11 @@ function render3D(){
     var startGX = -wLot * 0.78, spanGX = (wLot * 1.56) / Math.max(1, nGx - 1);
     var startGZ = -dLot * 0.78, spanGZ = (dLot * 1.56) / Math.max(1, nGy - 1);
 
-    // Determinar el índice de eje exacto para la zapata activa según ubicación seleccionada
-    var actIdxX = (D3.zUbic === 'medianera' || D3.zUbic === 'esquina') ? 0 : Math.floor(nGx / 2);
-    var actIdxZ = (D3.zUbic === 'esquina') ? 0 : Math.floor(nGy / 2);
+    // Determinar el eje exacto tanto para Zapata como para Columna según ubicación seleccionada
+    var esBorde = (cMod === 'columnas') ? (D3.cUbic === 'perimetral' || D3.cUbic === 'esquina') : (D3.zUbic === 'medianera' || D3.zUbic === 'esquina');
+    var esEsquina = (cMod === 'columnas') ? (D3.cUbic === 'esquina') : (D3.zUbic === 'esquina');
+    var actIdxX = esBorde ? 0 : Math.floor(nGx / 2);
+    var actIdxZ = esEsquina ? 0 : Math.floor(nGy / 2);
     var activeGX = (nGx === 1) ? 0 : (startGX + actIdxX * spanGX);
     var activeGZ = (nGy === 1) ? 0 : (startGZ + actIdxZ * spanGZ);
 
@@ -2723,37 +2801,36 @@ function render3D(){
         ctx.fillStyle = '#00e5ff';
         ctx.fillText('FRENTE CALLE (Lx≈' + (D3.spanX||3.0).toFixed(1) + 'm | Ly≈' + (D3.spanY||4.5).toFixed(1) + 'm)', (pc1.x + pc2.x)/2, (pc1.y + pc2.y)/2 + 14);
 
-        // Dibujar líneas de Ejes X (A, B, C...) y Ejes Y (1, 2, 3...) sobre el Lote 3D
-        ctx.strokeStyle = 'rgba(255, 159, 10, 0.38)'; ctx.lineWidth = 1.1; ctx.setLineDash([3, 3]);
+        ctx.strokeStyle = 'rgba(255, 159, 10, 0.42)'; ctx.lineWidth = 1.1; ctx.setLineDash([3, 3]);
         var letrasEje = ['A','B','C','D','E','F','G','H'];
         for(var ax = 0; ax < nGx; ax++){
             var xEje = (nGx === 1) ? 0 : (startGX + ax * spanGX);
             var pa1 = prj(xEje, -0.6, -dLot * 0.92, cx, cy), pa2 = prj(xEje, -0.6, dLot * 0.92, cx, cy);
             ctx.beginPath(); ctx.moveTo(pa1.x, pa1.y); ctx.lineTo(pa2.x, pa2.y); ctx.stroke();
-            ctx.fillStyle = '#ff9f0a'; ctx.font = 'bold 8.5px sans-serif';
-            ctx.fillText(letrasEje[ax] || ('X'+(ax+1)), pa2.x, pa2.y + 8);
+            ctx.fillStyle = '#ff9f0a'; ctx.font = 'bold 9px sans-serif';
+            ctx.fillText(letrasEje[ax] || ('X'+(ax+1)), pa2.x, pa2.y + 9);
         }
         for(var ay = 0; ay < nGy; ay++){
             var zEje = (nGy === 1) ? 0 : (startGZ + ay * spanGZ);
             var py1 = prj(-wLot * 0.92, -0.6, zEje, cx, cy), py2 = prj(wLot * 0.92, -0.6, zEje, cx, cy);
             ctx.beginPath(); ctx.moveTo(py1.x, py1.y); ctx.lineTo(py2.x, py2.y); ctx.stroke();
-            ctx.fillStyle = '#ff9f0a'; ctx.font = 'bold 8.5px sans-serif';
+            ctx.fillStyle = '#ff9f0a'; ctx.font = 'bold 9px sans-serif';
             ctx.fillText(String(ay + 1), py2.x + 8, py2.y);
         }
         ctx.setLineDash([]);
 
-        // Dibujar las zapatas de la grilla Nx × Ny
         var hwZ = Math.min(0.18, 0.45 / Math.max(nGx, nGy));
         for(var gx = 0; gx < nGx; gx++){
             for(var gz = 0; gz < nGy; gz++){
-                if(cMod === 'zapatas' && gx === actIdxX && gz === actIdxZ) continue;
                 var curGX = (nGx === 1) ? 0 : (startGX + gx * spanGX);
                 var curGZ = (nGy === 1) ? 0 : (startGZ + gz * spanGZ);
+                if(cMod === 'zapatas' && gx === actIdxX && gz === actIdxZ) continue;
+                var isActColAxis = (cMod === 'columnas' && gx === actIdxX && gz === actIdxZ);
                 var zSec1 = prj(curGX - hwZ, -0.6, curGZ - hwZ, cx, cy);
                 var zSec2 = prj(curGX + hwZ, -0.6, curGZ - hwZ, cx, cy);
                 var zSec3 = prj(curGX + hwZ, -0.6, curGZ + hwZ, cx, cy);
                 var zSec4 = prj(curGX - hwZ, -0.6, curGZ + hwZ, cx, cy);
-                dPol(ctx, [zSec1, zSec2, zSec3, zSec4], 'rgba(148, 163, 184, 0.18)', 'rgba(0, 229, 255, 0.45)');
+                dPol(ctx, [zSec1, zSec2, zSec3, zSec4], isActColAxis ? 'rgba(48, 209, 88, 0.28)' : 'rgba(148, 163, 184, 0.18)', isActColAxis ? '#30d158' : 'rgba(0, 229, 255, 0.45)');
             }
         }
     }
@@ -2864,19 +2941,22 @@ function render3D(){
         dDim(ctx, prj((xZ1+xZ2)/2, -0.6 + hZp*2 - hV*2, -bV, cx, cy), prj((xZ1+xZ2)/2, -0.6 + hZp*2, -bV, cx, cy), '#ff9f0a', 'h=' + D3.vcH);
     }
     else if(cMod === 'columnas'){
-        var sx = (D3.cx / 100) * 1.05, sz = (D3.cy / 100) * 1.05, sy = 1.25;
-        var col = rxM ? {f: 'rgba(0, 229, 255, 0.06)', s: 'rgba(0, 229, 255, 0.32)'} : {f: '#3b82f6', s: '#93c5fd'};
-        aB(fc, 0, -0.6, 0, sx, sy, sz, col, cx, cy); 
+        var escCol = showLote ? 0.65 : 1.05;
+        var sx = (D3.cx / 100) * escCol, sz = (D3.cy / 100) * escCol, sy = showLote ? 0.95 : 1.25;
+        var colX = showLote ? activeGX : 0;
+        var colZ = showLote ? activeGZ : 0;
+        var col = rxM ? {f: 'rgba(0, 229, 255, 0.08)', s: 'rgba(0, 229, 255, 0.38)'} : {f: '#3b82f6', s: '#93c5fd'};
+        aB(fc, colX, -0.6, colZ, sx, sy, sz, col, cx, cy); 
         fc.sort(function(a, b){ return a.az - b.az; }); 
         fc.forEach(function(f){ dPol(ctx, f.i.map(function(i){ return f.p[i]; }), f.f, f.s); });
         if(rxM){
-            ctx.lineWidth = 2.2; 
-            var rxs = sx * 0.78, rzs = sz * 0.78;
+            ctx.lineWidth = 2.1; 
+            var rxs = sx * 0.78, rzs = sz * 0.78, pataLen = showLote ? 0.16 : 0.25;
             var esq = [[-rxs, -rzs], [rxs, -rzs], [rxs, rzs], [-rxs, rzs]]; 
             ctx.strokeStyle = phiC(D3.cPhiE);
             esq.forEach(function(r){
-                var p1 = prj(r[0], -0.6, r[1], cx, cy), p2 = prj(r[0], -0.6 + sy * 2, r[1], cx, cy);
-                var pPata = prj(r[0] + Math.sign(r[0]) * 0.25, -0.6, r[1] + Math.sign(r[1]) * 0.25, cx, cy); 
+                var p1 = prj(colX + r[0], -0.6, colZ + r[1], cx, cy), p2 = prj(colX + r[0], -0.6 + sy * 2, colZ + r[1], cx, cy);
+                var pPata = prj(colX + r[0] + Math.sign(r[0]) * pataLen, -0.6, colZ + r[1] + Math.sign(r[1]) * pataLen, cx, cy); 
                 ctx.beginPath(); ctx.moveTo(pPata.x, pPata.y); ctx.lineTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
             });
             var mids = []; 
@@ -2886,23 +2966,23 @@ function render3D(){
                     var stX3 = (rxs * 2) / (nTB3 / 2 + 1);
                     for(var m1 = 1; m1 <= nTB3 / 2; m1++){
                         var xm3 = -rxs + stX3 * m1;
-                        mids.push({x: xm3, z: -rzs, dx: 0, dz: -0.25});
-                        mids.push({x: xm3, z: rzs,  dx: 0, dz: 0.25});
+                        mids.push({x: xm3, z: -rzs, dx: 0, dz: -pataLen});
+                        mids.push({x: xm3, z: rzs,  dx: 0, dz: pataLen});
                     }
                 }
                 if(nS3 > 0){
                     var stZ3 = (rzs * 2) / (nS3 / 2 + 1);
                     for(var m2 = 1; m2 <= nS3 / 2; m2++){
                         var zm3 = -rzs + stZ3 * m2;
-                        mids.push({x: -rxs, z: zm3, dx: -0.25, dz: 0});
-                        mids.push({x: rxs,  z: zm3, dx: 0.25,  dz: 0});
+                        mids.push({x: -rxs, z: zm3, dx: -pataLen, dz: 0});
+                        mids.push({x: rxs,  z: zm3, dx: pataLen,  dz: 0});
                     }
                 }
             }
             ctx.strokeStyle = phiC(D3.cPhiM);
             mids.forEach(function(r){
-                var p1 = prj(r.x, -0.6, r.z, cx, cy), p2 = prj(r.x, -0.6 + sy * 2, r.z, cx, cy);
-                var pPataM = prj(r.x + r.dx, -0.6, r.z + r.dz, cx, cy);
+                var p1 = prj(colX + r.x, -0.6, colZ + r.z, cx, cy), p2 = prj(colX + r.x, -0.6 + sy * 2, colZ + r.z, cx, cy);
+                var pPataM = prj(colX + r.x + r.dx, -0.6, colZ + r.z + r.dz, cx, cy);
                 ctx.beginPath(); ctx.moveTo(pPataM.x, pPataM.y); ctx.lineTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
             });
 
@@ -2917,21 +2997,21 @@ function render3D(){
                 var y3d = -0.6 + (yV / D3.ch) * (sy * 2);
                 var isConf = (yV <= bC + 0.01 || yV >= tC - 0.01);
                 var cl = isConf ? '#30d158' : '#ff9f0a'; 
-                ctx.strokeStyle = cl; ctx.lineWidth = 1.6;
-                dPol(ctx, [prj(-rxs, y3d, -rzs, cx, cy), prj(rxs, y3d, -rzs, cx, cy), prj(rxs, y3d, rzs, cx, cy), prj(-rxs, y3d, rzs, cx, cy)], null, cl);
+                ctx.strokeStyle = cl; ctx.lineWidth = 1.5;
+                dPol(ctx, [prj(colX - rxs, y3d, colZ - rzs, cx, cy), prj(colX + rxs, y3d, colZ - rzs, cx, cy), prj(colX + rxs, y3d, colZ + rzs, cx, cy), prj(colX - rxs, y3d, colZ + rzs, cx, cy)], null, cl);
                 if(D3.nM >= 2){
-                    var pg1 = prj(0, y3d, -rzs, cx, cy), pg2 = prj(0, y3d, rzs, cx, cy);
+                    var pg1 = prj(colX, y3d, colZ - rzs, cx, cy), pg2 = prj(colX, y3d, colZ + rzs, cx, cy);
                     ctx.beginPath(); ctx.moveTo(pg1.x, pg1.y); ctx.lineTo(pg2.x, pg2.y); ctx.stroke();
                 }
                 if(D3.nM >= 4){
-                    var pg3 = prj(-rxs, y3d, 0, cx, cy), pg4 = prj(rxs, y3d, 0, cx, cy);
+                    var pg3 = prj(colX - rxs, y3d, colZ, cx, cy), pg4 = prj(colX + rxs, y3d, colZ, cx, cy);
                     ctx.beginPath(); ctx.moveTo(pg3.x, pg3.y); ctx.lineTo(pg4.x, pg4.y); ctx.stroke();
                 }
             });
         }
-        dDim(ctx, prj(-sx, -0.6, sz, cx, cy), prj(sx, -0.6, sz, cx, cy), '#00e5ff', 'b=' + D3.cx); 
-        dDim(ctx, prj(sx, -0.6, sz, cx, cy), prj(sx, -0.6, -sz, cx, cy), '#30d158', 't=' + D3.cy); 
-        dDim(ctx, prj(sx, -0.6, -sz, cx, cy), prj(sx, -0.6 + sy * 2, -sz, cx, cy), '#ff9f0a', 'H=' + D3.ch.toFixed(2));
+        dDim(ctx, prj(colX - sx, -0.6, colZ + sz, cx, cy), prj(colX + sx, -0.6, colZ + sz, cx, cy), '#00e5ff', 'b=' + D3.cx, showLote ? 12 : 0); 
+        dDim(ctx, prj(colX + sx, -0.6, colZ + sz, cx, cy), prj(colX + sx, -0.6, colZ - sz, cx, cy), '#30d158', 't=' + D3.cy, showLote ? -10 : 0); 
+        dDim(ctx, prj(colX + sx, -0.6, colZ - sz, cx, cy), prj(colX + sx, -0.6 + sy * 2, colZ - sz, cx, cy), '#ff9f0a', 'H=' + D3.ch.toFixed(2));
     }
     else if(cMod === 'vigas'){
         var sx = (D3.vl / 5) * 1.2, sz = (D3.vb / 100) * 0.9, sy = (D3.vh / 100) * 0.9;
